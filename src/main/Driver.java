@@ -40,7 +40,7 @@ public class Driver {
 		genesis.addSinglePerson("Harold", "Harris", Sex.MALE, 18);
 		genesis.addSinglePerson("Ivan", "Irvine", Sex.MALE, 18);
 		genesis.addSinglePerson("Joe", "Jenkins", Sex.MALE, 18);
-		int interval = 50;
+		int interval = 10;
 		int i = 0;
 		while (true) {
 			genesis.incrementTime(new Random());
@@ -56,7 +56,6 @@ public class Driver {
 				}
 			}
 			i++;
-
 		}
 
 		System.out.println("Now printing output.");

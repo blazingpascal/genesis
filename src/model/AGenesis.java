@@ -42,7 +42,7 @@ public abstract class AGenesis implements IGenesis {
 	@Override
 	public String livingPersonalPopulationSummary() {
 		StringBuilder sb = new StringBuilder("Personal Population Summary");
-		for(IPerson p : this.livingPopulation()){
+		for (IPerson p : this.livingPopulation()) {
 			sb.append("\n");
 			sb.append(p.basicPersonalInfo());
 		}
@@ -54,10 +54,17 @@ public abstract class AGenesis implements IGenesis {
 	@Override
 	public void incrementTime(Random r) {
 		timeInYears++;
-		historicalPopulation().forEach(p -> p.incrementAge());
+		for(IPerson p : livingPopulation()){
+			p.incrementAge();
+		}
 		pairOffCouples(r);
 		tryForBabies(r);
 		evaluateDeath(r);
+		cleanUp();
+	}
+
+	protected void cleanUp() {
+		// Do nothing generally.
 	}
 
 	private void tryForBabies(Random r) {
@@ -91,11 +98,11 @@ public abstract class AGenesis implements IGenesis {
 	}
 
 	private void pairOffCouples(Random r) {
-		List<IPerson> livingPeople = livingPopulation();
-		for (int i = 0; i < livingPeople.size(); i++) {
-			IPerson candidate1 = livingPeople.get(i);
-			for (int j = i + 1; j < livingPeople.size(); j++) {
-				IPerson candidate2 = livingPeople.get(j);
+		List<IPerson> pairablePeople = pairablePopulation();
+		for (int i = 0; i < pairablePeople.size(); i++) {
+			IPerson candidate1 = pairablePeople.get(i);
+			for (int j = i + 1; j < pairablePeople.size(); j++) {
+				IPerson candidate2 = pairablePeople.get(j);
 				double marriageChance = GeneologyRules.marriageChance(candidate1, candidate2);
 				double marriageRoll = r.nextDouble();
 				if (marriageRoll < marriageChance) {
@@ -103,6 +110,34 @@ public abstract class AGenesis implements IGenesis {
 				}
 			}
 		}
+	}
+
+	private List<IPerson> pairablePopulation() {
+		List<IPerson> pairables = new ArrayList<IPerson>();
+		for (IPerson p : this.livingPopulation()) {
+			if (p.getAge() > GeneologyRules.MIN_MARRIAGE_AGE) {
+				pairables.add(p);
+			}
+		}
+		return pairables;
+	}
+
+	private List<IPerson> fertilePopulation() {
+		List<IPerson> fertiles = new ArrayList<IPerson>();
+		for (IPerson p : this.livingPopulation()) {
+			if(p.getSex() == Sex.MALE){
+				if(p.getAge() <= GeneologyRules.MALE_MAX_FERTILE_AGE &&
+						p.getAge() >= GeneologyRules.MALE_MIN_FERTILE_AGE ){
+					fertiles.add(p);
+				}
+			} else{
+				if(p.getAge() <= GeneologyRules.FEMALE_MAX_FERTILE_AGE &&
+						p.getAge() >= GeneologyRules.FEMALE_MIN_FERTILE_AGE ){
+					fertiles.add(p);
+				}
+			}
+		}
+		return fertiles;
 	}
 
 	private void evaluateDeath(Random r) {
@@ -114,11 +149,11 @@ public abstract class AGenesis implements IGenesis {
 			}
 		}
 	}
-	
-	public List<IPerson> getByIds(List<String> ids){
+
+	public List<IPerson> getByIds(List<String> ids) {
 		List<IPerson> people = new ArrayList<IPerson>();
-		for(IPerson p : this.livingPopulation()){
-			if(ids.contains(p.getId())){
+		for (IPerson p : this.livingPopulation()) {
+			if (ids.contains(p.getId())) {
 				people.add(p);
 			}
 		}

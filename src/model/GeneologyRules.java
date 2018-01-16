@@ -1,39 +1,68 @@
 package model;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class GeneologyRules {
 	private static final double BASE_MARRIAGE_CHANCE = .7;
-	private static final int FEMALE_MIN_FERTILE_AGE = 18;
-	private static final int FEMALE_MAX_FERTILE_AGE = 50;
+	public static final int FEMALE_MIN_FERTILE_AGE = 18;
+	public static final int FEMALE_MAX_FERTILE_AGE = 50;
 	private static final int FEMALE_FERTILITY_AGE_RANGE = FEMALE_MAX_FERTILE_AGE - FEMALE_MIN_FERTILE_AGE;
-	private static final int MALE_MIN_FERTILE_AGE = 18;
-	private static final int MALE_MAX_FERTILE_AGE = 50;
+	public static final int MALE_MIN_FERTILE_AGE = 18;
+	public static final int MALE_MAX_FERTILE_AGE = 50;
 	private static final int MALE_FERTILITY_AGE_RANGE = MALE_MAX_FERTILE_AGE - MALE_MIN_FERTILE_AGE;
 	private static final int MAX_MARRIAGE_AGE_GAP = 20;
-	private static final double BASE_PREGNANCY_CHANCE = .90;
+	private static final double BASE_PREGNANCY_CHANCE = .80;
 	private static final double OUT_OF_WEDLOCK_CHANCE = 0.05;
 	private static final double OUT_OF_WEDLOCK_AND_MARRIED_CHANCE = 0.001;
-	private static final int MAX_CHILDREN = 4;
+	private static final int MAX_CHILDREN = 6;
 	private static final int PREFERRED_CHILD_GAP = 3;
+	public static final int MIN_MARRIAGE_AGE = 18;
+	private static List<String> maleNames;
+	private static List<String> femaleNames;
 
+	static{
+		try {
+			Scanner mReader = new Scanner(new File("resources/male.txt"));
+			Scanner fReader = new Scanner(new File("resources/female.txt"));
+			maleNames = new ArrayList<String>();
+			while(mReader.hasNextLine()){
+				maleNames.add(mReader.nextLine().trim());
+			}
+			femaleNames = new ArrayList<String>();
+			while(fReader.hasNextLine()){
+				femaleNames.add(fReader.nextLine().trim());
+			}
+			mReader.close();
+			fReader.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	public static double fertilityChanceCouple(IPerson p1, IPerson p2) {
 		Sex p1sex = p1.getSex();
 		Sex p2sex = p2.getSex();
 		if (p1sex == p2sex) {
 			return 0;
 		}
-		
-		if(p1.relationLevelMax(p2, 3)){
+
+		if (p1.relationLevelMax(p2, 2)) {
 			return 0;
 		}
 
 		double coupleChance = fertilityChance(p1) * fertilityChance(p2);
 		boolean outOfWedlock = !p1.isMarriedTo(p2);
 		if (outOfWedlock) {
-			if(p1.isSingle() && p2.isSingle()){
-			coupleChance *= OUT_OF_WEDLOCK_CHANCE;
-			} else{
+			if (p1.isSingle() && p2.isSingle()) {
+				coupleChance *= OUT_OF_WEDLOCK_CHANCE;
+			} else {
 				coupleChance *= OUT_OF_WEDLOCK_AND_MARRIED_CHANCE;
 			}
 		}
@@ -51,7 +80,7 @@ public class GeneologyRules {
 		Sex sex = p.getSex();
 		double modifier = 1;
 		int yearsSinceLastChild = p.getYearsSinceLastChild();
-		modifier *= (double) yearsSinceLastChild / (double) PREFERRED_CHILD_GAP;
+		modifier *= ((double) yearsSinceLastChild / (double) PREFERRED_CHILD_GAP);
 		if (sex == Sex.MALE) {
 			if (age < MALE_MIN_FERTILE_AGE || age > MALE_MAX_FERTILE_AGE) {
 				return 0;
@@ -120,7 +149,7 @@ public class GeneologyRules {
 		}
 
 		// No kissing cousins here
-		if (p1.relationLevelMax(p2, 3)) {
+		if (p1.relationLevelMax(p2, 2)) {
 			return 0;
 		}
 
@@ -141,16 +170,16 @@ public class GeneologyRules {
 	}
 
 	private static String getRandomMaleName(Random r) {
-		String[] maleNames = new String[] { "John", "Jacob", "Cain", "Abel", "Isaac", "Abraham", "Joseph", "Samuel",
-				"Ezekiel", "Moses" };
-		int rIndex = r.nextInt(maleNames.length);
-		return maleNames[rIndex];
+/*		String[] maleNames = new String[] { "John", "Jacob", "Cain", "Abel", "Isaac", "Abraham", "Joseph", "Samuel",
+				"Ezekiel", "Moses" };*/
+		int rIndex = r.nextInt(maleNames.size());
+		return maleNames.get(rIndex);
 	}
 
 	private static String getRandomFemaleName(Random r) {
-		String[] femaleNames = new String[] { "Lilith", "Mary", "Delilah", "Veronica", "Ruth", "Bethany", "Abigail",
-				"Serah", "Leah", "Grace" };
-		int rIndex = r.nextInt(femaleNames.length);
-		return femaleNames[rIndex];
+/*		String[] femaleNames = new String[] { "Lilith", "Mary", "Delilah", "Veronica", "Ruth", "Bethany", "Abigail",
+				"Serah", "Leah", "Grace" };*/
+		int rIndex = r.nextInt(femaleNames.size());
+		return femaleNames.get(rIndex);
 	}
 }

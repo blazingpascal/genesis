@@ -11,6 +11,8 @@ public class IdBasedPerson extends APersonalInfoPerson {
 	String spouseId = null;
 	List<String> spouseIdHistory = new ArrayList<String>();
 	List<String> childrenIds = new ArrayList<String>();
+	List<String> ancestorIds = new ArrayList<String>();
+	List<String> relatedIds = new ArrayList<String>();
 
 	protected IdBasedPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
 			int genesisId) {
@@ -36,21 +38,30 @@ public class IdBasedPerson extends APersonalInfoPerson {
 		 */
 
 		// go up depth levels
-		ArrayList<IPerson> ancestors = new ArrayList<IPerson>();
+		List<IPerson> ancestors = new ArrayList<IPerson>();
 
-		// get mother's ancestors
-		List<IPerson> mAncestors = getAncestors(getMother(), depth);
+		if (relatedIds.contains(p2.getId())) {
+			return false;
+		}
 
-		// get father's ancestors
-		List<IPerson> fAncestors = getAncestors(getFather(), depth);
+		if (this.ancestorIds.size() > 0) {
+			ancestors = this.getPersonsByIdFromHomeGenesis(ancestorIds.toArray(new String[] {}));
+		} else {
+			// get mother's ancestors
+			List<IPerson> mAncestors = getAncestors(getMother(), depth);
 
-		ancestors.addAll(mAncestors);
-		ancestors.addAll(fAncestors);
+			// get father's ancestors
+			List<IPerson> fAncestors = getAncestors(getFather(), depth);
+
+			ancestors.addAll(mAncestors);
+			ancestors.addAll(fAncestors);
+		}
 
 		// Crawl from these ancestors to see if anyone is related.
 		while (!ancestors.isEmpty()) {
 			IPerson p = ancestors.remove(0);
 			if (p.equals(p2)) {
+				relatedIds.add(p2.getId());
 				return true;
 			}
 			ancestors.addAll(p.getChildren());
@@ -62,6 +73,9 @@ public class IdBasedPerson extends APersonalInfoPerson {
 	private List<IPerson> getAncestors(IPerson person, int depth) {
 		if (person == null) {
 			return new ArrayList<IPerson>();
+		}
+		if (!ancestorIds.isEmpty()) {
+			return getPersonsByIdFromHomeGenesis(ancestorIds.toArray(new String[] {}));
 		}
 		List<IPerson> ancestors = new ArrayList<IPerson>();
 		List<IPerson> ancSubset = new ArrayList<IPerson>();
@@ -202,4 +216,51 @@ public class IdBasedPerson extends APersonalInfoPerson {
 		return new IdBasedPerson(firstName, lastName, sex, age, generation, birthYear, this.genesisId);
 	}
 
+	@Override
+	public void kill(int deathYear) {
+		super.kill(deathYear);
+		notifyGenesisOfDeath();
+	}
+
+	private void notifyGenesisOfDeath() {
+		getHomeGenesis().reactToDeath(this);
+	}
+
+	@Override
+	public void incrementAge() {
+		super.incrementAge();
+		if (this.age == GeneologyRules.MIN_MARRIAGE_AGE) {
+			notifyGenesisOfPairablePerson();
+		}
+		if (this.sex == Sex.MALE) {
+			if (this.age == GeneologyRules.MALE_MIN_FERTILE_AGE) {
+				notifyGenesisOfFertility();
+			}
+			if (this.age == GeneologyRules.MALE_MAX_FERTILE_AGE) {
+				notifyGenesisOfInfertility();
+			}
+		} else {
+			if (this.age == GeneologyRules.FEMALE_MIN_FERTILE_AGE) {
+				notifyGenesisOfFertility();
+			}
+			if (this.age == GeneologyRules.FEMALE_MAX_FERTILE_AGE) {
+				notifyGenesisOfInfertility();
+			}
+		}
+	}
+
+	private void notifyGenesisOfInfertility() {
+		getHomeGenesis().reactToInfertility(this);
+
+	}
+
+	private void notifyGenesisOfFertility() {
+		getHomeGenesis().reactToFertility(this);
+
+	}
+
+	private void notifyGenesisOfPairablePerson() {
+		getHomeGenesis().reactToPairability(this);
+
+	}
 }
