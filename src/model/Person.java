@@ -14,7 +14,7 @@ public class Person extends APersonalInfoPerson{
 	private List<IPerson> children = new ArrayList<IPerson>();
 	
 	Person(String firstName, String lastName, Sex sex, int age, int generation, int birthYear) {
-		super(firstName, lastName, sex, age, generation, birthYear, GenesisImpl.PEOPLE_COUNT);
+		super(firstName, lastName, sex, age, generation, birthYear, firstName + lastName + GenesisImpl.PEOPLE_COUNT);
 	}
 	
 	public String basicFamilyInfo() {
@@ -102,11 +102,6 @@ public class Person extends APersonalInfoPerson{
 	}
 
 	@Override
-	public int hashCode() {
-		return (int)person_id;
-	}
-
-	@Override
 	public boolean relationLevelMax(IPerson p2, int depth) {
 		return depth > 0 && (this.equals(p2) || this.children.contains(p2)
 				|| (this.mother != null && this.mother.relationLevelMax(p2, depth - 1))
@@ -147,7 +142,7 @@ public class Person extends APersonalInfoPerson{
 	}
 
 	@Override
-	protected void makeSpouseWidow() {
+	protected void makeSpouseWidow(int deathYear) {
 		if(spouse != null){
 			this.spouse.setSpouse(null);
 		}
@@ -160,7 +155,7 @@ public class Person extends APersonalInfoPerson{
 	}
 
 	@Override
-	public Map<IPerson, Integer> getSpousalHistory() {
+	public List<ISpouseHistory> getSpousalHistory() {
 		throw new IllegalStateException("Not implemented yet");
 	}
 
@@ -195,4 +190,10 @@ public class Person extends APersonalInfoPerson{
 		}
 		return null;
 	}
+
+	@Override
+	public void makeWidow(int endYear) {
+		this.spouse = null;
+	}
+
 }

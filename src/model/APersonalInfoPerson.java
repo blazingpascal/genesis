@@ -11,14 +11,16 @@ abstract class APersonalInfoPerson implements IPerson {
 	protected final Sex sex;
 	protected int age;
 	protected boolean living = true;
-	protected long person_id;
+	protected String person_id;
 	protected final int generation;
 	protected final int birthYear;
 	protected int deathYear;
 	protected int yearsSinceLastChild = 0;
 	protected String currentLastName;
+	protected boolean isMourningSpouse = false;
+	protected int timeMourningSpouse = 0;
 
-	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear, long person_id){
+	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear, String person_id){
 		this.firstName = firstName;
 		this.currentLastName = lastName;
 		this.birthLastName = lastName;
@@ -50,6 +52,9 @@ abstract class APersonalInfoPerson implements IPerson {
 	public void incrementAge() {
 		if (living) {
 			this.age++;
+		}
+		if(isMourningSpouse){
+			this.timeMourningSpouse++;
 		}
 		this.yearsSinceLastChild++;
 	}
@@ -92,7 +97,7 @@ abstract class APersonalInfoPerson implements IPerson {
 
 	@Override
 	public String getId() {
-		return Long.toString(this.person_id);
+		return this.person_id;
 	}
 
 	String getMaritalStatusString() {
@@ -150,15 +155,15 @@ abstract class APersonalInfoPerson implements IPerson {
 
 	public void kill(int deathYear) {
 		this.living = false;
-		makeSpouseWidow();
+		makeSpouseWidow(deathYear);
 		this.deathYear = deathYear;
 	}
 
-	protected abstract void makeSpouseWidow();
+	protected abstract void makeSpouseWidow(int deathYear);
 	
 	@Override
 	public boolean sharesGrandparentWith(IPerson p){
-		List<IPerson> myGrandparents = p.getGrandparents();
+		List<IPerson> myGrandparents = this.getGrandparents();
 		List<IPerson> theirGrandparents = p.getGrandparents();
 		for(IPerson gp : myGrandparents){
 			if(theirGrandparents.contains(gp)){
@@ -182,9 +187,33 @@ abstract class APersonalInfoPerson implements IPerson {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof IPerson) {
-			return Long.toString(this.person_id) == ((IPerson)o).getId();
+		if (o instanceof APersonalInfoPerson) {
+			return this.person_id.equals(((APersonalInfoPerson)o).getId());
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return person_id.hashCode();
+	}
+	
+	@Override
+	public void startMourning(){
+		this.isMourningSpouse = true;
+		this.timeMourningSpouse = 0;
+	}
+	
+	@Override
+	public int getTimeMourningSpouse(){
+		return this.timeMourningSpouse;
+	}
+	
+	public boolean isMourningSpouse(){
+		return this.isMourningSpouse;
+	}
+	
+	public void stopMourning(){
+		this.isMourningSpouse = false;
 	}
 }

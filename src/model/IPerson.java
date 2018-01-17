@@ -64,7 +64,7 @@ public interface IPerson {
 
 	int getBirthYear();
 	
-	Map<IPerson, Integer> getSpousalHistory();
+	List<ISpouseHistory> getSpousalHistory();
 
 	boolean sharesGrandparentWith(IPerson p2);
 
@@ -74,5 +74,15 @@ public interface IPerson {
 	IPerson getPaternalGrandmother();
 	IPerson getMaternalGrandfather();
 	IPerson getPaternalGrandfather();
+
+	void makeWidow(int endYear);
+
+	void startMourning();
+
+	int getTimeMourningSpouse();
+
+	boolean isMourningSpouse();
+
+	void stopMourning();
 
 }

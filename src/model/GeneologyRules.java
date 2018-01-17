@@ -15,26 +15,33 @@ public class GeneologyRules {
 	public static final int MALE_MIN_FERTILE_AGE = 18;
 	public static final int MALE_MAX_FERTILE_AGE = 50;
 	private static final int MALE_FERTILITY_AGE_RANGE = MALE_MAX_FERTILE_AGE - MALE_MIN_FERTILE_AGE;
-	private static final int MAX_MARRIAGE_AGE_GAP = 20;
-	private static final double BASE_PREGNANCY_CHANCE = .80;
+	private static final int MAX_MARRIAGE_AGE_GAP = 6;
+	private static final double BASE_PREGNANCY_CHANCE = .50;
+	private static final int PREFERRED_WIDOW_MOURNING_PERIOD = 3;
+
 	private static final double OUT_OF_WEDLOCK_CHANCE = 0.05;
 	private static final double OUT_OF_WEDLOCK_AND_MARRIED_CHANCE = 0.001;
-	private static final int MAX_CHILDREN = 6;
-	private static final int PREFERRED_CHILD_GAP = 3;
+
+	/*
+	 * private static final double OUT_OF_WEDLOCK_CHANCE = 0; private static
+	 * final double OUT_OF_WEDLOCK_AND_MARRIED_CHANCE = 0;
+	 */
+	private static final int MAX_CHILDREN = 20;
+	private static final int PREFERRED_CHILD_GAP = 5;
 	public static final int MIN_MARRIAGE_AGE = 18;
 	private static List<String> maleNames;
 	private static List<String> femaleNames;
 
-	static{
+	static {
 		try {
 			Scanner mReader = new Scanner(new File("resources/male.txt"));
 			Scanner fReader = new Scanner(new File("resources/female.txt"));
 			maleNames = new ArrayList<String>();
-			while(mReader.hasNextLine()){
+			while (mReader.hasNextLine()) {
 				maleNames.add(mReader.nextLine().trim());
 			}
 			femaleNames = new ArrayList<String>();
-			while(fReader.hasNextLine()){
+			while (fReader.hasNextLine()) {
 				femaleNames.add(fReader.nextLine().trim());
 			}
 			mReader.close();
@@ -43,9 +50,9 @@ public class GeneologyRules {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	public static double fertilityChanceCouple(IPerson p1, IPerson p2) {
 		Sex p1sex = p1.getSex();
 		Sex p2sex = p2.getSex();
@@ -53,10 +60,10 @@ public class GeneologyRules {
 			return 0;
 		}
 
-/*		if (p1.relationLevelMax(p2, 2)) {
-			return 0;
-		}*/
-		if(p1.sharesGrandparentWith(p2)){
+		/*
+		 * if (p1.relationLevelMax(p2, 2)) { return 0; }
+		 */
+		if (p1.sharesGrandparentWith(p2)) {
 			return 0;
 		}
 
@@ -83,13 +90,16 @@ public class GeneologyRules {
 		Sex sex = p.getSex();
 		double modifier = 1;
 		int yearsSinceLastChild = p.getYearsSinceLastChild();
-		modifier *= ((double) yearsSinceLastChild / (double) PREFERRED_CHILD_GAP);
+		modifier *= Math.min(1, ((double) yearsSinceLastChild / (double) PREFERRED_CHILD_GAP));
 		if (sex == Sex.MALE) {
 			if (age < MALE_MIN_FERTILE_AGE || age > MALE_MAX_FERTILE_AGE) {
 				return 0;
 			}
-			modifier *= (double) (MALE_FERTILITY_AGE_RANGE - (age - MALE_MIN_FERTILE_AGE))
-					/ (double) MALE_FERTILITY_AGE_RANGE;
+			/*modifier *= ((double) (MALE_FERTILITY_AGE_RANGE - (age - MALE_MIN_FERTILE_AGE)))
+					/ (double) MALE_FERTILITY_AGE_RANGE;*/
+			modifier *= (13.674192022749644 - 1.7885073342041384 * age + 
+					 0.09622799460742272 * Math.pow(age, 2) - 0.0024520153723827194 * Math.pow(age, 3) + 
+					 0.000029353412509580285 * Math.pow(age, 4) - 1.3346725220382162 * Math.pow(10, -7) * Math.pow(age, 5));
 		} else if (sex == Sex.FEMALE) {
 			if (p.getChildren().size() == MAX_CHILDREN) {
 				modifier = 0;
@@ -97,11 +107,15 @@ public class GeneologyRules {
 				if (age < FEMALE_MIN_FERTILE_AGE || age > FEMALE_MAX_FERTILE_AGE) {
 					return 0;
 				}
-				modifier *= (double) (FEMALE_FERTILITY_AGE_RANGE - (age - FEMALE_MIN_FERTILE_AGE))
-						/ (double) FEMALE_FERTILITY_AGE_RANGE;
+				/*modifier *= ((double) (FEMALE_FERTILITY_AGE_RANGE - (age - FEMALE_MIN_FERTILE_AGE)))
+						/ (double) FEMALE_FERTILITY_AGE_RANGE;*/
+				modifier *= (13.674192022749644 - 1.7885073342041384 * age + 
+						 0.09622799460742272 * Math.pow(age, 2) - 0.0024520153723827194 * Math.pow(age, 3) + 
+						 0.000029353412509580285 * Math.pow(age, 4) - 1.3346725220382162 * Math.pow(10, -7) * Math.pow(age, 5));
 			}
 		}
-
+		assert false;
+		
 		return Math.min(1, modifier);
 	}
 
@@ -153,15 +167,30 @@ public class GeneologyRules {
 		}
 
 		// No kissing cousins here
-		/*if (p1.relationLevelMax(p2, 2)) {
-			return 0;
-		}*/
-		if(p1.sharesGrandparentWith(p2)){
+		/*
+		 * if (p1.relationLevelMax(p2, 2)) { return 0; }
+		 */
+		if (p1.sharesGrandparentWith(p2)) {
 			return 0;
 		}
 
-		// We're just gonna based this on age for right now.
-		return (1.0 - ((double)Math.abs(p1.getAge() - p2.getAge()) / ((double)(p1.getAge() + p2.getAge()) / 2))) * BASE_MARRIAGE_CHANCE;
+		// Age factor
+		int ageDiff = p1.getAge() - p2.getAge();
+		double mChance;
+		if (ageDiff == 0) {
+			mChance = 1;
+		} else {
+			mChance = Math.pow(Math.abs(ageDiff) + 0.001, -2);
+		}
+		// Widowhood Factor
+		if(p1.isMourningSpouse()){
+			mChance *= Math.min(1, ((double)(p1.getTimeMourningSpouse()/PREFERRED_WIDOW_MOURNING_PERIOD)));
+		}
+		if(p2.isMourningSpouse()){
+			mChance *= Math.min(1, ((double)(p2.getTimeMourningSpouse()/PREFERRED_WIDOW_MOURNING_PERIOD)));
+		}
+		
+		return mChance * BASE_MARRIAGE_CHANCE;
 
 	}
 
@@ -177,15 +206,19 @@ public class GeneologyRules {
 	}
 
 	private static String getRandomMaleName(Random r) {
-/*		String[] maleNames = new String[] { "John", "Jacob", "Cain", "Abel", "Isaac", "Abraham", "Joseph", "Samuel",
-				"Ezekiel", "Moses" };*/
+		/*
+		 * String[] maleNames = new String[] { "John", "Jacob", "Cain", "Abel",
+		 * "Isaac", "Abraham", "Joseph", "Samuel", "Ezekiel", "Moses" };
+		 */
 		int rIndex = r.nextInt(maleNames.size());
 		return maleNames.get(rIndex);
 	}
 
 	private static String getRandomFemaleName(Random r) {
-/*		String[] femaleNames = new String[] { "Lilith", "Mary", "Delilah", "Veronica", "Ruth", "Bethany", "Abigail",
-				"Serah", "Leah", "Grace" };*/
+		/*
+		 * String[] femaleNames = new String[] { "Lilith", "Mary", "Delilah",
+		 * "Veronica", "Ruth", "Bethany", "Abigail", "Serah", "Leah", "Grace" };
+		 */
 		int rIndex = r.nextInt(femaleNames.size());
 		return femaleNames.get(rIndex);
 	}

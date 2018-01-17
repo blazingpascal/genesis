@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -13,6 +14,7 @@ import model.GeneologyRules;
 import model.GenesisImpl;
 import model.IGenesis;
 import model.IPerson;
+import model.ISpouseHistory;
 import model.IdBasedGenesisImpl;
 import model.Person;
 import model.Sex;
@@ -94,11 +96,12 @@ public class Driver {
 			sb.append("b" + p.getBirthYear() + "0101");
 
 			// Anniversary
-/*			sb.append("\n");
-			Map<IPerson, Integer> spousalHistory = p.getSpousalHistory();
-			for (Entry<IPerson, Integer> entry : spousalHistory.entrySet()) {
-				sb.append("p" + p.getId() + " " + entry.getKey().getId() + "\tm" + entry.getValue() + "0101" + "\n");
-			}*/
+			sb.append("\n");
+			List<ISpouseHistory> spousalHistory = p.getSpousalHistory();
+			for (ISpouseHistory h : spousalHistory) {
+				sb.append("p" + p.getId() + " " + h.getSpouse().getId() + "\te1\tm" + h.getAnniversaryYear() + "0101"
+						+ "\tgm" + ((h.getEndingYear() > -1) ? "\tz" + h.getEndingYear() + "1231" : "") + "\n");
+			}
 			fileWriter.write(sb.toString() + "\n");
 
 		}
