@@ -68,17 +68,16 @@ public abstract class AGenesis implements IGenesis {
 	}
 
 	private void tryForBabies(Random r) {
-		List<IPerson> livingPeople = livingPopulation();
-		for (int i = 0; i < livingPeople.size(); i++) {
-			IPerson candidate1 = livingPeople.get(i);
-			for (int j = i + 1; j < livingPeople.size(); j++) {
-				IPerson candidate2 = livingPeople.get(j);
+		List<IPerson> fertilePopulation = fertilePopulation();
+		for (int i = 0; i < fertilePopulation.size(); i++) {
+			IPerson candidate1 = fertilePopulation.get(i);
+			for (int j = i + 1; j < fertilePopulation.size(); j++) {
+				IPerson candidate2 = fertilePopulation.get(j);
 				double birthChance = GeneologyRules.fertilityChanceCouple(candidate1, candidate2);
 				double birthRoll = r.nextDouble();
 				if (birthRoll < birthChance) {
 					IPerson child = candidate1.createChildWith(candidate2, timeInYears, new Random(r.nextInt()));
 					addPerson(child);
-					incrementIdCount();
 				}
 			}
 		}
@@ -106,7 +105,7 @@ public abstract class AGenesis implements IGenesis {
 				double marriageChance = GeneologyRules.marriageChance(candidate1, candidate2);
 				double marriageRoll = r.nextDouble();
 				if (marriageRoll < marriageChance) {
-					candidate1.marry(candidate2);
+					candidate1.marry(candidate2, this.timeInYears);
 				}
 			}
 		}

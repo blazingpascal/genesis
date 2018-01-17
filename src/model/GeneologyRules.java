@@ -53,7 +53,10 @@ public class GeneologyRules {
 			return 0;
 		}
 
-		if (p1.relationLevelMax(p2, 2)) {
+/*		if (p1.relationLevelMax(p2, 2)) {
+			return 0;
+		}*/
+		if(p1.sharesGrandparentWith(p2)){
 			return 0;
 		}
 
@@ -85,7 +88,7 @@ public class GeneologyRules {
 			if (age < MALE_MIN_FERTILE_AGE || age > MALE_MAX_FERTILE_AGE) {
 				return 0;
 			}
-			modifier = (double) (MALE_FERTILITY_AGE_RANGE - (age - MALE_MIN_FERTILE_AGE))
+			modifier *= (double) (MALE_FERTILITY_AGE_RANGE - (age - MALE_MIN_FERTILE_AGE))
 					/ (double) MALE_FERTILITY_AGE_RANGE;
 		} else if (sex == Sex.FEMALE) {
 			if (p.getChildren().size() == MAX_CHILDREN) {
@@ -94,10 +97,11 @@ public class GeneologyRules {
 				if (age < FEMALE_MIN_FERTILE_AGE || age > FEMALE_MAX_FERTILE_AGE) {
 					return 0;
 				}
-				modifier = (double) (FEMALE_FERTILITY_AGE_RANGE - (age - FEMALE_MIN_FERTILE_AGE))
+				modifier *= (double) (FEMALE_FERTILITY_AGE_RANGE - (age - FEMALE_MIN_FERTILE_AGE))
 						/ (double) FEMALE_FERTILITY_AGE_RANGE;
 			}
 		}
+
 		return Math.min(1, modifier);
 	}
 
@@ -149,12 +153,15 @@ public class GeneologyRules {
 		}
 
 		// No kissing cousins here
-		if (p1.relationLevelMax(p2, 2)) {
+		/*if (p1.relationLevelMax(p2, 2)) {
+			return 0;
+		}*/
+		if(p1.sharesGrandparentWith(p2)){
 			return 0;
 		}
 
 		// We're just gonna based this on age for right now.
-		return (1.0 - (Math.abs(p1.getAge() - p2.getAge()) / ((p1.getAge() + p2.getAge()) / 2))) * BASE_MARRIAGE_CHANCE;
+		return (1.0 - ((double)Math.abs(p1.getAge() - p2.getAge()) / ((double)(p1.getAge() + p2.getAge()) / 2))) * BASE_MARRIAGE_CHANCE;
 
 	}
 

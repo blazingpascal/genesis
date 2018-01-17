@@ -1,7 +1,10 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class IdBasedPerson extends APersonalInfoPerson {
 
@@ -9,7 +12,11 @@ public class IdBasedPerson extends APersonalInfoPerson {
 	String motherId = null;
 	String fatherId = null;
 	String spouseId = null;
-	List<String> spouseIdHistory = new ArrayList<String>();
+	String maternalGrandmother = null;
+	String paternalGrandmother = null;
+	String maternalGrandfather = null;
+	String paternalGrandfather = null;
+	HashMap<String, Integer> spouseIdAnniversaryHistory = new HashMap<String, Integer>();
 	List<String> childrenIds = new ArrayList<String>();
 	List<String> ancestorIds = new ArrayList<String>();
 	List<String> relatedIds = new ArrayList<String>();
@@ -41,7 +48,7 @@ public class IdBasedPerson extends APersonalInfoPerson {
 		List<IPerson> ancestors = new ArrayList<IPerson>();
 
 		if (relatedIds.contains(p2.getId())) {
-			return false;
+			return true;
 		}
 
 		if (this.ancestorIds.size() > 0) {
@@ -135,8 +142,8 @@ public class IdBasedPerson extends APersonalInfoPerson {
 	}
 
 	@Override
-	public void addSpouse(IPerson person) {
-		this.spouseIdHistory.add(person.getId());
+	public void addSpouse(IPerson person, int year) {
+		this.spouseIdAnniversaryHistory.put(person.getId(), year);
 	}
 
 	@Override
@@ -148,11 +155,13 @@ public class IdBasedPerson extends APersonalInfoPerson {
 	}
 
 	@Override
-	public void marry(IPerson fiance) {
+	public void marry(IPerson fiance, int year) {
 		String newLastName = GeneologyRules.getMarriedLastName(this, fiance);
 		this.currentLastName = newLastName;
 		fiance.setLastName(newLastName);
 		fiance.setSpouse(this);
+		this.addSpouse(fiance, year);
+		fiance.addSpouse(this, year);
 		this.spouseId = fiance.getId();
 	}
 
@@ -176,6 +185,14 @@ public class IdBasedPerson extends APersonalInfoPerson {
 			this.fatherId = null;
 		} else {
 			this.fatherId = parent.getId();
+			IPerson grandmother = parent.getMother();
+			IPerson grandfather = parent.getFather();
+			if(grandmother != null){
+				this.paternalGrandmother = grandmother.getId();
+			}
+			if(grandfather != null){
+				this.paternalGrandfather = grandfather.getId();
+			}
 		}
 
 	}
@@ -186,6 +203,14 @@ public class IdBasedPerson extends APersonalInfoPerson {
 			this.motherId = null;
 		} else {
 			this.motherId = parent.getId();
+			IPerson grandmother = parent.getMother();
+			IPerson grandfather = parent.getFather();
+			if(grandmother != null){
+				this.maternalGrandmother = grandmother.getId();
+			}
+			if(grandfather != null){
+				this.maternalGrandfather = grandfather.getId();
+			}
 		}
 	}
 
@@ -262,5 +287,46 @@ public class IdBasedPerson extends APersonalInfoPerson {
 	private void notifyGenesisOfPairablePerson() {
 		getHomeGenesis().reactToPairability(this);
 
+	}
+
+	@Override
+	public Map<IPerson, Integer> getSpousalHistory() {
+		HashMap<IPerson, Integer> map = new HashMap<IPerson, Integer>();
+		for(Entry<String, Integer> entry : spouseIdAnniversaryHistory.entrySet()){
+			map.put(getPersonsByIdFromHomeGenesis(entry.getKey()).get(0), entry.getValue());
+		}
+		return map;
+	}
+
+	@Override
+	public IPerson getMaternalGrandmother() {
+		if(this.maternalGrandmother == null){
+			return null;
+		}
+		return getPersonsByIdFromHomeGenesis(this.maternalGrandmother).get(0);
+	}
+
+	@Override
+	public IPerson getPaternalGrandmother() {
+		if(this.paternalGrandmother == null){
+			return null;
+		}
+		return getPersonsByIdFromHomeGenesis(this.paternalGrandmother).get(0);
+	}
+
+	@Override
+	public IPerson getMaternalGrandfather() {
+		if(this.maternalGrandfather == null){
+			return null;
+		}
+		return getPersonsByIdFromHomeGenesis(this.maternalGrandfather).get(0);
+	}
+
+	@Override
+	public IPerson getPaternalGrandfather() {
+		if(this.paternalGrandfather == null){
+			return null;
+		}
+		return getPersonsByIdFromHomeGenesis(this.paternalGrandfather).get(0);
 	}
 }

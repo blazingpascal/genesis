@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class Person extends APersonalInfoPerson{
@@ -11,6 +12,7 @@ public class Person extends APersonalInfoPerson{
 	IPerson father = null;
 	List<IPerson> spouseHistory = new ArrayList<IPerson>();
 	private List<IPerson> children = new ArrayList<IPerson>();
+	
 	Person(String firstName, String lastName, Sex sex, int age, int generation, int birthYear) {
 		super(firstName, lastName, sex, age, generation, birthYear, GenesisImpl.PEOPLE_COUNT);
 	}
@@ -100,14 +102,6 @@ public class Person extends APersonalInfoPerson{
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (o instanceof IPerson) {
-			return Long.toString(this.person_id) == ((IPerson)o).getId();
-		}
-		return false;
-	}
-
-	@Override
 	public int hashCode() {
 		return (int)person_id;
 	}
@@ -132,14 +126,14 @@ public class Person extends APersonalInfoPerson{
 		return spouse == null;
 	}
 
-	public void marry(IPerson fiance) {
+	public void marry(IPerson fiance, int year) {
 		this.spouse = fiance;
 		String newLastName = GeneologyRules.getMarriedLastName(this, fiance);
 		this.currentLastName = newLastName;
 		fiance.setLastName(newLastName);
 		fiance.setSpouse(this);
-		this.addSpouse(this);
-		spouse.addSpouse(this);
+		this.addSpouse(this, year);
+		spouse.addSpouse(this, year);
 	}
 
 	@Override
@@ -148,7 +142,7 @@ public class Person extends APersonalInfoPerson{
 	}
 
 	@Override
-	public void addSpouse(IPerson person) {
+	public void addSpouse(IPerson person, int year) {
 		this.spouseHistory.add(person);
 	}
 
@@ -163,5 +157,42 @@ public class Person extends APersonalInfoPerson{
 	protected APersonalInfoPerson createPerson(String firstName, String lastName, Sex sex, int age,
 			int generation, int birthYear) {
 		return new Person(firstName, lastName, sex, age, generation, birthYear);
+	}
+
+	@Override
+	public Map<IPerson, Integer> getSpousalHistory() {
+		throw new IllegalStateException("Not implemented yet");
+	}
+
+	@Override
+	public IPerson getMaternalGrandmother() {
+		if(this.mother != null){
+			return this.mother.getMother();
+		}
+		return null;
+	}
+
+	@Override
+	public IPerson getPaternalGrandmother() {
+		if(this.father != null){
+			return this.father.getMother();
+		}
+		return null;
+	}
+
+	@Override
+	public IPerson getMaternalGrandfather() {
+		if(this.mother != null){
+			return this.mother.getFather();
+		}
+		return null;
+	}
+
+	@Override
+	public IPerson getPaternalGrandfather() {
+		if(this.father != null){
+			return this.father.getFather();
+		}
+		return null;
 	}
 }

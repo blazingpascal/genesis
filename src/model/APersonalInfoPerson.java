@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -135,7 +136,7 @@ abstract class APersonalInfoPerson implements IPerson {
 		}
 		this.addChild(child);
 		parent.addChild(child);
-		this.yearsSinceLastChild = 0;
+		this.resetYearsSinceLastChild();
 		parent.resetYearsSinceLastChild();
 		return child;
 	}
@@ -154,5 +155,36 @@ abstract class APersonalInfoPerson implements IPerson {
 	}
 
 	protected abstract void makeSpouseWidow();
+	
+	@Override
+	public boolean sharesGrandparentWith(IPerson p){
+		List<IPerson> myGrandparents = p.getGrandparents();
+		List<IPerson> theirGrandparents = p.getGrandparents();
+		for(IPerson gp : myGrandparents){
+			if(theirGrandparents.contains(gp)){
+				return true;
+			}
+		}
+		return false;
+	}
 
+	@Override
+	public List<IPerson> getGrandparents() {
+		List<IPerson> list = new ArrayList<IPerson>();
+		list.add(getMaternalGrandmother());
+		list.add(getMaternalGrandfather());
+		list.add(getPaternalGrandfather());
+		list.add(getPaternalGrandmother());
+		list.removeIf(p -> p == null);
+		assert !list.contains(null);
+		return list;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof IPerson) {
+			return Long.toString(this.person_id) == ((IPerson)o).getId();
+		}
+		return false;
+	}
 }

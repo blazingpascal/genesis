@@ -1,6 +1,7 @@
 package model;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public interface IPerson {
@@ -29,13 +30,13 @@ public interface IPerson {
 
 	void setSpouse(IPerson person);
 
-	void addSpouse(IPerson person);
+	void addSpouse(IPerson person, int anniversaryYear);
 
 	String getId();
 	
 	IPerson getSpouse();
 	
-	void marry(IPerson fiance);
+	void marry(IPerson fiance, int anniversaryYear);
 
 	boolean isLiving();
 	
@@ -62,5 +63,16 @@ public interface IPerson {
 	int getDeathYear();
 
 	int getBirthYear();
+	
+	Map<IPerson, Integer> getSpousalHistory();
+
+	boolean sharesGrandparentWith(IPerson p2);
+
+	List<IPerson> getGrandparents();
+	
+	IPerson getMaternalGrandmother();
+	IPerson getPaternalGrandmother();
+	IPerson getMaternalGrandfather();
+	IPerson getPaternalGrandfather();
 
 }

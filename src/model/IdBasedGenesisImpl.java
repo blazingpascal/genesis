@@ -26,7 +26,7 @@ public class IdBasedGenesisImpl extends AGenesis implements IIdBasedGenesis {
 
 	@Override
 	public void addSinglePerson(String firstName, String lastName, Sex sex, int age) {
-		IdBasedPerson person = new IdBasedPerson(firstName, lastName, sex, age, 0, timeInYears - age, genesis_id);
+		APersonalInfoPerson person = new IdBasedPerson(firstName, lastName, sex, age, 0, timeInYears - age, genesis_id);
 		String id = person.getId();
 		map.put(id, person);
 		livingMap.put(id, person);

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -40,7 +42,7 @@ public class Driver {
 		genesis.addSinglePerson("Harold", "Harris", Sex.MALE, 18);
 		genesis.addSinglePerson("Ivan", "Irvine", Sex.MALE, 18);
 		genesis.addSinglePerson("Joe", "Jenkins", Sex.MALE, 18);
-		int interval = 10;
+		int interval = 50;
 		int i = 0;
 		while (true) {
 			genesis.incrementTime(new Random());
@@ -90,7 +92,15 @@ public class Driver {
 			sb.append((p.getSex() == Sex.MALE ? "gm" : "gf") + "\t");
 			// BirthYear
 			sb.append("b" + p.getBirthYear() + "0101");
+
+			// Anniversary
+/*			sb.append("\n");
+			Map<IPerson, Integer> spousalHistory = p.getSpousalHistory();
+			for (Entry<IPerson, Integer> entry : spousalHistory.entrySet()) {
+				sb.append("p" + p.getId() + " " + entry.getKey().getId() + "\tm" + entry.getValue() + "0101" + "\n");
+			}*/
 			fileWriter.write(sb.toString() + "\n");
+
 		}
 		fileWriter.close();
 
