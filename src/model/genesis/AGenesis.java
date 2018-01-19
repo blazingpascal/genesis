@@ -1,8 +1,12 @@
-package model;
+package model.genesis;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import model.GeneologyRules;
+import model.Sex;
+import model.person.IPerson;
 
 public abstract class AGenesis implements IGenesis {
 
@@ -77,13 +81,13 @@ public abstract class AGenesis implements IGenesis {
 				double birthRoll = r.nextDouble();
 				if (birthRoll < birthChance) {
 					IPerson child = candidate1.createChildWith(candidate2, timeInYears, new Random(r.nextInt()));
-					addPerson(child);
+					addChild(child);
 				}
 			}
 		}
 	}
 
-	protected abstract void addPerson(IPerson child);
+	protected abstract void addChild(IPerson child);
 
 	@Override
 	public List<IPerson> livingPopulation() {
@@ -114,7 +118,7 @@ public abstract class AGenesis implements IGenesis {
 	private List<IPerson> pairablePopulation() {
 		List<IPerson> pairables = new ArrayList<IPerson>();
 		for (IPerson p : this.livingPopulation()) {
-			if (p.getAge() > GeneologyRules.MIN_MARRIAGE_AGE) {
+			if (p.getAge() > GeneologyRules.MIN_MARRIAGE_AGE && p.isSingle()) {
 				pairables.add(p);
 			}
 		}

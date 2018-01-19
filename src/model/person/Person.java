@@ -1,11 +1,16 @@
-package model;
+package model.person;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class Person extends APersonalInfoPerson{
+import model.GeneologyRules;
+import model.Sex;
+import model.genesis.GenesisImpl;
+import model.spousehistory.ISpouseHistory;
+
+class Person extends APersonalInfoPerson{
 	// Family details
 	IPerson spouse = null;
 	IPerson mother = null;

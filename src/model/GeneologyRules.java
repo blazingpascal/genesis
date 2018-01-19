@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+import model.person.IPerson;
+
 public class GeneologyRules {
 	private static final double BASE_MARRIAGE_CHANCE = .7;
 	public static final int FEMALE_MIN_FERTILE_AGE = 18;
@@ -19,13 +21,14 @@ public class GeneologyRules {
 	private static final double BASE_PREGNANCY_CHANCE = .50;
 	private static final int PREFERRED_WIDOW_MOURNING_PERIOD = 3;
 
-	private static final double OUT_OF_WEDLOCK_CHANCE = 0.05;
-	private static final double OUT_OF_WEDLOCK_AND_MARRIED_CHANCE = 0.001;
-
 	/*
-	 * private static final double OUT_OF_WEDLOCK_CHANCE = 0; private static
-	 * final double OUT_OF_WEDLOCK_AND_MARRIED_CHANCE = 0;
+	 * private static final double OUT_OF_WEDLOCK_CHANCE = 0.05; private static
+	 * final double OUT_OF_WEDLOCK_AND_MARRIED_CHANCE = 0.001;
 	 */
+
+	private static final double OUT_OF_WEDLOCK_CHANCE = 0;
+	private static final double OUT_OF_WEDLOCK_AND_MARRIED_CHANCE = 0;
+
 	private static final int MAX_CHILDREN = 20;
 	private static final int PREFERRED_CHILD_GAP = 5;
 	public static final int MIN_MARRIAGE_AGE = 18;
@@ -95,11 +98,13 @@ public class GeneologyRules {
 			if (age < MALE_MIN_FERTILE_AGE || age > MALE_MAX_FERTILE_AGE) {
 				return 0;
 			}
-			/*modifier *= ((double) (MALE_FERTILITY_AGE_RANGE - (age - MALE_MIN_FERTILE_AGE)))
-					/ (double) MALE_FERTILITY_AGE_RANGE;*/
-			modifier *= (13.674192022749644 - 1.7885073342041384 * age + 
-					 0.09622799460742272 * Math.pow(age, 2) - 0.0024520153723827194 * Math.pow(age, 3) + 
-					 0.000029353412509580285 * Math.pow(age, 4) - 1.3346725220382162 * Math.pow(10, -7) * Math.pow(age, 5));
+			/*
+			 * modifier *= ((double) (MALE_FERTILITY_AGE_RANGE - (age -
+			 * MALE_MIN_FERTILE_AGE))) / (double) MALE_FERTILITY_AGE_RANGE;
+			 */
+			modifier *= (13.674192022749644 - 1.7885073342041384 * age + 0.09622799460742272 * Math.pow(age, 2)
+					- 0.0024520153723827194 * Math.pow(age, 3) + 0.000029353412509580285 * Math.pow(age, 4)
+					- 1.3346725220382162 * Math.pow(10, -7) * Math.pow(age, 5));
 		} else if (sex == Sex.FEMALE) {
 			if (p.getChildren().size() == MAX_CHILDREN) {
 				modifier = 0;
@@ -107,15 +112,17 @@ public class GeneologyRules {
 				if (age < FEMALE_MIN_FERTILE_AGE || age > FEMALE_MAX_FERTILE_AGE) {
 					return 0;
 				}
-				/*modifier *= ((double) (FEMALE_FERTILITY_AGE_RANGE - (age - FEMALE_MIN_FERTILE_AGE)))
-						/ (double) FEMALE_FERTILITY_AGE_RANGE;*/
-				modifier *= (13.674192022749644 - 1.7885073342041384 * age + 
-						 0.09622799460742272 * Math.pow(age, 2) - 0.0024520153723827194 * Math.pow(age, 3) + 
-						 0.000029353412509580285 * Math.pow(age, 4) - 1.3346725220382162 * Math.pow(10, -7) * Math.pow(age, 5));
+				/*
+				 * modifier *= ((double) (FEMALE_FERTILITY_AGE_RANGE - (age -
+				 * FEMALE_MIN_FERTILE_AGE))) / (double)
+				 * FEMALE_FERTILITY_AGE_RANGE;
+				 */
+				modifier *= (13.674192022749644 - 1.7885073342041384 * age + 0.09622799460742272 * Math.pow(age, 2)
+						- 0.0024520153723827194 * Math.pow(age, 3) + 0.000029353412509580285 * Math.pow(age, 4)
+						- 1.3346725220382162 * Math.pow(10, -7) * Math.pow(age, 5));
 			}
 		}
-		assert false;
-		
+
 		return Math.min(1, modifier);
 	}
 
@@ -183,13 +190,13 @@ public class GeneologyRules {
 			mChance = Math.pow(Math.abs(ageDiff) + 0.001, -2);
 		}
 		// Widowhood Factor
-		if(p1.isMourningSpouse()){
-			mChance *= Math.min(1, ((double)(p1.getTimeMourningSpouse()/PREFERRED_WIDOW_MOURNING_PERIOD)));
+		if (p1.isMourningSpouse()) {
+			mChance *= Math.min(1, ((double) (p1.getTimeMourningSpouse() / PREFERRED_WIDOW_MOURNING_PERIOD)));
 		}
-		if(p2.isMourningSpouse()){
-			mChance *= Math.min(1, ((double)(p2.getTimeMourningSpouse()/PREFERRED_WIDOW_MOURNING_PERIOD)));
+		if (p2.isMourningSpouse()) {
+			mChance *= Math.min(1, ((double) (p2.getTimeMourningSpouse() / PREFERRED_WIDOW_MOURNING_PERIOD)));
 		}
-		
+
 		return mChance * BASE_MARRIAGE_CHANCE;
 
 	}

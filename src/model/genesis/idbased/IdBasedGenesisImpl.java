@@ -1,11 +1,16 @@
-package model;
+package model.genesis.idbased;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class IdBasedGenesisImpl extends AGenesis implements IIdBasedGenesis {
+import model.GeneologyRules;
+import model.Sex;
+import model.genesis.AGenesis;
+import model.person.IPerson;
+
+class IdBasedGenesisImpl extends AGenesis implements IIdBasedGenesis {
 
 	private static int GENESIS_COUNT = 0;
 	private int genesis_id;
@@ -25,17 +30,18 @@ public class IdBasedGenesisImpl extends AGenesis implements IIdBasedGenesis {
 	}
 
 	@Override
-	public void addSinglePerson(String firstName, String lastName, Sex sex, int age) {
-		APersonalInfoPerson person = new IdBasedPerson(firstName, lastName, sex, age, 0, timeInYears - age, genesis_id);
+	public IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age) {
+		IPerson person = IPerson.createIdBasedPerson(firstName, lastName, sex, age, 0, timeInYears - age, genesis_id);
 		String id = person.getId();
 		map.put(id, person);
 		livingMap.put(id, person);
-		if(sex == Sex.MALE){
+		if (sex == Sex.MALE) {
 			maleMap.put(person.getId(), person);
-		} else{
+		} else {
 			femaleMap.put(person.getId(), person);
 		}
 		incrementIdCount();
+		return person;
 	}
 
 	@Override
@@ -54,7 +60,7 @@ public class IdBasedGenesisImpl extends AGenesis implements IIdBasedGenesis {
 	}
 
 	@Override
-	protected void addPerson(IPerson child) {
+	protected void addChild(IPerson child) {
 		this.map.put(child.getId(), child);
 		if (child.isLiving()) {
 			this.livingMap.put(child.getId(), child);
@@ -105,25 +111,36 @@ public class IdBasedGenesisImpl extends AGenesis implements IIdBasedGenesis {
 	}
 
 	@Override
-	public void reactToDeath(IPerson person) {
+	public void reactToDeath(IPerson person, int year) {
 		livingMap.remove(person.getId());
 	}
 
 	@Override
-	public void reactToInfertility(IPerson person) {
-		if(fertileMap.containsKey(person.getId())){
+	public void reactToInfertility(IPerson person, int year) {
+		if (fertileMap.containsKey(person.getId())) {
 			fertileMap.remove(person.getId());
 		}
 	}
 
 	@Override
-	public void reactToFertility(IPerson person) {
+	public void reactToFertility(IPerson person, int year) {
 		fertileMap.put(person.getId(), person);
-		
+
 	}
 
 	@Override
-	public void reactToPairability(IPerson person) {
+	public void reactToPairability(IPerson person, int year) {
 		pairableMap.put(person.getId(), person);
+	}
+
+	@Override
+	public void reactToMarriage(IPerson s1, IPerson s2, int anniversaryYear) {
+		pairableMap.remove(s1.getId());
+		pairableMap.remove(s2.getId());
+	}
+
+	@Override
+	public void reactToWidowhood(IPerson p, int widowYear) {
+		pairableMap.put(p.getId(), p);
 	}
 }

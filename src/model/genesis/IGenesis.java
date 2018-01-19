@@ -1,10 +1,13 @@
-package model;
+package model.genesis;
 
 import java.util.List;
 import java.util.Random;
 
+import model.Sex;
+import model.person.IPerson;
+
 public interface IGenesis {
-	void addSinglePerson(String firstName, String lastName, Sex sex, int age);
+	IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age);
 	void incrementTime(Random r);
 	void incrementTime(int yearsPast, Random r0);
 	long livingPopulationCount();

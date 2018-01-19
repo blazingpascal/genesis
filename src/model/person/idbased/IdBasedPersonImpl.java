@@ -1,12 +1,17 @@
-package model;
+package model.person.idbased;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-public class IdBasedPerson extends APersonalInfoPerson {
+import model.GeneologyRules;
+import model.Sex;
+import model.genesis.idbased.IIdBasedGenesis;
+import model.genesis.idbased.IdGenesisMapCollection;
+import model.person.APersonalInfoPerson;
+import model.person.IPerson;
+import model.spousehistory.ISpouseHistory;
+
+class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
 
 	int genesisId;
 	String motherId = null;
@@ -21,7 +26,7 @@ public class IdBasedPerson extends APersonalInfoPerson {
 	List<String> ancestorIds = new ArrayList<String>();
 	List<String> relatedIds = new ArrayList<String>();
 
-	protected IdBasedPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
+	protected IdBasedPersonImpl(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
 			int genesisId) {
 		super(firstName, lastName, sex, age, generation, birthYear,
 				firstName + lastName + IdGenesisMapCollection.getGenesisIdCount(genesisId));
@@ -143,7 +148,7 @@ public class IdBasedPerson extends APersonalInfoPerson {
 
 	@Override
 	public void addSpouse(IPerson person, int year) {
-		this.spouseHistory.add(new SpouseHistoryImpl(person, year));
+		this.spouseHistory.add(ISpouseHistory.createSpouseHistory(person, year));
 	}
 
 	@Override
@@ -165,6 +170,12 @@ public class IdBasedPerson extends APersonalInfoPerson {
 		this.stopMourning();
 		fiance.stopMourning();
 		this.spouseId = fiance.getId();
+		notifyGenesisOfMarriage(this, fiance, year);
+		
+	}
+
+	private void notifyGenesisOfMarriage(IPerson s1,IPerson s2, int anniversaryYear) {
+		getHomeGenesis().reactToMarriage(s1, s2, anniversaryYear);
 	}
 
 	@Override
@@ -221,7 +232,13 @@ public class IdBasedPerson extends APersonalInfoPerson {
 		if (getSpouse() != null) {
 			getSpouse().makeWidow(deathYear);
 			getSpouse().startMourning();
+			notifyGenesisOfWidowhood(deathYear);
 		}
+	}
+
+	private void notifyGenesisOfWidowhood(int widowYear) {
+		getHomeGenesis().reactToWidowhood(this, widowYear);
+		
 	}
 
 	@Override
@@ -241,59 +258,55 @@ public class IdBasedPerson extends APersonalInfoPerson {
 	@Override
 	protected APersonalInfoPerson createPerson(String firstName, String lastName, Sex sex, int age, int generation,
 			int birthYear) {
-		return new IdBasedPerson(firstName, lastName, sex, age, generation, birthYear, this.genesisId);
+		return new IdBasedPersonImpl(firstName, lastName, sex, age, generation, birthYear, this.genesisId);
 	}
 
 	@Override
 	public void kill(int deathYear) {
 		super.kill(deathYear);
-		/*
-		 * if (this.spouseHistory.size() > 0) {
-		 * this.spouseHistory.get(this.spouseHistory.size() -
-		 * 1).setEndingYear(deathYear); }
-		 */
-		notifyGenesisOfDeath();
+		notifyGenesisOfDeath(deathYear);
 	}
 
-	private void notifyGenesisOfDeath() {
-		getHomeGenesis().reactToDeath(this);
+	private void notifyGenesisOfDeath(int deathYear) {
+		getHomeGenesis().reactToDeath(this, deathYear);
 	}
 
 	@Override
 	public void incrementAge() {
 		super.incrementAge();
+		int year = (int)getHomeGenesis().getYear();
 		if (this.age == GeneologyRules.MIN_MARRIAGE_AGE) {
-			notifyGenesisOfPairablePerson();
+			notifyGenesisOfPairablePerson(year);
 		}
 		if (this.sex == Sex.MALE) {
 			if (this.age == GeneologyRules.MALE_MIN_FERTILE_AGE) {
-				notifyGenesisOfFertility();
+				notifyGenesisOfFertility(year);
 			}
 			if (this.age == GeneologyRules.MALE_MAX_FERTILE_AGE) {
-				notifyGenesisOfInfertility();
+				notifyGenesisOfInfertility(year);
 			}
 		} else {
 			if (this.age == GeneologyRules.FEMALE_MIN_FERTILE_AGE) {
-				notifyGenesisOfFertility();
+				notifyGenesisOfFertility(year);
 			}
 			if (this.age == GeneologyRules.FEMALE_MAX_FERTILE_AGE) {
-				notifyGenesisOfInfertility();
+				notifyGenesisOfInfertility(year);
 			}
 		}
 	}
 
-	private void notifyGenesisOfInfertility() {
-		getHomeGenesis().reactToInfertility(this);
+	private void notifyGenesisOfInfertility(int year) {
+		getHomeGenesis().reactToInfertility(this, year);
 
 	}
 
-	private void notifyGenesisOfFertility() {
-		getHomeGenesis().reactToFertility(this);
+	private void notifyGenesisOfFertility(int year) {
+		getHomeGenesis().reactToFertility(this, year);
 
 	}
 
-	private void notifyGenesisOfPairablePerson() {
-		getHomeGenesis().reactToPairability(this);
+	private void notifyGenesisOfPairablePerson(int year) {
+		getHomeGenesis().reactToPairability(this, year);
 
 	}
 

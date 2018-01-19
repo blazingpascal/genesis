@@ -1,4 +1,6 @@
-package model;
+package model.spousehistory;
+
+import model.person.IPerson;
 
 class SpouseHistoryImpl implements ISpouseHistory {
 	

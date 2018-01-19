@@ -1,9 +1,12 @@
-package model;
+package model.genesis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import model.Sex;
+import model.person.IPerson;
 
 public class GenesisImpl extends AGenesis {
 
@@ -11,9 +14,11 @@ public class GenesisImpl extends AGenesis {
 	public static long PEOPLE_COUNT = 0;
 
 	@Override
-	public void addSinglePerson(String firstName, String lastName, Sex sex, int age) {
-		people.add(new Person(firstName, lastName, sex, age, 0, timeInYears - age));
+	public IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age) {
+		IPerson p = IPerson.createBasicPerson(firstName, lastName, sex, age, 0, timeInYears - age);
+		people.add(p);
 		PEOPLE_COUNT++;
+		return p;
 	}
 
 	public int getTimeInYears() {
@@ -42,7 +47,7 @@ public class GenesisImpl extends AGenesis {
 	}
 
 	@Override
-	protected void addPerson(IPerson person) {
+	protected void addChild(IPerson person) {
 		this.people.add(person);
 	}
 

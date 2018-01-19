@@ -1,10 +1,13 @@
-package model;
+package model.person;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-abstract class APersonalInfoPerson implements IPerson {
+import model.GeneologyRules;
+import model.Sex;
+
+public abstract class APersonalInfoPerson implements IPerson {
 
 	protected String firstName;
 	protected final String birthLastName;
@@ -215,5 +218,9 @@ abstract class APersonalInfoPerson implements IPerson {
 	
 	public void stopMourning(){
 		this.isMourningSpouse = false;
+	}
+	
+	public String getFullBirthName(){
+		return this.getFirstName() + " " + this.getBirthLastName();
 	}
 }

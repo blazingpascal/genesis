@@ -1,8 +1,12 @@
-package model;
+package model.person;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import model.Sex;
+import model.person.idbased.IIdBasedPerson;
+import model.spousehistory.ISpouseHistory;
 
 public interface IPerson {
 
@@ -84,5 +88,16 @@ public interface IPerson {
 	boolean isMourningSpouse();
 
 	void stopMourning();
+
+	public static IPerson createBasicPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear){
+		// TODO fix this
+		return new Person(firstName, lastName, sex, age, generation, birthYear);
+	}
+	
+	public static IPerson createIdBasedPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear, int genesis_id){
+		return IIdBasedPerson.create(firstName, lastName, sex, age, generation, birthYear, genesis_id);
+	}
+
+	String getFullBirthName();
 
 }
