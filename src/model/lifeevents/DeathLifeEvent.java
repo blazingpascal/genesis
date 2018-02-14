@@ -1,5 +1,9 @@
 package model.lifeevents;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import model.person.IPerson;
@@ -60,8 +64,13 @@ public class DeathLifeEvent implements ILifeEvent {
 	}
 
 	@Override
-	public String getLifeEventDate() {
-		return "12/31/" + this.year;
+	public Date getLifeEventDate() {
+		DateFormat df = new SimpleDateFormat("dd/mm/yyyy");
+		try {
+			return df.parse("12/31/" + this.year);
+		} catch (ParseException e) {
+			throw new IllegalStateException("????");
+		}
 	}
 
 }

@@ -10,6 +10,9 @@ import model.person.IPerson;
 
 public abstract class AGenesis implements IGenesis {
 
+	List<IPerson> livingCache;
+	private long livingPopulationCacheCount;
+
 	@Override
 	public final void incrementTime(int yearsPast, Random r0) {
 		for (int i = 0; i < yearsPast; i++) {
@@ -19,6 +22,7 @@ public abstract class AGenesis implements IGenesis {
 
 	@Override
 	public final long livingPopulationCount() {
+		//if(livingCache == null) { livingPopulation();}
 		return this.livingPopulation().size();
 	}
 
@@ -57,8 +61,10 @@ public abstract class AGenesis implements IGenesis {
 
 	@Override
 	public void incrementTime(Random r) {
+		//reset cache.
+		this.livingCache = null;
 		timeInYears++;
-		for(IPerson p : livingPopulation()){
+		for (IPerson p : livingPopulation()) {
 			p.incrementAge();
 		}
 		pairOffCouples(r);
@@ -68,10 +74,10 @@ public abstract class AGenesis implements IGenesis {
 	}
 
 	protected void cleanUp() {
-		// Do nothing generally.
+		// Do nothing normally
 	}
 
-	private void tryForBabies(Random r) {
+	protected void tryForBabies(Random r) {
 		List<IPerson> fertilePopulation = fertilePopulation();
 		for (int i = 0; i < fertilePopulation.size(); i++) {
 			IPerson candidate1 = fertilePopulation.get(i);
@@ -91,13 +97,16 @@ public abstract class AGenesis implements IGenesis {
 
 	@Override
 	public List<IPerson> livingPopulation() {
-		List<IPerson> livingPeople = new ArrayList<IPerson>();
-		for (IPerson p : historicalPopulation()) {
-			if (p.isLiving()) {
-				livingPeople.add(p);
+		//if (livingCache == null) {
+			List<IPerson> livingPopulation = new ArrayList<IPerson>();
+			for (IPerson p : historicalPopulation()) {
+				if (p.isLiving()) {
+					livingPopulation.add(p);
+				}
 			}
-		}
-		return livingPeople;
+		//}
+		//this.livingPopulationCacheCount = livingCache.size();
+		return livingPopulation;
 	}
 
 	private void pairOffCouples(Random r) {
@@ -128,14 +137,14 @@ public abstract class AGenesis implements IGenesis {
 	private List<IPerson> fertilePopulation() {
 		List<IPerson> fertiles = new ArrayList<IPerson>();
 		for (IPerson p : this.livingPopulation()) {
-			if(p.getSex() == Sex.MALE){
-				if(p.getAge() <= GeneologyRules.MALE_MAX_FERTILE_AGE &&
-						p.getAge() >= GeneologyRules.MALE_MIN_FERTILE_AGE ){
+			if (p.getSex() == Sex.MALE) {
+				if (p.getAge() <= GeneologyRules.MALE_MAX_FERTILE_AGE
+						&& p.getAge() >= GeneologyRules.MALE_MIN_FERTILE_AGE) {
 					fertiles.add(p);
 				}
-			} else{
-				if(p.getAge() <= GeneologyRules.FEMALE_MAX_FERTILE_AGE &&
-						p.getAge() >= GeneologyRules.FEMALE_MIN_FERTILE_AGE ){
+			} else {
+				if (p.getAge() <= GeneologyRules.FEMALE_MAX_FERTILE_AGE
+						&& p.getAge() >= GeneologyRules.FEMALE_MIN_FERTILE_AGE) {
 					fertiles.add(p);
 				}
 			}

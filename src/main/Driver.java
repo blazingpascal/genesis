@@ -3,6 +3,9 @@ package main;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -11,6 +14,7 @@ import model.Sex;
 import model.genesis.IGenesis;
 import model.genesis.idbased.ILifeEventEnabledGenesis;
 import model.genesis.idbased.LifeEventEnabledGenesisImpl;
+import model.lifeevents.BirthLifeEvent;
 import model.lifeevents.ILifeEvent;
 import model.person.IPerson;
 import model.spousehistory.ISpouseHistory;
@@ -47,7 +51,7 @@ public class Driver {
 		genesis.addSinglePerson("Xena", "Xie", Sex.FEMALE, 18);
 		genesis.addSinglePerson("Yolanda", "Yale", Sex.FEMALE, 18);
 		genesis.addSinglePerson("Zarah", "Zimmerer", Sex.FEMALE, 18);
-		
+
 		genesis.addSinglePerson("Adam", "Godman", Sex.MALE, 18);
 		genesis.addSinglePerson("Bob", "Bones", Sex.MALE, 18);
 		genesis.addSinglePerson("Colin", "Carter", Sex.MALE, 18);
@@ -74,7 +78,7 @@ public class Driver {
 		genesis.addSinglePerson("Xavier", "Xenos", Sex.MALE, 18);
 		genesis.addSinglePerson("Yahir", "Yorrick", Sex.MALE, 18);
 		genesis.addSinglePerson("Zachary", "Zuckerberg", Sex.MALE, 18);
-		int interval = 100;
+		int interval = 500;
 		int i = 0;
 		while (true) {
 			genesis.incrementTime(new Random());
@@ -93,21 +97,84 @@ public class Driver {
 
 		System.out.println("Now printing output.");
 		outputFamilyScript(genesis);
+		System.out.println("Family script outputted");
 		outputLifeEvents(genesis);
+		System.out.println("Life events outputted.");
+		outputPersonStats(genesis);
+		System.out.println("Person stats outputted");
+
 	}
 
-	private static void outputLifeEvents(ILifeEventEnabledGenesis genesis) throws IOException{
+	private static void outputPersonStats(ILifeEventEnabledGenesis genesis) throws IOException {
+		File file = new File("personalInfoStats.csv");
+		FileWriter fileWriter = new FileWriter(file);
+		fileWriter.write(
+				"ID, First Name, Last Name, Birth Last Name, Age, Birth Year, "
+				+ "Spouse, Mother, Father, Generation, Living, Death Year, "
+				+ "Spouse History, Number of Children\n");
+		for (IPerson p : genesis.historicalPopulation()) {
+			StringBuilder sb = new StringBuilder();
+			// PersonID
+			sb.append(p.getId() + ",");
+			// First Name
+			sb.append(p.getFirstName() + ",");
+			// Last Name
+			sb.append(p.getCurrentLastName() + ",");
+			// Birth Last Name
+			sb.append(p.getBirthLastName() + ", ");
+			// Age
+			sb.append(p.getAge() + ", ");
+			// Birth Year
+			sb.append(p.getBirthYear() + ", ");
+			// Spouse
+			sb.append((p.getSpouse() == null ? "-1" : p.getSpouse().getId()) + ",");
+			// Mother
+			sb.append((p.getMother() == null ? "-1" : p.getMother().getId()) + ", ");
+			// Father
+			sb.append((p.getFather() == null ? "-1" : p.getFather().getId()) + ", ");
+			// Generation
+			sb.append(p.getGeneration() + ", ");
+			// Living
+			sb.append(p.isLiving() + ", ");
+			// Death Year
+			sb.append(p.getDeathYear() + ", ");
+			// Spousal History
+			List<ISpouseHistory> sh = p.getSpousalHistory();
+			if (!sh.isEmpty()) {
+				for (ISpouseHistory h : sh) {
+					sb.append(String.format("(%s/%d/%s);", h.getSpouse().getId(), h.getAnniversaryYear(),
+							h.getEndingYear() == -1 ? "Still Married" : Integer.toString(h.getEndingYear())));
+				}
+			} else {
+				sb.append("nil");
+			}
+			sb.append(", ");
+			// Number of children
+			sb.append(String.format("%d", p.getChildren().size()));
+
+			fileWriter.write(sb.toString() + "\n");
+		}
+		fileWriter.close();
+	}
+
+	private static void outputLifeEvents(ILifeEventEnabledGenesis genesis) throws IOException {
 		List<ILifeEvent> lifeEvents = genesis.lifeEvents();
+		// TODO Bandaid solution to the lack for birth events:
+		for (IPerson p : genesis.historicalPopulation()) {
+			lifeEvents.add(new BirthLifeEvent(p));
+		}
+		lifeEvents.sort((e1, e2) -> e1.getLifeEventDate().compareTo(e2.getLifeEventDate()));
 		File file = new File("lifeEvents.csv");
 		FileWriter fileWriter = new FileWriter(file);
-		fileWriter.write("Date, Type, Title, Description\n");
-		for(ILifeEvent le : lifeEvents){
+		fileWriter.write("Date\t Type\t Title\t Description\n");
+		DateFormat df = new SimpleDateFormat("dd/mm/yyyy");
+		for (ILifeEvent le : lifeEvents) {
 			// Year
-			fileWriter.write(le.getLifeEventDate() + ", ");
+			fileWriter.write(df.format(le.getLifeEventDate()) + "\t");
 			// Type
-			fileWriter.write(le.getLifeEventType() + ", ");
+			fileWriter.write(le.getLifeEventType() + "\t");
 			// Title
-			fileWriter.write(le.getLifeEventTitle() + ", ");
+			fileWriter.write(le.getLifeEventTitle() + "\t");
 			// Description
 			fileWriter.write(le.getLifeEventDescription() + "\n");
 		}

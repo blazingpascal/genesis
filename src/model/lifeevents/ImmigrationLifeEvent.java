@@ -1,5 +1,10 @@
 package model.lifeevents;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import model.person.IPerson;
 
 public class ImmigrationLifeEvent implements ILifeEvent {
@@ -29,8 +34,13 @@ public class ImmigrationLifeEvent implements ILifeEvent {
 	}
 
 	@Override
-	public String getLifeEventDate() {
-		return "01/01/" + this.immigrationYear;
+	public Date getLifeEventDate() {
+		DateFormat df = new SimpleDateFormat("dd/mm/yyyy");
+		try {
+			return df.parse("01/01/" + this.immigrationYear);
+		} catch (ParseException e) {
+			throw new IllegalStateException("????");
+		}
 	}
 
 }

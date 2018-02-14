@@ -1,5 +1,10 @@
 package model.lifeevents;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import model.person.IPerson;
 
 public class MarriageLifeEvent implements ILifeEvent {
@@ -34,8 +39,13 @@ public class MarriageLifeEvent implements ILifeEvent {
 	}
 
 	@Override
-	public String getLifeEventDate() {
-		return String.format("1/1/%d", this.anniversaryYear);
+	public Date getLifeEventDate() {
+		DateFormat df = new SimpleDateFormat("dd/mm/yyyy");
+		try {
+			return df.parse(String.format("01/01/%d", this.anniversaryYear));
+		} catch (ParseException e) {
+			throw new IllegalStateException("????");
+		}
 	}
 
 }

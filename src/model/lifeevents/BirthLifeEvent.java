@@ -1,5 +1,10 @@
 package model.lifeevents;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import model.Sex;
 import model.person.IPerson;
 
@@ -8,6 +13,7 @@ public class BirthLifeEvent implements ILifeEvent {
 	private IPerson person;
 	private final String TITLE_FMT = "%s is born!";
 	private final String DESC_FMT = "%s and %s had a baby %s in %d.";
+	private final String ORPHAN_FMT = "%s arrived as a newborn baby at the Genesis orphanage in %d";
 
 	public BirthLifeEvent(IPerson child) {
 		this.person = child;
@@ -25,8 +31,15 @@ public class BirthLifeEvent implements ILifeEvent {
 
 	@Override
 	public String getLifeEventDescription() {
-		return String.format(DESC_FMT, person.getMother().getFullName(), person.getFather().getFullName(),
-				person.getBirthYear(), getSexNoun(person.getSex()));
+		IPerson mother = person.getMother();
+		IPerson father = person.getFather();
+		if (mother != null && father != null) {
+			return String.format(DESC_FMT, mother.getFullName(), father.getFullName(), getSexNoun(person.getSex()), person.getBirthYear());
+		}
+		
+		return String.format(ORPHAN_FMT, person.getFullBirthName(),
+				person.getBirthYear());
+
 	}
 
 	private String getSexNoun(Sex sex) {
@@ -41,8 +54,13 @@ public class BirthLifeEvent implements ILifeEvent {
 	}
 
 	@Override
-	public String getLifeEventDate() {
-		return "1/1/" + this.person.getBirthYear();
+	public Date getLifeEventDate() {
+		DateFormat df = new SimpleDateFormat("dd/mm/yyyy");
+		try {
+			return df.parse("01/01/" + this.person.getBirthYear());
+		} catch (ParseException e) {
+			throw new IllegalStateException("????");
+		}
 	}
 
 }
