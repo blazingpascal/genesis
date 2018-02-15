@@ -1,6 +1,8 @@
 package model.genesis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -58,7 +60,7 @@ public abstract class AGenesis implements IGenesis {
 	@Override
 	public void incrementTime(Random r) {
 		timeInYears++;
-		for(IPerson p : livingPopulation()){
+		for (IPerson p : livingPopulation()) {
 			p.incrementAge();
 		}
 		pairOffCouples(r);
@@ -72,19 +74,67 @@ public abstract class AGenesis implements IGenesis {
 	}
 
 	private void tryForBabies(Random r) {
-		List<IPerson> fertilePopulation = fertilePopulation();
-		for (int i = 0; i < fertilePopulation.size(); i++) {
-			IPerson candidate1 = fertilePopulation.get(i);
-			for (int j = i + 1; j < fertilePopulation.size(); j++) {
-				IPerson candidate2 = fertilePopulation.get(j);
-				double birthChance = GeneologyRules.fertilityChanceCouple(candidate1, candidate2);
-				double birthRoll = r.nextDouble();
-				if (birthRoll < birthChance) {
-					IPerson child = candidate1.createChildWith(candidate2, timeInYears, new Random(r.nextInt()));
+		/*
+		 * List<IPerson> fertilePopulation = fertilePopulation(); for (int i =
+		 * 0; i < fertilePopulation.size(); i++) { IPerson candidate1 =
+		 * fertilePopulation.get(i); for (int j = i + 1; j <
+		 * fertilePopulation.size(); j++) { IPerson candidate2 =
+		 * fertilePopulation.get(j); double birthChance =
+		 * GeneologyRules.fertilityChanceCouple(candidate1, candidate2); double
+		 * birthRoll = r.nextDouble(); if (birthRoll < birthChance) { IPerson
+		 * child = candidate1.createChildWith(candidate2, timeInYears, new
+		 * Random(r.nextInt())); addChild(child); } } }
+		 */
+		// This is incredibly heteronormative but unfortunately
+		// it may be more efficient
+		List<IPerson> fathers = potentialFatherPopulation();
+		List<IPerson> mothers = potentialMotherPopulation();
+		// Check for married couples first
+		List<IPerson> morePeople = fathers.size() > mothers.size() ? fathers : mothers;
+		for (IPerson p : morePeople) {
+			if (!p.isSingle()) {
+				IPerson spouse = p.getSpouse();
+				double chance = GeneologyRules.fertilityChanceCouple(p, spouse);
+				double roll = r.nextDouble();
+				if (roll < chance) {
+					IPerson child = p.createChildWith(spouse, timeInYears, new Random(r.nextInt()));
 					addChild(child);
 				}
 			}
 		}
+		Collections.shuffle(fathers);
+		Collections.shuffle(mothers);
+		int max = Math.min(fathers.size(), mothers.size());
+		for (int i = 0; i < max; i++) {
+			IPerson father = fathers.get(i);
+			IPerson mother = mothers.get(i);
+			double chance = GeneologyRules.fertilityChanceCouple(father, mother);
+			double roll = r.nextDouble();
+			if (roll < chance) {
+				IPerson child = father.createChildWith(mother, timeInYears, new Random(r.nextInt()));
+				addChild(child);
+			}
+		}
+	}
+
+	private List<IPerson> potentialMotherPopulation() {
+		List<IPerson> potentialMothers = new ArrayList<IPerson>();
+		for(IPerson p : this.fertilePopulation()){
+			if(p.getSex() == Sex.FEMALE){
+				potentialMothers.add(p);
+			}
+		}
+		return potentialMothers;
+	}
+
+	private List<IPerson> potentialFatherPopulation() {
+		List<IPerson> potentialFathers = new ArrayList<IPerson>();
+		for(IPerson p : this.fertilePopulation()){
+			if(p.getSex() == Sex.MALE){
+				potentialFathers.add(p);
+			}
+		}
+		return potentialFathers;
 	}
 
 	protected abstract void addChild(IPerson child);
@@ -101,18 +151,42 @@ public abstract class AGenesis implements IGenesis {
 	}
 
 	private void pairOffCouples(Random r) {
-		List<IPerson> pairablePeople = pairablePopulation();
-		for (int i = 0; i < pairablePeople.size(); i++) {
-			IPerson candidate1 = pairablePeople.get(i);
-			for (int j = i + 1; j < pairablePeople.size(); j++) {
-				IPerson candidate2 = pairablePeople.get(j);
-				double marriageChance = GeneologyRules.marriageChance(candidate1, candidate2);
-				double marriageRoll = r.nextDouble();
-				if (marriageRoll < marriageChance) {
-					candidate1.marry(candidate2, this.timeInYears);
-				}
+		// This is incredibly heteronormative but unfortunately
+		// it may be more efficient
+		List<IPerson> bachelors = bachelorPopulation();
+		List<IPerson> bachelorettes = bachelorettePopulation();
+		Collections.shuffle(bachelors);
+		Collections.shuffle(bachelorettes);
+		int max = Math.min(bachelors.size(), bachelorettes.size());
+		for (int i = 0; i < max; i++) {
+			IPerson bachelor = bachelors.get(i);
+			IPerson bachelorette = bachelorettes.get(i);
+			double chance = GeneologyRules.marriageChance(bachelor, bachelorette);
+			double roll = r.nextDouble();
+			if (roll < chance) {
+				bachelor.marry(bachelorette, this.timeInYears);
 			}
 		}
+	}
+
+	private List<IPerson> bachelorettePopulation() {
+		List<IPerson> bachelorettes = new ArrayList<IPerson>();
+		for (IPerson p : this.pairablePopulation()) {
+			if (p.getSex() == Sex.FEMALE) {
+				bachelorettes.add(p);
+			}
+		}
+		return bachelorettes;
+	}
+
+	private List<IPerson> bachelorPopulation() {
+		List<IPerson> bachelors = new ArrayList<IPerson>();
+		for (IPerson p : this.pairablePopulation()) {
+			if (p.getSex() == Sex.MALE) {
+				bachelors.add(p);
+			}
+		}
+		return bachelors;
 	}
 
 	private List<IPerson> pairablePopulation() {
@@ -128,14 +202,14 @@ public abstract class AGenesis implements IGenesis {
 	private List<IPerson> fertilePopulation() {
 		List<IPerson> fertiles = new ArrayList<IPerson>();
 		for (IPerson p : this.livingPopulation()) {
-			if(p.getSex() == Sex.MALE){
-				if(p.getAge() <= GeneologyRules.MALE_MAX_FERTILE_AGE &&
-						p.getAge() >= GeneologyRules.MALE_MIN_FERTILE_AGE ){
+			if (p.getSex() == Sex.MALE) {
+				if (p.getAge() <= GeneologyRules.MALE_MAX_FERTILE_AGE
+						&& p.getAge() >= GeneologyRules.MALE_MIN_FERTILE_AGE) {
 					fertiles.add(p);
 				}
-			} else{
-				if(p.getAge() <= GeneologyRules.FEMALE_MAX_FERTILE_AGE &&
-						p.getAge() >= GeneologyRules.FEMALE_MIN_FERTILE_AGE ){
+			} else {
+				if (p.getAge() <= GeneologyRules.FEMALE_MAX_FERTILE_AGE
+						&& p.getAge() >= GeneologyRules.FEMALE_MIN_FERTILE_AGE) {
 					fertiles.add(p);
 				}
 			}

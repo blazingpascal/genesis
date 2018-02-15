@@ -66,7 +66,7 @@ public class GeneologyRules {
 		/*
 		 * if (p1.relationLevelMax(p2, 2)) { return 0; }
 		 */
-		if (p1.sharesGrandparentWith(p2)) {
+		if (p1.atLeastCousins(p2)) {
 			return 0;
 		}
 
@@ -177,7 +177,7 @@ public class GeneologyRules {
 		/*
 		 * if (p1.relationLevelMax(p2, 2)) { return 0; }
 		 */
-		if (p1.sharesGrandparentWith(p2)) {
+		if (p1.atLeastCousins(p2)) {
 			return 0;
 		}
 

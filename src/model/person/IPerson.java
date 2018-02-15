@@ -70,7 +70,7 @@ public interface IPerson {
 	
 	List<ISpouseHistory> getSpousalHistory();
 
-	boolean sharesGrandparentWith(IPerson p2);
+	boolean atLeastCousins(IPerson p2);
 
 	List<IPerson> getGrandparents();
 	

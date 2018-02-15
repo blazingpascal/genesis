@@ -23,7 +23,8 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected boolean isMourningSpouse = false;
 	protected int timeMourningSpouse = 0;
 
-	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear, String person_id){
+	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
+			String person_id) {
 		this.firstName = firstName;
 		this.currentLastName = lastName;
 		this.birthLastName = lastName;
@@ -56,7 +57,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 		if (living) {
 			this.age++;
 		}
-		if(isMourningSpouse){
+		if (isMourningSpouse) {
 			this.timeMourningSpouse++;
 		}
 		this.yearsSinceLastChild++;
@@ -109,7 +110,6 @@ public abstract class APersonalInfoPerson implements IPerson {
 		return "Married to " + getSpouse().getFullName();
 	}
 
-
 	String livingStateString() {
 		return !living ? "(Deceased)" : "";
 	}
@@ -121,8 +121,8 @@ public abstract class APersonalInfoPerson implements IPerson {
 			return firstName + " " + currentLastName + " nee " + birthLastName;
 		}
 	}
-	
-	public void resetYearsSinceLastChild(){
+
+	public void resetYearsSinceLastChild() {
 		this.yearsSinceLastChild = 0;
 	}
 
@@ -132,9 +132,10 @@ public abstract class APersonalInfoPerson implements IPerson {
 		}
 		Sex sex = r.nextDouble() < 0.5 ? Sex.FEMALE : Sex.MALE;
 		String firstName = GeneologyRules.getRandomFirstName(sex, new Random(r.nextInt()));
-	
-		APersonalInfoPerson child = createPerson(firstName, this.currentLastName, sex, 0, Math.max(this.generation, parent.getGeneration()) + 1, year);
-	
+
+		APersonalInfoPerson child = createPerson(firstName, this.currentLastName, sex, 0,
+				Math.max(this.generation, parent.getGeneration()) + 1, year);
+
 		if (this.sex == Sex.FEMALE) {
 			child.setMother(this);
 			child.setFather(parent);
@@ -148,12 +149,12 @@ public abstract class APersonalInfoPerson implements IPerson {
 		parent.resetYearsSinceLastChild();
 		return child;
 	}
-	
-	protected abstract APersonalInfoPerson createPerson(String firstName2, String currentLastName2, Sex sex2, int age, int generation,
-			int birthYear);
+
+	protected abstract APersonalInfoPerson createPerson(String firstName2, String currentLastName2, Sex sex2, int age,
+			int generation, int birthYear);
 
 	protected abstract void setFather(IPerson parent);
-	
+
 	protected abstract void setMother(IPerson parent);
 
 	public void kill(int deathYear) {
@@ -163,13 +164,17 @@ public abstract class APersonalInfoPerson implements IPerson {
 	}
 
 	protected abstract void makeSpouseWidow(int deathYear);
-	
+
 	@Override
-	public boolean sharesGrandparentWith(IPerson p){
+	public boolean atLeastCousins(IPerson p) {
+		if (p.equals(this.getMother()) || p.equals(this.getFather()) || 
+				p.getChildren().contains(p)) {
+			return true;
+		}
 		List<IPerson> myGrandparents = this.getGrandparents();
 		List<IPerson> theirGrandparents = p.getGrandparents();
-		for(IPerson gp : myGrandparents){
-			if(theirGrandparents.contains(gp)){
+		for (IPerson gp : myGrandparents) {
+			if (theirGrandparents.contains(gp)) {
 				return true;
 			}
 		}
@@ -191,7 +196,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof APersonalInfoPerson) {
-			return this.person_id.equals(((APersonalInfoPerson)o).getId());
+			return this.person_id.equals(((APersonalInfoPerson) o).getId());
 		}
 		return false;
 	}
@@ -200,27 +205,27 @@ public abstract class APersonalInfoPerson implements IPerson {
 	public int hashCode() {
 		return person_id.hashCode();
 	}
-	
+
 	@Override
-	public void startMourning(){
+	public void startMourning() {
 		this.isMourningSpouse = true;
 		this.timeMourningSpouse = 0;
 	}
-	
+
 	@Override
-	public int getTimeMourningSpouse(){
+	public int getTimeMourningSpouse() {
 		return this.timeMourningSpouse;
 	}
-	
-	public boolean isMourningSpouse(){
+
+	public boolean isMourningSpouse() {
 		return this.isMourningSpouse;
 	}
-	
-	public void stopMourning(){
+
+	public void stopMourning() {
 		this.isMourningSpouse = false;
 	}
-	
-	public String getFullBirthName(){
+
+	public String getFullBirthName() {
 		return this.getFirstName() + " " + this.getBirthLastName();
 	}
 }
