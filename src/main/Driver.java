@@ -31,23 +31,25 @@ public class Driver {
 		genesis.addSinglePerson("Illiana", "Irvin", Sex.FEMALE, 18);
 		genesis.addSinglePerson("Jane", "Jones", Sex.FEMALE, 18);
 		// More diversity
-		genesis.addSinglePerson("Kathleen", "Knott", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Lily", "Locke", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Molly", "Merritt", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Natalie", "Nelson", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Ophelia", "Oakes", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Polly", "Peterson", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Quita", "Quest", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Rhonda", "Richardson", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Sally", "Saylor", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Tanya", "Thomas", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Uma", "Udell", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Valerie", "Vendell", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Wanda", "Walters", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Xena", "Xie", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Yolanda", "Yale", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Zarah", "Zimmerer", Sex.FEMALE, 18);
-		
+		/*
+		 * genesis.addSinglePerson("Kathleen", "Knott", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Lily", "Locke", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Molly", "Merritt", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Natalie", "Nelson", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Ophelia", "Oakes", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Polly", "Peterson", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Quita", "Quest", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Rhonda", "Richardson", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Sally", "Saylor", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Tanya", "Thomas", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Uma", "Udell", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Valerie", "Vendell", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Wanda", "Walters", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Xena", "Xie", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Yolanda", "Yale", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Zarah", "Zimmerer", Sex.FEMALE, 18);
+		 */
+
 		genesis.addSinglePerson("Adam", "Godman", Sex.MALE, 18);
 		genesis.addSinglePerson("Bob", "Bones", Sex.MALE, 18);
 		genesis.addSinglePerson("Colin", "Carter", Sex.MALE, 18);
@@ -58,35 +60,51 @@ public class Driver {
 		genesis.addSinglePerson("Ivan", "Irvine", Sex.MALE, 18);
 		genesis.addSinglePerson("Joe", "Jenkins", Sex.MALE, 18);
 		// More Diversity
-		genesis.addSinglePerson("Karl", "Kirk", Sex.MALE, 18);
-		genesis.addSinglePerson("Leigh", "Larson", Sex.MALE, 18);
-		genesis.addSinglePerson("Marvin", "Morrison", Sex.MALE, 18);
-		genesis.addSinglePerson("Neil", "Neace", Sex.MALE, 18);
-		genesis.addSinglePerson("Oliver", "O'Bryan", Sex.MALE, 18);
-		genesis.addSinglePerson("Peter", "Polk", Sex.MALE, 18);
-		genesis.addSinglePerson("Quinten", "Qua", Sex.MALE, 18);
-		genesis.addSinglePerson("Richard", "Rockwell", Sex.MALE, 18);
-		genesis.addSinglePerson("Samuel", "Sole", Sex.MALE, 18);
-		genesis.addSinglePerson("Theodore", "Tucker", Sex.MALE, 18);
-		genesis.addSinglePerson("Ulysses", "Ubel", Sex.MALE, 18);
-		genesis.addSinglePerson("Victor", "Varaldi", Sex.MALE, 18);
-		genesis.addSinglePerson("Winston", "Walker", Sex.MALE, 18);
-		genesis.addSinglePerson("Xavier", "Xenos", Sex.MALE, 18);
-		genesis.addSinglePerson("Yahir", "Yorrick", Sex.MALE, 18);
-		genesis.addSinglePerson("Zachary", "Zuckerberg", Sex.MALE, 18);
-		int interval = 100;
+		/*
+		 * genesis.addSinglePerson("Karl", "Kirk", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Leigh", "Larson", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Marvin", "Morrison", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Neil", "Neace", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Oliver", "O'Bryan", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Peter", "Polk", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Quinten", "Qua", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Richard", "Rockwell", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Samuel", "Sole", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Theodore", "Tucker", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Ulysses", "Ubel", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Victor", "Varaldi", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Winston", "Walker", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Xavier", "Xenos", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Yahir", "Yorrick", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Zachary", "Zuckerberg", Sex.MALE, 18);
+		 */
+
+		int target = Integer.parseInt(args[1]);
+		StopCondition condition;
+		String mode = args[0];
+		if (mode.equalsIgnoreCase("population")) {
+			condition = StopCondition.POPULATION;
+		} else if (mode.equalsIgnoreCase("years")) {
+			condition = StopCondition.YEARS;
+		} else {
+			System.out.printf("Invalid conditions: %s %s\n", args[0], args[1]);
+			return;
+		}
 		int i = 0;
-		while (true) {
+		boolean loop = true;
+		while (loop) {
 			genesis.incrementTime(new Random());
 			System.out.println("Year: " + genesis.getYear());
 			System.out.println(genesis.historicalPopulationCount());
 			System.out.println("Living Population: " + genesis.livingPopulationCount());
 			System.out.println("----------------");
-			if (i % interval == 0) {
-				String input = s.nextLine();
-				if (input.equalsIgnoreCase("END")) {
-					break;
-				}
+			switch (condition) {
+			case POPULATION:
+				loop = genesis.historicalPopulationCount() < target;
+				break;
+			case YEARS:
+				loop = genesis.getYear() < target;
+				break;
 			}
 			i++;
 		}
@@ -96,12 +114,12 @@ public class Driver {
 		outputLifeEvents(genesis);
 	}
 
-	private static void outputLifeEvents(ILifeEventEnabledGenesis genesis) throws IOException{
+	private static void outputLifeEvents(ILifeEventEnabledGenesis genesis) throws IOException {
 		List<ILifeEvent> lifeEvents = genesis.lifeEvents();
 		File file = new File("lifeEvents.csv");
 		FileWriter fileWriter = new FileWriter(file);
 		fileWriter.write("Date, Type, Title, Description\n");
-		for(ILifeEvent le : lifeEvents){
+		for (ILifeEvent le : lifeEvents) {
 			// Year
 			fileWriter.write(le.getLifeEventDate() + ", ");
 			// Type
