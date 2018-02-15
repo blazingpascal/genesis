@@ -78,19 +78,32 @@ public class Driver {
 		genesis.addSinglePerson("Xavier", "Xenos", Sex.MALE, 18);
 		genesis.addSinglePerson("Yahir", "Yorrick", Sex.MALE, 18);
 		genesis.addSinglePerson("Zachary", "Zuckerberg", Sex.MALE, 18);
-		int interval = 500;
+		int target = Integer.parseInt(args[1]);
+		StopCondition condition;
+		String mode = args[0];
+		if (mode.equalsIgnoreCase("population")) {
+			condition = StopCondition.POPULATION;
+		} else if (mode.equalsIgnoreCase("years")) {
+			condition = StopCondition.YEARS;
+		} else {
+			System.out.printf("Invalid conditions: %s %s\n", args[0], args[1]);
+			return;
+		}
 		int i = 0;
-		while (true) {
+		boolean loop = true;
+		while (loop) {
 			genesis.incrementTime(new Random());
 			System.out.println("Year: " + genesis.getYear());
 			System.out.println(genesis.historicalPopulationCount());
 			System.out.println("Living Population: " + genesis.livingPopulationCount());
 			System.out.println("----------------");
-			if (i % interval == 0) {
-				String input = s.nextLine();
-				if (input.equalsIgnoreCase("END")) {
-					break;
-				}
+			switch (condition) {
+			case POPULATION:
+				loop = genesis.historicalPopulationCount() < target;
+				break;
+			case YEARS:
+				loop = genesis.getYear() < target;
+				break;
 			}
 			i++;
 		}

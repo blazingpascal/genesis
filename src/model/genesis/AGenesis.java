@@ -1,6 +1,8 @@
 package model.genesis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -12,6 +14,10 @@ public abstract class AGenesis implements IGenesis {
 
 	List<IPerson> livingCache;
 	private long livingPopulationCacheCount;
+	protected int timeInYears = 1900;
+
+	private static final int COUPLING_ATTEMPTS_PER_YEAR = 4;
+	private static final int PREGNANCY_ATTEMPTS_PER_YEAR = 10;
 
 	@Override
 	public final void incrementTime(int yearsPast, Random r0) {
@@ -22,7 +28,7 @@ public abstract class AGenesis implements IGenesis {
 
 	@Override
 	public final long livingPopulationCount() {
-		//if(livingCache == null) { livingPopulation();}
+		// if(livingCache == null) { livingPopulation();}
 		return this.livingPopulation().size();
 	}
 
@@ -57,11 +63,9 @@ public abstract class AGenesis implements IGenesis {
 		return sb.toString();
 	}
 
-	protected int timeInYears = 1900;
-
 	@Override
 	public void incrementTime(Random r) {
-		//reset cache.
+		// reset cache.
 		this.livingCache = null;
 		timeInYears++;
 		for (IPerson p : livingPopulation()) {
@@ -78,50 +82,130 @@ public abstract class AGenesis implements IGenesis {
 	}
 
 	protected void tryForBabies(Random r) {
-		List<IPerson> fertilePopulation = fertilePopulation();
-		for (int i = 0; i < fertilePopulation.size(); i++) {
-			IPerson candidate1 = fertilePopulation.get(i);
-			for (int j = i + 1; j < fertilePopulation.size(); j++) {
-				IPerson candidate2 = fertilePopulation.get(j);
-				double birthChance = GeneologyRules.fertilityChanceCouple(candidate1, candidate2);
-				double birthRoll = r.nextDouble();
-				if (birthRoll < birthChance) {
-					IPerson child = candidate1.createChildWith(candidate2, timeInYears, new Random(r.nextInt()));
+		/*
+		 * List<IPerson> fertilePopulation = fertilePopulation(); for (int i =
+		 * 0; i < fertilePopulation.size(); i++) { IPerson candidate1 =
+		 * fertilePopulation.get(i); for (int j = i + 1; j <
+		 * fertilePopulation.size(); j++) { IPerson candidate2 =
+		 * fertilePopulation.get(j); double birthChance =
+		 * GeneologyRules.fertilityChanceCouple(candidate1, candidate2); double
+		 * birthRoll = r.nextDouble(); if (birthRoll < birthChance) { IPerson
+		 * child = candidate1.createChildWith(candidate2, timeInYears, new
+		 * Random(r.nextInt())); addChild(child); } } }
+		 */
+		// This is incredibly heteronormative but unfortunately
+		// it may be more efficient
+		List<IPerson> fathers = potentialFatherPopulation();
+		List<IPerson> mothers = potentialMotherPopulation();
+		// Check for married couples first
+		List<IPerson> morePeople = fathers.size() > mothers.size() ? fathers : mothers;
+
+		int max = Math.min(fathers.size(), mothers.size());
+		for (int attempt = 0; attempt < PREGNANCY_ATTEMPTS_PER_YEAR; attempt++) {
+			for (IPerson p : morePeople) {
+				if (!p.isSingle()) {
+					IPerson spouse = p.getSpouse();
+					double chance = GeneologyRules.fertilityChanceCouple(p, spouse);
+					double roll = r.nextDouble();
+					if (roll < chance) {
+						IPerson child = p.createChildWith(spouse, timeInYears, new Random(r.nextInt()));
+						addChild(child);
+					}
+				}
+			}
+			Collections.shuffle(fathers);
+			Collections.shuffle(mothers);
+			for (int i = 0; i < max; i++) {
+				IPerson father = fathers.get(i);
+				IPerson mother = mothers.get(i);
+				double chance = GeneologyRules.fertilityChanceCouple(father, mother);
+				double roll = r.nextDouble();
+				if (roll < chance) {
+					IPerson child = father.createChildWith(mother, timeInYears, new Random(r.nextInt()));
 					addChild(child);
 				}
 			}
 		}
 	}
 
+	private List<IPerson> potentialMotherPopulation() {
+		List<IPerson> potentialMothers = new ArrayList<IPerson>();
+		for (IPerson p : this.fertilePopulation()) {
+			if (p.getSex() == Sex.FEMALE) {
+				potentialMothers.add(p);
+			}
+		}
+		return potentialMothers;
+	}
+
+	private List<IPerson> potentialFatherPopulation() {
+		List<IPerson> potentialFathers = new ArrayList<IPerson>();
+		for (IPerson p : this.fertilePopulation()) {
+			if (p.getSex() == Sex.MALE) {
+				potentialFathers.add(p);
+			}
+		}
+		return potentialFathers;
+	}
+
 	protected abstract void addChild(IPerson child);
 
 	@Override
 	public List<IPerson> livingPopulation() {
-		//if (livingCache == null) {
-			List<IPerson> livingPopulation = new ArrayList<IPerson>();
-			for (IPerson p : historicalPopulation()) {
-				if (p.isLiving()) {
-					livingPopulation.add(p);
-				}
+		// if (livingCache == null) {
+		List<IPerson> livingPopulation = new ArrayList<IPerson>();
+		for (IPerson p : historicalPopulation()) {
+			if (p.isLiving()) {
+				livingPopulation.add(p);
 			}
-		//}
-		//this.livingPopulationCacheCount = livingCache.size();
+		}
+		// }
+		// this.livingPopulationCacheCount = livingCache.size();
 		return livingPopulation;
 	}
 
 	private void pairOffCouples(Random r) {
-		List<IPerson> pairablePeople = pairablePopulation();
-		for (int i = 0; i < pairablePeople.size(); i++) {
-			IPerson candidate1 = pairablePeople.get(i);
-			for (int j = i + 1; j < pairablePeople.size(); j++) {
-				IPerson candidate2 = pairablePeople.get(j);
-				double marriageChance = GeneologyRules.marriageChance(candidate1, candidate2);
-				double marriageRoll = r.nextDouble();
-				if (marriageRoll < marriageChance) {
-					candidate1.marry(candidate2, this.timeInYears);
+		// This is incredibly heteronormative but unfortunately
+		// it may be more efficient
+		List<IPerson> bachelors = bachelorPopulation();
+		List<IPerson> bachelorettes = bachelorettePopulation();
+
+		for (int attempt = 0; attempt < COUPLING_ATTEMPTS_PER_YEAR; attempt++) {
+			int max = Math.min(bachelors.size(), bachelorettes.size());
+			Collections.shuffle(bachelors);
+			Collections.shuffle(bachelorettes);
+			for (int i = 0; i < max; i++) {
+				IPerson bachelor = bachelors.get(i);
+				IPerson bachelorette = bachelorettes.get(i);
+				double chance = GeneologyRules.marriageChance(bachelor, bachelorette);
+				double roll = r.nextDouble();
+				if (roll < chance) {
+					bachelor.marry(bachelorette, this.timeInYears);
 				}
 			}
+			bachelors.removeIf(b -> !b.isSingle());
+			bachelorettes.removeIf(b -> !b.isSingle());
 		}
+	}
+
+	private List<IPerson> bachelorettePopulation() {
+		List<IPerson> bachelorettes = new ArrayList<IPerson>();
+		for (IPerson p : this.pairablePopulation()) {
+			if (p.getSex() == Sex.FEMALE) {
+				bachelorettes.add(p);
+			}
+		}
+		return bachelorettes;
+	}
+
+	private List<IPerson> bachelorPopulation() {
+		List<IPerson> bachelors = new ArrayList<IPerson>();
+		for (IPerson p : this.pairablePopulation()) {
+			if (p.getSex() == Sex.MALE) {
+				bachelors.add(p);
+			}
+		}
+		return bachelors;
 	}
 
 	private List<IPerson> pairablePopulation() {
@@ -148,8 +232,22 @@ public abstract class AGenesis implements IGenesis {
 					fertiles.add(p);
 				}
 			}
+			if (p.getYearsSinceLastChild() > 0) {
+				if (p.getSex() == Sex.MALE) {
+					if (p.getAge() <= GeneologyRules.MALE_MAX_FERTILE_AGE
+							&& p.getAge() >= GeneologyRules.MALE_MIN_FERTILE_AGE) {
+						fertiles.add(p);
+					}
+				}
+			} else {
+				if (p.getAge() <= GeneologyRules.FEMALE_MAX_FERTILE_AGE
+						&& p.getAge() >= GeneologyRules.FEMALE_MIN_FERTILE_AGE) {
+					fertiles.add(p);
+				}
+			}
 		}
 		return fertiles;
+
 	}
 
 	private void evaluateDeath(Random r) {

@@ -29,7 +29,7 @@ public class GeneologyRules {
 	private static final double OUT_OF_WEDLOCK_CHANCE = 0;
 	private static final double OUT_OF_WEDLOCK_AND_MARRIED_CHANCE = 0;
 
-	private static final int MAX_CHILDREN = 20;
+	private static final int MAX_CHILDREN = 10;
 	private static final int PREFERRED_CHILD_GAP = 5;
 	public static final int MIN_MARRIAGE_AGE = 18;
 	private static List<String> maleNames;
@@ -66,7 +66,7 @@ public class GeneologyRules {
 		/*
 		 * if (p1.relationLevelMax(p2, 2)) { return 0; }
 		 */
-		if (p1.sharesGrandparentWith(p2)) {
+		if (p1.atLeastCousins(p2)) {
 			return 0;
 		}
 
@@ -106,7 +106,8 @@ public class GeneologyRules {
 					- 0.0024520153723827194 * Math.pow(age, 3) + 0.000029353412509580285 * Math.pow(age, 4)
 					- 1.3346725220382162 * Math.pow(10, -7) * Math.pow(age, 5));
 		} else if (sex == Sex.FEMALE) {
-			if (p.getChildren().size() == MAX_CHILDREN) {
+			int numChildren = p.getChildren().size();
+			if (numChildren == MAX_CHILDREN) {
 				modifier = 0;
 			} else {
 				if (age < FEMALE_MIN_FERTILE_AGE || age > FEMALE_MAX_FERTILE_AGE) {
@@ -120,6 +121,7 @@ public class GeneologyRules {
 				modifier *= (13.674192022749644 - 1.7885073342041384 * age + 0.09622799460742272 * Math.pow(age, 2)
 						- 0.0024520153723827194 * Math.pow(age, 3) + 0.000029353412509580285 * Math.pow(age, 4)
 						- 1.3346725220382162 * Math.pow(10, -7) * Math.pow(age, 5));
+				modifier *= ((double)(MAX_CHILDREN - numChildren))/MAX_CHILDREN;
 			}
 		}
 
@@ -177,7 +179,7 @@ public class GeneologyRules {
 		/*
 		 * if (p1.relationLevelMax(p2, 2)) { return 0; }
 		 */
-		if (p1.sharesGrandparentWith(p2)) {
+		if (p1.atLeastCousins(p2)) {
 			return 0;
 		}
 
