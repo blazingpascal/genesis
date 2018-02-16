@@ -16,8 +16,8 @@ public abstract class AGenesis implements IGenesis {
 	private long livingPopulationCacheCount;
 	protected int timeInYears = 1900;
 
-	private static final int COUPLING_ATTEMPTS_PER_YEAR = 4;
-	private static final int PREGNANCY_ATTEMPTS_PER_YEAR = 10;
+	private static final int COUPLING_ATTEMPTS_PER_YEAR = 2;
+	private static final int PREGNANCY_ATTEMPTS_PER_YEAR = 2;
 
 	@Override
 	public final void incrementTime(int yearsPast, Random r0) {

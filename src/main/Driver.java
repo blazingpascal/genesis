@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -32,25 +33,27 @@ public class Driver {
 		genesis.addSinglePerson("Fiona", "Foreman", Sex.FEMALE, 18);
 		genesis.addSinglePerson("Geraldine", "Gordon", Sex.FEMALE, 18);
 		genesis.addSinglePerson("Hailey", "Henderson", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Illiana", "Irvin", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Jane", "Jones", Sex.FEMALE, 18);
+		/*genesis.addSinglePerson("Illiana", "Irvin", Sex.FEMALE, 18);
+		genesis.addSinglePerson("Jane", "Jones", Sex.FEMALE, 18);*/
 		// More diversity
-		genesis.addSinglePerson("Kathleen", "Knott", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Lily", "Locke", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Molly", "Merritt", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Natalie", "Nelson", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Ophelia", "Oakes", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Polly", "Peterson", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Quita", "Quest", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Rhonda", "Richardson", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Sally", "Saylor", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Tanya", "Thomas", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Uma", "Udell", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Valerie", "Vendell", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Wanda", "Walters", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Xena", "Xie", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Yolanda", "Yale", Sex.FEMALE, 18);
-		genesis.addSinglePerson("Zarah", "Zimmerer", Sex.FEMALE, 18);
+		/*
+		 * genesis.addSinglePerson("Kathleen", "Knott", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Lily", "Locke", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Molly", "Merritt", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Natalie", "Nelson", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Ophelia", "Oakes", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Polly", "Peterson", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Quita", "Quest", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Rhonda", "Richardson", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Sally", "Saylor", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Tanya", "Thomas", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Uma", "Udell", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Valerie", "Vendell", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Wanda", "Walters", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Xena", "Xie", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Yolanda", "Yale", Sex.FEMALE, 18);
+		 * genesis.addSinglePerson("Zarah", "Zimmerer", Sex.FEMALE, 18);
+		 */
 
 		genesis.addSinglePerson("Adam", "Godman", Sex.MALE, 18);
 		genesis.addSinglePerson("Bob", "Bones", Sex.MALE, 18);
@@ -59,36 +62,40 @@ public class Driver {
 		genesis.addSinglePerson("Fred", "Fontes", Sex.MALE, 18);
 		genesis.addSinglePerson("Gino", "Giovanni", Sex.MALE, 18);
 		genesis.addSinglePerson("Harold", "Harris", Sex.MALE, 18);
-		genesis.addSinglePerson("Ivan", "Irvine", Sex.MALE, 18);
+		/*genesis.addSinglePerson("Ivan", "Irvine", Sex.MALE, 18);
 		genesis.addSinglePerson("Joe", "Jenkins", Sex.MALE, 18);
 		// More Diversity
-		genesis.addSinglePerson("Karl", "Kirk", Sex.MALE, 18);
-		genesis.addSinglePerson("Leigh", "Larson", Sex.MALE, 18);
-		genesis.addSinglePerson("Marvin", "Morrison", Sex.MALE, 18);
-		genesis.addSinglePerson("Neil", "Neace", Sex.MALE, 18);
-		genesis.addSinglePerson("Oliver", "O'Bryan", Sex.MALE, 18);
-		genesis.addSinglePerson("Peter", "Polk", Sex.MALE, 18);
-		genesis.addSinglePerson("Quinten", "Qua", Sex.MALE, 18);
-		genesis.addSinglePerson("Richard", "Rockwell", Sex.MALE, 18);
-		genesis.addSinglePerson("Samuel", "Sole", Sex.MALE, 18);
-		genesis.addSinglePerson("Theodore", "Tucker", Sex.MALE, 18);
-		genesis.addSinglePerson("Ulysses", "Ubel", Sex.MALE, 18);
-		genesis.addSinglePerson("Victor", "Varaldi", Sex.MALE, 18);
-		genesis.addSinglePerson("Winston", "Walker", Sex.MALE, 18);
-		genesis.addSinglePerson("Xavier", "Xenos", Sex.MALE, 18);
-		genesis.addSinglePerson("Yahir", "Yorrick", Sex.MALE, 18);
-		genesis.addSinglePerson("Zachary", "Zuckerberg", Sex.MALE, 18);
+		/*
+		 * genesis.addSinglePerson("Karl", "Kirk", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Leigh", "Larson", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Marvin", "Morrison", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Neil", "Neace", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Oliver", "O'Bryan", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Peter", "Polk", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Quinten", "Qua", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Richard", "Rockwell", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Samuel", "Sole", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Theodore", "Tucker", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Ulysses", "Ubel", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Victor", "Varaldi", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Winston", "Walker", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Xavier", "Xenos", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Yahir", "Yorrick", Sex.MALE, 18);
+		 * genesis.addSinglePerson("Zachary", "Zuckerberg", Sex.MALE, 18);
+		 */
 		int target = Integer.parseInt(args[1]);
 		StopCondition condition;
 		String mode = args[0];
+		String prefix = args[2];
 		if (mode.equalsIgnoreCase("population")) {
 			condition = StopCondition.POPULATION;
 		} else if (mode.equalsIgnoreCase("years")) {
 			condition = StopCondition.YEARS;
 		} else {
-			System.out.printf("Invalid conditions: %s %s\n", args[0], args[1]);
+			System.out.printf("Invalid conditions: %s\n", Arrays.toString(args));
 			return;
 		}
+		
 		int i = 0;
 		boolean loop = true;
 		while (loop) {
@@ -105,26 +112,27 @@ public class Driver {
 				loop = genesis.getYear() < target;
 				break;
 			}
+			if (genesis.livingPopulationCount() == 0) {
+				break;
+			}
 			i++;
 		}
 
 		System.out.println("Now printing output.");
-		outputFamilyScript(genesis);
+		outputFamilyScript(prefix, genesis);
 		System.out.println("Family script outputted");
-		outputLifeEvents(genesis);
+		outputLifeEvents(prefix, genesis);
 		System.out.println("Life events outputted.");
-		outputPersonStats(genesis);
+		outputPersonStats(prefix, genesis);
 		System.out.println("Person stats outputted");
 
 	}
 
-	private static void outputPersonStats(ILifeEventEnabledGenesis genesis) throws IOException {
-		File file = new File("personalInfoStats.csv");
+	private static void outputPersonStats(String prefix, ILifeEventEnabledGenesis genesis) throws IOException {
+		File file = new File(prefix+"-personalInfoStats.csv");
 		FileWriter fileWriter = new FileWriter(file);
-		fileWriter.write(
-				"ID, First Name, Last Name, Birth Last Name, Age, Birth Year, "
-				+ "Spouse, Mother, Father, Generation, Living, Death Year, "
-				+ "Spouse History, Number of Children\n");
+		fileWriter.write("ID, First Name, Last Name, Birth Last Name, Age, Birth Year, "
+				+ "Spouse, Mother, Father, Generation, Living, Death Year, " + "Spouse History, Number of Children\n");
 		for (IPerson p : genesis.historicalPopulation()) {
 			StringBuilder sb = new StringBuilder();
 			// PersonID
@@ -170,14 +178,14 @@ public class Driver {
 		fileWriter.close();
 	}
 
-	private static void outputLifeEvents(ILifeEventEnabledGenesis genesis) throws IOException {
+	private static void outputLifeEvents(String prefix, ILifeEventEnabledGenesis genesis) throws IOException {
 		List<ILifeEvent> lifeEvents = genesis.lifeEvents();
 		// TODO Bandaid solution to the lack for birth events:
 		for (IPerson p : genesis.historicalPopulation()) {
 			lifeEvents.add(new BirthLifeEvent(p));
 		}
 		lifeEvents.sort((e1, e2) -> e1.getLifeEventDate().compareTo(e2.getLifeEventDate()));
-		File file = new File("lifeEvents.csv");
+		File file = new File(prefix+"-lifeEvents.csv");
 		FileWriter fileWriter = new FileWriter(file);
 		fileWriter.write("Date\t Type\t Title\t Description\n");
 		DateFormat df = new SimpleDateFormat("dd/mm/yyyy");
@@ -195,8 +203,8 @@ public class Driver {
 		fileWriter.close();
 	}
 
-	private static void outputFamilyScript(IGenesis genesis) throws IOException {
-		File file = new File("familyTree.fs");
+	private static void outputFamilyScript(String prefix, IGenesis genesis) throws IOException {
+		File file = new File(prefix+"-familyTree.fs");
 		FileWriter fileWriter = new FileWriter(file);
 		for (IPerson p : genesis.historicalPopulation()) {
 			StringBuilder sb = new StringBuilder();
