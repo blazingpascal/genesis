@@ -3,6 +3,8 @@ package model;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -26,29 +28,41 @@ public class GeneologyRules {
 	 * final double OUT_OF_WEDLOCK_AND_MARRIED_CHANCE = 0.001;
 	 */
 
-	private static final double OUT_OF_WEDLOCK_CHANCE = 0;
-	private static final double OUT_OF_WEDLOCK_AND_MARRIED_CHANCE = 0;
+	private static final double OUT_OF_WEDLOCK_CHANCE = .1;
+	private static final double OUT_OF_WEDLOCK_AND_MARRIED_CHANCE = .01;
 
+	private static final int PREFERRED_NUMBER_OF_KIDS = 3;
 	private static final int MAX_CHILDREN = 10;
 	private static final int PREFERRED_CHILD_GAP = 5;
 	public static final int MIN_MARRIAGE_AGE = 18;
 	private static List<String> maleNames;
 	private static List<String> femaleNames;
+	private static List<String> lastNames;
+	private static HashSet<Integer> alreadyPickedLastNamesIndices = new HashSet<Integer>();
 
 	static {
 		try {
 			Scanner mReader = new Scanner(new File("resources/male.txt"));
 			Scanner fReader = new Scanner(new File("resources/female.txt"));
+			Scanner lastNameReader = new Scanner(new File("resources/surnames.txt"));
 			maleNames = new ArrayList<String>();
 			while (mReader.hasNextLine()) {
 				maleNames.add(mReader.nextLine().trim());
 			}
+			System.out.printf("%d male first names loaded\n", maleNames.size());
 			femaleNames = new ArrayList<String>();
 			while (fReader.hasNextLine()) {
 				femaleNames.add(fReader.nextLine().trim());
 			}
+			System.out.printf("%d female first names loaded\n", femaleNames.size());
+			lastNames = new ArrayList<String>();
+			while (lastNameReader.hasNextLine()) {
+				lastNames.add(lastNameReader.nextLine());
+			}
+			System.out.printf("%d last names loaded\n",lastNames.size());
 			mReader.close();
 			fReader.close();
+			lastNameReader.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -79,7 +93,7 @@ public class GeneologyRules {
 				coupleChance *= OUT_OF_WEDLOCK_AND_MARRIED_CHANCE;
 			}
 		}
-		return coupleChance * BASE_PREGNANCY_CHANCE;
+		return founderBasedAttractionModifier(p1, p2) * coupleChance * BASE_PREGNANCY_CHANCE;
 	}
 
 	/**
@@ -121,7 +135,10 @@ public class GeneologyRules {
 				modifier *= (13.674192022749644 - 1.7885073342041384 * age + 0.09622799460742272 * Math.pow(age, 2)
 						- 0.0024520153723827194 * Math.pow(age, 3) + 0.000029353412509580285 * Math.pow(age, 4)
 						- 1.3346725220382162 * Math.pow(10, -7) * Math.pow(age, 5));
-				modifier *= ((double)(MAX_CHILDREN - numChildren))/MAX_CHILDREN;
+				modifier *= ((double) (MAX_CHILDREN - (numChildren))) / MAX_CHILDREN;
+				if(numChildren > PREFERRED_NUMBER_OF_KIDS){
+					modifier *= (1 - ((double)numChildren - PREFERRED_NUMBER_OF_KIDS)/(MAX_CHILDREN - PREFERRED_NUMBER_OF_KIDS));
+				}
 			}
 		}
 
@@ -129,6 +146,13 @@ public class GeneologyRules {
 	}
 
 	public static String getMarriedLastName(IPerson p1, IPerson p2) {
+		// Let's have age rules!
+		int p1Age = p1.getAge();
+		int p2Age = p2.getAge();
+		if (p1Age != p2Age) {
+			return p1Age > p2Age ? p1.getBirthLastName() : p2.getBirthLastName();
+		}
+
 		String p1LastNameContribution = p1.getBirthLastName();
 		String p2LastNameContribution = p2.getBirthLastName();
 		if (p1LastNameContribution.contains("-")) {
@@ -199,8 +223,36 @@ public class GeneologyRules {
 			mChance *= Math.min(1, ((double) (p2.getTimeMourningSpouse() / PREFERRED_WIDOW_MOURNING_PERIOD)));
 		}
 
-		return mChance * BASE_MARRIAGE_CHANCE;
+		return founderBasedAttractionModifier(p1, p2) * mChance * BASE_MARRIAGE_CHANCE;
 
+	}
+
+	private static double founderBasedAttractionModifier(IPerson p1, IPerson p2) {
+		Collection<String> p1Founders = p1.getFoundingLastNames();
+		Collection<String> p2Founders = p2.getFoundingLastNames();
+		int commonAncs = 0;
+		for (String f : p1Founders) {
+			if (p2Founders.contains(f)) {
+				commonAncs++;
+			}
+		}
+		int totalFounders = p1Founders.size() + p2Founders.size();
+		if (totalFounders == 0) {
+			return 1.0;
+		}
+		double mod = ((totalFounders - commonAncs)) / (double) totalFounders;
+		return mod;
+	}
+
+	public static String getRandomLastName(Random r) {
+		int rIndex = r.nextInt(lastNames.size());
+		if (alreadyPickedLastNamesIndices.size() == lastNames.size()) {
+			alreadyPickedLastNamesIndices.clear();
+		}
+		while (alreadyPickedLastNamesIndices.contains(rIndex)) {
+			rIndex = r.nextInt(maleNames.size());
+		}
+		return lastNames.get(rIndex);
 	}
 
 	public static String getRandomFirstName(Sex sex, Random r) {

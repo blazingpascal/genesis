@@ -1,6 +1,6 @@
 package main;
 
 public enum StopCondition {
-	POPULATION, YEARS
+	POPULATION, YEARS, GENERATION
 
 }

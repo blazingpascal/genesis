@@ -15,8 +15,9 @@ public abstract class AGenesis implements IGenesis {
 	List<IPerson> livingCache;
 	private long livingPopulationCacheCount;
 	protected int timeInYears = 1900;
+	int maxGen = 0;
 
-	private static final int COUPLING_ATTEMPTS_PER_YEAR = 2;
+	private static final int COUPLING_ATTEMPTS_PER_YEAR = 1;
 	private static final int PREGNANCY_ATTEMPTS_PER_YEAR = 2;
 
 	@Override
@@ -110,6 +111,7 @@ public abstract class AGenesis implements IGenesis {
 					if (roll < chance) {
 						IPerson child = p.createChildWith(spouse, timeInYears, new Random(r.nextInt()));
 						addChild(child);
+						this.maxGen = Math.max(this.maxGen, child.getGeneration());
 					}
 				}
 			}
@@ -123,6 +125,7 @@ public abstract class AGenesis implements IGenesis {
 				if (roll < chance) {
 					IPerson child = father.createChildWith(mother, timeInYears, new Random(r.nextInt()));
 					addChild(child);
+					this.maxGen = Math.max(this.maxGen, child.getGeneration());
 				}
 			}
 		}
@@ -268,6 +271,10 @@ public abstract class AGenesis implements IGenesis {
 			}
 		}
 		return people;
+	}
+	
+	public int maxGeneration(){
+		return this.maxGen;
 	}
 
 }

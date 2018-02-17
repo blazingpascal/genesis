@@ -102,4 +102,9 @@ public class LifeEventEnabledGenesisImpl extends AGenesis implements IIdBasedGen
 	public void incrementTime(Random r) {
 		this.subGenesis.incrementTime(r);
 	}
+	
+	@Override
+	public int maxGeneration(){
+		return this.subGenesis.maxGeneration();
+	}
 }

@@ -1,6 +1,8 @@
 package model.person;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -22,6 +24,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected String currentLastName;
 	protected boolean isMourningSpouse = false;
 	protected int timeMourningSpouse = 0;
+	protected HashSet<String> foundingLastNames = new HashSet<String>();
 
 	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
 			String person_id) {
@@ -131,7 +134,19 @@ public abstract class APersonalInfoPerson implements IPerson {
 			throw new IllegalArgumentException("Parent sexes must be different");
 		}
 		Sex sex = r.nextDouble() < 0.5 ? Sex.FEMALE : Sex.MALE;
+		List<IPerson> myChildren = this.getChildren();
+		List<IPerson> theirChildren = this.getChildren();
 		String firstName = GeneologyRules.getRandomFirstName(sex, new Random(r.nextInt()));
+		if (sex == this.sex) {
+			if (!myChildren.stream().anyMatch(c -> c.getFirstName().startsWith(this.firstName))) {
+				firstName = this.firstName;
+			}
+		} else {
+			// Check if other parent has an heir yet.
+			if (!theirChildren.stream().anyMatch(c -> c.getFirstName().startsWith(parent.getFirstName()))) {
+				firstName = parent.getFirstName();
+			}
+		}
 
 		APersonalInfoPerson child = createPerson(firstName, this.currentLastName, sex, 0,
 				Math.max(this.generation, parent.getGeneration()) + 1, year);
@@ -143,10 +158,21 @@ public abstract class APersonalInfoPerson implements IPerson {
 			child.setFather(this);
 			child.setMother(parent);
 		}
+		if (this.foundingLastNames.isEmpty()) {
+			child.foundingLastNames.add(this.birthLastName);
+		} else {
+			child.foundingLastNames.addAll(this.foundingLastNames);
+		}
+		if (parent.getFoundingLastNames().isEmpty()) {
+			child.foundingLastNames.add(parent.getBirthLastName());
+		} else {
+			child.foundingLastNames.addAll(parent.getFoundingLastNames());
+		}
 		this.addChild(child);
 		parent.addChild(child);
 		this.resetYearsSinceLastChild();
 		parent.resetYearsSinceLastChild();
+
 		return child;
 	}
 
@@ -167,12 +193,20 @@ public abstract class APersonalInfoPerson implements IPerson {
 
 	@Override
 	public boolean atLeastCousins(IPerson p) {
-		if (p.equals(this.getMother()) || p.equals(this.getFather()) || 
-				p.getChildren().contains(p)) {
-			return true;
-		}
 		List<IPerson> myGrandparents = this.getGrandparents();
 		List<IPerson> theirGrandparents = p.getGrandparents();
+		IPerson myMother = this.getMother();
+		IPerson myFather = this.getFather();
+		IPerson theirFather = p.getFather();
+		IPerson theirMother = p.getMother();
+		if (p.equals(myMother) || p.equals(myFather) || this.getChildren().contains(p)
+				|| (theirMother != null && theirMother.equals(myMother))
+				|| (theirFather != null && theirFather.equals(myFather)) || myGrandparents.contains(theirMother)
+				|| myGrandparents.contains(theirFather) || theirGrandparents.contains(myMother)
+				|| theirGrandparents.contains(myFather) 
+				|| theirGrandparents.contains(this) || myGrandparents.contains(p)) {
+			return true;
+		}
 		for (IPerson gp : myGrandparents) {
 			if (theirGrandparents.contains(gp)) {
 				return true;
@@ -227,5 +261,10 @@ public abstract class APersonalInfoPerson implements IPerson {
 
 	public String getFullBirthName() {
 		return this.getFirstName() + " " + this.getBirthLastName();
+	}
+
+	@Override
+	public Collection<String> getFoundingLastNames() {
+		return this.foundingLastNames;
 	}
 }

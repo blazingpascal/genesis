@@ -21,4 +21,5 @@ public interface IGenesis {
 	long getIdCount();
 	List<IPerson> deadPopulation();
 	List<IPerson> getByIds(String ... ids);
+	int maxGeneration();
 }
