@@ -8,6 +8,7 @@ import java.util.Random;
 import model.GeneologyRules;
 import model.Sex;
 import model.genesis.AGenesis;
+import model.genetics.GeneticsMap;
 import model.person.IPerson;
 
 class IdBasedGenesisImpl extends AGenesis implements IIdBasedGenesis {
@@ -30,8 +31,8 @@ class IdBasedGenesisImpl extends AGenesis implements IIdBasedGenesis {
 	}
 
 	@Override
-	public IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age) {
-		IPerson person = IPerson.createIdBasedPerson(firstName, lastName, sex, age, 0, timeInYears - age, genesis_id);
+	public IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age, GeneticsMap genes) {
+		IPerson person = IPerson.createIdBasedPerson(firstName, lastName, sex, age, 0, timeInYears - age, genesis_id, genes);
 		String id = person.getId();
 		map.put(id, person);
 		livingMap.put(id, person);

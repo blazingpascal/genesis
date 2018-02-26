@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Random;
 
 import model.Sex;
+import model.genetics.GeneticsMap;
 import model.person.idbased.IIdBasedPerson;
 import model.spousehistory.ISpouseHistory;
 
@@ -95,12 +96,14 @@ public interface IPerson {
 		return new Person(firstName, lastName, sex, age, generation, birthYear);
 	}
 	
-	public static IPerson createIdBasedPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear, int genesis_id){
-		return IIdBasedPerson.create(firstName, lastName, sex, age, generation, birthYear, genesis_id);
+	public static IPerson createIdBasedPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear, int genesis_id, GeneticsMap genes){
+		return IIdBasedPerson.create(firstName, lastName, sex, age, generation, birthYear, genesis_id, genes);
 	}
 
 	String getFullBirthName();
 
 	Collection<String> getFoundingLastNames();
+
+	GeneticsMap getGenes();
 
 }

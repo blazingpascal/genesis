@@ -4,10 +4,11 @@ import java.util.List;
 import java.util.Random;
 
 import model.Sex;
+import model.genetics.GeneticsMap;
 import model.person.IPerson;
 
 public interface IGenesis {
-	IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age);
+	IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age, GeneticsMap genes);
 	void incrementTime(Random r);
 	void incrementTime(int yearsPast, Random r0);
 	long livingPopulationCount();

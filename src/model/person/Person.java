@@ -8,6 +8,7 @@ import java.util.Random;
 import model.GeneologyRules;
 import model.Sex;
 import model.genesis.GenesisImpl;
+import model.genetics.GeneticsMap;
 import model.spousehistory.ISpouseHistory;
 
 class Person extends APersonalInfoPerson{
@@ -19,7 +20,7 @@ class Person extends APersonalInfoPerson{
 	private List<IPerson> children = new ArrayList<IPerson>();
 	
 	Person(String firstName, String lastName, Sex sex, int age, int generation, int birthYear) {
-		super(firstName, lastName, sex, age, generation, birthYear, firstName + lastName + GenesisImpl.PEOPLE_COUNT);
+		super(firstName, lastName, sex, age, generation, birthYear, firstName + lastName + GenesisImpl.PEOPLE_COUNT, null);
 	}
 	
 	public String basicFamilyInfo() {
@@ -155,7 +156,7 @@ class Person extends APersonalInfoPerson{
 
 	@Override
 	protected APersonalInfoPerson createPerson(String firstName, String lastName, Sex sex, int age,
-			int generation, int birthYear) {
+			int generation, int birthYear, GeneticsMap genes) {
 		return new Person(firstName, lastName, sex, age, generation, birthYear);
 	}
 

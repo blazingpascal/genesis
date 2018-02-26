@@ -18,14 +18,15 @@ import model.Sex;
 import model.genesis.IGenesis;
 import model.genesis.idbased.ILifeEventEnabledGenesis;
 import model.genesis.idbased.LifeEventEnabledGenesisImpl;
+import model.genetics.GeneticsMap;
 import model.lifeevents.BirthLifeEvent;
 import model.lifeevents.ILifeEvent;
 import model.person.IPerson;
 import model.spousehistory.ISpouseHistory;
 
 public class Driver {
-	public static final int STARTING_MALE_FOUNDERS = 40;
-	public static final int STARTING_FEMALE_FOUNDERS = 40;
+	public static final int STARTING_MALE_FOUNDERS = 250;
+	public static final int STARTING_FEMALE_FOUNDERS = 250;
 	public static final int MINIMUM_FOUNDER_AGE = 18;
 	public static final int MAXIMUM_FOUNDER_AGE = 25;
 
@@ -37,13 +38,15 @@ public class Driver {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.MALE, new Random());
 			String lastName = GeneologyRules.getRandomLastName(new Random());
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
-			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.MALE, age));
+			founders.add(
+					genesis.addSinglePerson(firstName, lastName, Sex.MALE, age, GeneticsMap.randomGenes(new Random())));
 		}
 		for (int i = 0; i < STARTING_FEMALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.FEMALE, new Random());
 			String lastName = GeneologyRules.getRandomLastName(new Random());
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
-			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, age));
+			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, age,
+					GeneticsMap.randomGenes(new Random())));
 		}
 		// genesis.addSinglePerson("Eve", "Godwoman", Sex.FEMALE, 18);
 		// genesis.addSinglePerson("Amy", "Adams", Sex.FEMALE, 18);
@@ -157,14 +160,14 @@ public class Driver {
 	}
 
 	private static void outputFounderInfo(String prefix, List<IPerson> founders) throws IOException {
-		File file = new File(prefix + "-founderInfo.csv");
+		File file = new File("output/"+ prefix + "-founderInfo.csv");
 		FileWriter fileWriter = new FileWriter(file);
 		writePersonInfoToFile(fileWriter, founders);
 		fileWriter.close();
 	}
 
 	private static void outputPersonStats(String prefix, ILifeEventEnabledGenesis genesis) throws IOException {
-		File file = new File(prefix + "-personalInfoStats.csv");
+		File file = new File("output/"+ prefix + "-personalInfoStats.csv");
 		FileWriter fileWriter = new FileWriter(file);
 		List<IPerson> population = genesis.historicalPopulation();
 		writePersonInfoToFile(fileWriter, population);
@@ -174,7 +177,8 @@ public class Driver {
 	private static void writePersonInfoToFile(FileWriter fileWriter, List<IPerson> population) throws IOException {
 		fileWriter.write("ID, First Name, Last Name, Birth Last Name, Age, Birth Year, "
 				+ "Spouse, Mother, Father, Generation, Living, Death Year, "
-				+ "Spouse History, Number of Children, Founding Last Names, Number of Founding Heritages, Sex\n");
+				+ "Spouse History, Number of Children, Founding Last Names, "
+				+ "Number of Founding Heritages, Sex, Hair Color\n");
 		for (IPerson p : population) {
 			StringBuilder sb = new StringBuilder();
 			// PersonID
@@ -230,6 +234,9 @@ public class Driver {
 			sb.append(",");
 			// Sex
 			sb.append(p.getSex());
+			sb.append(",");
+			// Hair Color
+			sb.append(p.getGenes().getHairColor().getName());
 			fileWriter.write(sb.toString() + "\n");
 		}
 		fileWriter.flush();
@@ -242,7 +249,7 @@ public class Driver {
 			lifeEvents.add(new BirthLifeEvent(p));
 		}
 		lifeEvents.sort((e1, e2) -> e1.getLifeEventDate().compareTo(e2.getLifeEventDate()));
-		File file = new File(prefix + "-lifeEvents.csv");
+		File file = new File("output/"+ prefix + "-lifeEvents.csv");
 		FileWriter fileWriter = new FileWriter(file);
 		fileWriter.write("Date\t Type\t Title\t Description\n");
 		DateFormat df = new SimpleDateFormat("dd/mm/yyyy");
@@ -261,7 +268,7 @@ public class Driver {
 	}
 
 	private static void outputFamilyScript(String prefix, IGenesis genesis) throws IOException {
-		File file = new File(prefix + "-familyTree.fs");
+		File file = new File("output/"+ prefix + "-familyTree.fs");
 		FileWriter fileWriter = new FileWriter(file);
 		for (IPerson p : genesis.historicalPopulation()) {
 			StringBuilder sb = new StringBuilder();

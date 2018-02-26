@@ -8,9 +8,14 @@ import java.util.Random;
 
 import model.GeneologyRules;
 import model.Sex;
+import model.genetics.GeneticsMap;
 
 public abstract class APersonalInfoPerson implements IPerson {
 
+	// Genetics!
+	protected GeneticsMap genes;
+	
+	// Personal Info
 	protected String firstName;
 	protected final String birthLastName;
 	protected final Sex sex;
@@ -27,7 +32,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected HashSet<String> foundingLastNames = new HashSet<String>();
 
 	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
-			String person_id) {
+			String person_id, GeneticsMap genes) {
 		this.firstName = firstName;
 		this.currentLastName = lastName;
 		this.birthLastName = lastName;
@@ -36,6 +41,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.generation = generation;
 		this.birthYear = birthYear;
 		this.person_id = person_id;
+		this.genes = genes;
 	}
 
 	@Override
@@ -148,8 +154,15 @@ public abstract class APersonalInfoPerson implements IPerson {
 			}
 		}
 
+		GeneticsMap childGenes;
+		if(this.sex == Sex.FEMALE){
+			childGenes = this.genes.combine(parent.getGenes(), r);
+		} else{
+			childGenes = parent.getGenes().combine(this.genes, r);
+		}
+		
 		APersonalInfoPerson child = createPerson(firstName, this.currentLastName, sex, 0,
-				Math.max(this.generation, parent.getGeneration()) + 1, year);
+				Math.max(this.generation, parent.getGeneration()) + 1, year, childGenes);
 
 		if (this.sex == Sex.FEMALE) {
 			child.setMother(this);
@@ -177,7 +190,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 	}
 
 	protected abstract APersonalInfoPerson createPerson(String firstName2, String currentLastName2, Sex sex2, int age,
-			int generation, int birthYear);
+			int generation, int birthYear, GeneticsMap genes);
 
 	protected abstract void setFather(IPerson parent);
 
@@ -266,5 +279,10 @@ public abstract class APersonalInfoPerson implements IPerson {
 	@Override
 	public Collection<String> getFoundingLastNames() {
 		return this.foundingLastNames;
+	}
+	
+	@Override
+	public GeneticsMap getGenes(){
+		return this.genes;
 	}
 }
