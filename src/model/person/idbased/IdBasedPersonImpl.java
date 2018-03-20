@@ -10,6 +10,7 @@ import model.genesis.idbased.IdGenesisMapCollection;
 import model.genetics.GeneticsMap;
 import model.person.APersonalInfoPerson;
 import model.person.IPerson;
+import model.person.Role;
 import model.spousehistory.ISpouseHistory;
 
 class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
@@ -28,9 +29,9 @@ class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
 	List<String> relatedIds = new ArrayList<String>();
 
 	protected IdBasedPersonImpl(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
-			int genesisId, GeneticsMap genes) {
+			int genesisId, GeneticsMap genes, Role role) {
 		super(firstName, lastName, sex, age, generation, birthYear,
-				firstName + lastName + IdGenesisMapCollection.getGenesisIdCount(genesisId), genes);
+				firstName + lastName + IdGenesisMapCollection.getGenesisIdCount(genesisId), genes, role);
 		this.genesisId = genesisId;
 	}
 
@@ -258,8 +259,8 @@ class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
 
 	@Override
 	protected APersonalInfoPerson createPerson(String firstName, String lastName, Sex sex, int age, int generation,
-			int birthYear, GeneticsMap genes) {
-		return new IdBasedPersonImpl(firstName, lastName, sex, age, generation, birthYear, this.genesisId, genes);
+			int birthYear, GeneticsMap genes, Role role) {
+		return new IdBasedPersonImpl(firstName, lastName, sex, age, generation, birthYear, this.genesisId, genes, role);
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import java.util.Random;
 import model.Sex;
 import model.genetics.GeneticsMap;
 import model.person.IPerson;
+import model.person.Role;
 
 public class GenesisImpl extends AGenesis {
 
@@ -15,7 +16,7 @@ public class GenesisImpl extends AGenesis {
 	public static long PEOPLE_COUNT = 0;
 
 	@Override
-	public IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age, GeneticsMap genes) {
+	public IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age, GeneticsMap genes, Role r) {
 		IPerson p = IPerson.createBasicPerson(firstName, lastName, sex, age, 0, timeInYears - age);
 		people.add(p);
 		PEOPLE_COUNT++;
