@@ -96,8 +96,8 @@ public interface IPerson {
 		return new Person(firstName, lastName, sex, age, generation, birthYear);
 	}
 	
-	public static IPerson createIdBasedPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear, int genesis_id, GeneticsMap genes){
-		return IIdBasedPerson.create(firstName, lastName, sex, age, generation, birthYear, genesis_id, genes);
+	public static IPerson createIdBasedPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear, int genesis_id, GeneticsMap genes, Role r){
+		return IIdBasedPerson.create(firstName, lastName, sex, age, generation, birthYear, genesis_id, genes, r);
 	}
 
 	String getFullBirthName();
@@ -105,5 +105,7 @@ public interface IPerson {
 	Collection<String> getFoundingLastNames();
 
 	GeneticsMap getGenes();
+
+	Role getRole();
 
 }

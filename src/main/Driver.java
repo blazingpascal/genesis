@@ -22,6 +22,7 @@ import model.genetics.GeneticsMap;
 import model.lifeevents.BirthLifeEvent;
 import model.lifeevents.ILifeEvent;
 import model.person.IPerson;
+import model.person.Role;
 import model.spousehistory.ISpouseHistory;
 
 public class Driver {
@@ -39,14 +40,14 @@ public class Driver {
 			String lastName = GeneologyRules.getRandomLastName(new Random());
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
 			founders.add(
-					genesis.addSinglePerson(firstName, lastName, Sex.MALE, age, GeneticsMap.randomGenes(new Random())));
+					genesis.addSinglePerson(firstName, lastName, Sex.MALE, age, GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random())));
 		}
 		for (int i = 0; i < STARTING_FEMALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.FEMALE, new Random());
 			String lastName = GeneologyRules.getRandomLastName(new Random());
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
 			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, age,
-					GeneticsMap.randomGenes(new Random())));
+					GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random())));
 		}
 		// genesis.addSinglePerson("Eve", "Godwoman", Sex.FEMALE, 18);
 		// genesis.addSinglePerson("Amy", "Adams", Sex.FEMALE, 18);

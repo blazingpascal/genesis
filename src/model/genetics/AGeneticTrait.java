@@ -2,7 +2,7 @@ package model.genetics;
 
 import java.util.Random;
 
-abstract class AGeneticTrait<SELF extends IGeneticTrait> implements IGeneticTrait {
+public abstract class AGeneticTrait<SELF extends IGeneticTrait> implements IGeneticTrait {
 	protected SELF maternalHistory;
 	protected SELF paternalHistory;
 	protected String name;

@@ -1,4 +1,4 @@
-package model.genetics;
+package model.genetics.subtypes;
 
 public class WidowsPeakTrait {
 
