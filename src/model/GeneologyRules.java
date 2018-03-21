@@ -2,13 +2,9 @@ package model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
+import model.genetics.subtypes.HairColorTrait;
 import model.person.IPerson;
 
 public class GeneologyRules {
@@ -223,9 +219,21 @@ public class GeneologyRules {
 			mChance *= Math.min(1, ((double) (p2.getTimeMourningSpouse() / PREFERRED_WIDOW_MOURNING_PERIOD)));
 		}
 
-		return founderBasedAttractionModifier(p1, p2) * mChance * BASE_MARRIAGE_CHANCE;
+        // Trait Attraction
+		double result = founderBasedAttractionModifier(p1, p2) * mChance * BASE_MARRIAGE_CHANCE;
+        double p1Pref = modifyByTraitAttraction(result, p1, p2);
+        double p2Pref = modifyByTraitAttraction(result, p2, p1);
 
+        return (p1Pref + p2Pref) / 2;
 	}
+
+    private static double modifyByTraitAttraction(double chance, IPerson p1, IPerson p2) {
+        Optional<HairColorTrait> pref = p1.getPreferredHair();
+        if(!pref.isPresent()) return chance;
+
+        double target = pref.get().getValue() == p2.getGenes().getHairColor().getValue() ? 1 : 0;
+        return 0.8 * chance + 0.2 * target;
+    }
 
 	private static double founderBasedAttractionModifier(IPerson p1, IPerson p2) {
 		Collection<String> p1Founders = p1.getFoundingLastNames();
