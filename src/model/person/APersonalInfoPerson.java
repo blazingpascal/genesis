@@ -5,10 +5,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Optional;
 
 import model.GeneologyRules;
 import model.Sex;
 import model.genetics.GeneticsMap;
+import model.genetics.subtypes.*;
 
 public abstract class APersonalInfoPerson implements IPerson {
 
@@ -31,6 +33,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected int timeMourningSpouse = 0;
 	protected HashSet<String> foundingLastNames = new HashSet<String>();
 	protected Role role;
+    protected Optional<HairColorTrait> preferredHair;
 
 	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
 			String person_id, GeneticsMap genes, Role role) {
@@ -44,7 +47,14 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.person_id = person_id;
 		this.genes = genes;
 		this.role = role;
+        this.preferredHair = getRandomPreference(new Random());
 	}
+
+    Optional<HairColorTrait> getRandomPreference(Random r) {
+        double roll = r.nextDouble();
+        if(roll < 0.5) return Optional.of(HairColorTrait.random(r));
+        return Optional.empty();
+    }
 
 	@Override
 	public int getGeneration() {
@@ -292,4 +302,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 	public Role getRole(){
 		return this.role;
 	}
+
+    @Override
+    public Optional<HairColorTrait> getPreferredHair() { return this.preferredHair; }
 }

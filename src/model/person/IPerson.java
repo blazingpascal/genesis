@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Optional;
 
 import model.Sex;
 import model.genetics.GeneticsMap;
+import model.genetics.subtypes.HairColorTrait;
 import model.person.idbased.IIdBasedPerson;
 import model.spousehistory.ISpouseHistory;
 
@@ -108,4 +110,5 @@ public interface IPerson {
 
 	Role getRole();
 
+    Optional<HairColorTrait> getPreferredHair();
 }
