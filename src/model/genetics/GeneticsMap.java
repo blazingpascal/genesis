@@ -27,13 +27,13 @@ public class GeneticsMap {
 	private HandednessTrait handedness;
 	private FrecklesTrait freckles;*/
 	
-	public GeneticsMap(HairColorTrait hairColor){
-		this.hairColor = hairColor;
+	public GeneticsMap(HairColorTrait hairColor) {
+        this.hairColor = hairColor;
 	}
 	
 	public GeneticsMap combine(GeneticsMap map, Random r){
 		HairColorTrait hairColorTrait = r.nextDouble() < MUTATION_CHANCE ? HairColorTrait.randomSkewRecess(r) : new HairColorTrait(this.hairColor, map.hairColor, r);
-		return new GeneticsMap(hairColorTrait);
+        return new GeneticsMap(hairColorTrait);
 	}
 
 	public HairColorTrait getHairColor() {

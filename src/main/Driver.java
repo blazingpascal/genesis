@@ -19,6 +19,7 @@ import model.genesis.IGenesis;
 import model.genesis.idbased.ILifeEventEnabledGenesis;
 import model.genesis.idbased.LifeEventEnabledGenesisImpl;
 import model.genetics.GeneticsMap;
+import model.genetics.JSONTraits;
 import model.lifeevents.BirthLifeEvent;
 import model.lifeevents.ILifeEvent;
 import model.person.IPerson;
@@ -49,6 +50,9 @@ public class Driver {
 			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, age,
 					GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random())));
 		}
+
+        JSONTraits.loadJSONTraits("resources/genetics/traits.json");
+
 		// genesis.addSinglePerson("Eve", "Godwoman", Sex.FEMALE, 18);
 		// genesis.addSinglePerson("Amy", "Adams", Sex.FEMALE, 18);
 		// genesis.addSinglePerson("Bella", "Burke", Sex.FEMALE, 18);
