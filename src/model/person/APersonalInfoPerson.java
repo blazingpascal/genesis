@@ -1,16 +1,14 @@
 package model.person;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Optional;
+import java.util.*;
 
 import model.GeneologyRules;
 import model.Sex;
 import model.genetics.GeneticsMap;
 import model.genetics.subtypes.*;
+import model.relationship.IRelationship;
+import model.relationship.RelationshipImpl;
+import model.relationship.SignificantOther;
 
 public abstract class APersonalInfoPerson implements IPerson {
 
@@ -34,6 +32,11 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected HashSet<String> foundingLastNames = new HashSet<String>();
 	protected Role role;
     protected Optional<HairColorTrait> preferredHair;
+
+	// Relationships
+	protected HashMap<IPerson, IRelationship> friends;
+	protected HashMap<IPerson, IRelationship> enemies;
+	protected SignificantOther significantOther;
 
 	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
 			String person_id, GeneticsMap genes, Role role) {
@@ -305,4 +308,35 @@ public abstract class APersonalInfoPerson implements IPerson {
 
     @Override
     public Optional<HairColorTrait> getPreferredHair() { return this.preferredHair; }
+
+	@Override
+	public HashMap<IPerson, IRelationship> getFriends() {
+		return this.friends;
+	}
+
+	@Override
+	public HashMap<IPerson, IRelationship> getEnemies() {
+		return this.enemies;
+	}
+
+	@Override
+	public IRelationship befriend(IPerson other) {
+		IRelationship friendship = new RelationshipImpl(other, GeneologyRules.FRIEND_REGARD_THRESHOLD);
+		this.friends.put(other, friendship);
+		return friendship;
+	}
+
+	@Override
+	public IRelationship declareEnemy(IPerson other) {
+		IRelationship rivalry = new RelationshipImpl(other, GeneologyRules.ENEMY_REGARD_THRESHOLD);
+		this.enemies.put(other, rivalry);
+		return rivalry;
+	}
+
+	@Override
+	public IRelationship startDating(IRelationship other) {
+		this.significantOther = new SignificantOther(other);
+		return this.significantOther;
+	}
 }
+

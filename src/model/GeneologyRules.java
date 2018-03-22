@@ -18,6 +18,8 @@ public class GeneologyRules {
 	private static final int MAX_MARRIAGE_AGE_GAP = 6;
 	private static final double BASE_PREGNANCY_CHANCE = .50;
 	private static final int PREFERRED_WIDOW_MOURNING_PERIOD = 3;
+	public static final double FRIEND_REGARD_THRESHOLD = .3;
+	public static final double ENEMY_REGARD_THRESHOLD = -.3;
 
 	/*
 	 * private static final double OUT_OF_WEDLOCK_CHANCE = 0.05; private static
