@@ -34,9 +34,8 @@ public abstract class APersonalInfoPerson implements IPerson {
     protected Optional<HairColorTrait> preferredHair;
 
 	// Relationships
-	protected HashMap<IPerson, IRelationship> friends;
-	protected HashMap<IPerson, IRelationship> enemies;
-	protected SignificantOther significantOther;
+	protected HashMap<IPerson, IRelationship> relationships;
+	protected IRelationship significantOther;
 
 	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
 			String person_id, GeneticsMap genes, Role role) {
@@ -310,33 +309,30 @@ public abstract class APersonalInfoPerson implements IPerson {
     public Optional<HairColorTrait> getPreferredHair() { return this.preferredHair; }
 
 	@Override
-	public HashMap<IPerson, IRelationship> getFriends() {
-		return this.friends;
+	public HashMap<IPerson, IRelationship> getRelationships() {
+		return relationships;
 	}
 
 	@Override
-	public HashMap<IPerson, IRelationship> getEnemies() {
-		return this.enemies;
+	public IRelationship meet(IPerson other, int year) {
+		IRelationship relationship = new RelationshipImpl(this, other, year);
+		this.relationships.put(other, relationship);
+		return relationship;
 	}
 
 	@Override
-	public IRelationship befriend(IPerson other) {
-		IRelationship friendship = new RelationshipImpl(other, GeneologyRules.FRIEND_REGARD_THRESHOLD);
-		this.friends.put(other, friendship);
-		return friendship;
+	public void setSignificantOther(IRelationship other) {
+		this.significantOther = other;
 	}
 
 	@Override
-	public IRelationship declareEnemy(IPerson other) {
-		IRelationship rivalry = new RelationshipImpl(other, GeneologyRules.ENEMY_REGARD_THRESHOLD);
-		this.enemies.put(other, rivalry);
-		return rivalry;
+	public boolean hasSignificantOther() {
+		return this.significantOther != null;
 	}
 
 	@Override
-	public IRelationship startDating(IRelationship other) {
-		this.significantOther = new SignificantOther(other);
-		return this.significantOther;
+	public int compareTo(IPerson other) {
+		return this.age - other.getAge();
 	}
 }
 

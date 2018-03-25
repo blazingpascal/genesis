@@ -9,6 +9,7 @@ import java.util.Random;
 import model.GeneologyRules;
 import model.Sex;
 import model.person.IPerson;
+import model.relationship.IRelationship;
 
 public abstract class AGenesis implements IGenesis {
 
@@ -19,6 +20,7 @@ public abstract class AGenesis implements IGenesis {
 
 	private static final int COUPLING_ATTEMPTS_PER_YEAR = 1;
 	private static final int PREGNANCY_ATTEMPTS_PER_YEAR = 2;
+	private static final int MEETING_ATTEMPTS_PER_YEAR = 1;
 
 	@Override
 	public final void incrementTime(int yearsPast, Random r0) {
@@ -72,6 +74,8 @@ public abstract class AGenesis implements IGenesis {
 		for (IPerson p : livingPopulation()) {
 			p.incrementAge();
 		}
+		progressRelationships(r);
+		meetPeople(r);
 		pairOffCouples(r);
 		tryForBabies(r);
 		evaluateDeath(r);
@@ -275,6 +279,31 @@ public abstract class AGenesis implements IGenesis {
 	
 	public int maxGeneration(){
 		return this.maxGen;
+	}
+
+	private void meetPeople(Random r) {
+		// efficiency... I got nothing. so this is a stopgap until we can talk about it some.
+		List<IPerson> people = livingPopulation();
+
+		for (int attempt = 0; attempt < MEETING_ATTEMPTS_PER_YEAR; attempt++) {
+			int max = people.size()/2;
+			Collections.shuffle(people);
+			for (int i = 0; i < max; i++) {
+				IPerson p1 = people.get(i);
+				IPerson p2 = people.get(i * 2);
+				double chance = IRelationship.meetingChance(p1, p2);
+				double roll = r.nextDouble();
+				if (roll < chance) {
+					p1.meet(p2, this.timeInYears);
+				}
+			}
+		}
+	}
+
+	private void progressRelationships(Random r) {
+		// efficiency considerations? because this is gonna somehow have to go through every relationship in the pop
+		// or maybe for every person, it picks a max number of relationships to change?
+		// so like go through each persons' list of relationships, and for the ones that are chosen, progress relationship?
 	}
 
 }

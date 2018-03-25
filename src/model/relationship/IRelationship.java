@@ -2,6 +2,8 @@ package model.relationship;
 
 import model.person.IPerson;
 
+import java.util.Random;
+
 /**
  * Created by alice on 3/21/2018.
  */
@@ -41,4 +43,15 @@ public interface IRelationship {
 
   public RelationshipType getType();
 
+  /**
+   *
+   * @return
+   */
+  public static double meetingChance(IPerson p1, IPerson p2) {
+    return 1; //TODO
+  }
+
+  public void progressRelationship(Random r);
+
+  public int getAnniversaryYear();
 }

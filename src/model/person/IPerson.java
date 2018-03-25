@@ -9,7 +9,7 @@ import model.person.idbased.IIdBasedPerson;
 import model.relationship.IRelationship;
 import model.spousehistory.ISpouseHistory;
 
-public interface IPerson {
+public interface IPerson extends Comparable<IPerson> {
 
 	String getFullName();
 
@@ -109,13 +109,13 @@ public interface IPerson {
 
 	Optional<HairColorTrait> getPreferredHair();
 
-	HashMap<IPerson, IRelationship> getFriends();
+	HashMap<IPerson, IRelationship> getRelationships();
 
-	HashMap<IPerson, IRelationship> getEnemies();
+	IRelationship meet(IPerson other, int year);
 
-	IRelationship befriend(IPerson other);
+	void setSignificantOther(IRelationship other);
 
-	IRelationship declareEnemy(IPerson other);
+	boolean hasSignificantOther();
 
-	IRelationship startDating(IRelationship friendship);
+	IRelationship getSignificantOther();
 }
