@@ -1,10 +1,6 @@
 package model.genesis;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import model.GeneologyRules;
 import model.Sex;
@@ -21,6 +17,7 @@ public abstract class AGenesis implements IGenesis {
 	private static final int COUPLING_ATTEMPTS_PER_YEAR = 1;
 	private static final int PREGNANCY_ATTEMPTS_PER_YEAR = 2;
 	private static final int MEETING_ATTEMPTS_PER_YEAR = 1;
+	private static final int RELATIONSHIP_CHANGES_PER_YEAR = 5;
 
 	@Override
 	public final void incrementTime(int yearsPast, Random r0) {
@@ -304,6 +301,15 @@ public abstract class AGenesis implements IGenesis {
 		// efficiency considerations? because this is gonna somehow have to go through every relationship in the pop
 		// or maybe for every person, it picks a max number of relationships to change?
 		// so like go through each persons' list of relationships, and for the ones that are chosen, progress relationship?
+
+		for (IPerson p : this.livingPopulation()) {
+			int numRelationships = Math.min(p.getRelationships().size(), RELATIONSHIP_CHANGES_PER_YEAR);
+			Iterator<IRelationship> it = p.getRelationships().values().iterator();
+			for (int i = 0; i < numRelationships; i++) { //
+				it.next().progressRelationship(r);
+			}
+		}
+
 	}
 
 }

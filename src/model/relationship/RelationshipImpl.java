@@ -3,7 +3,6 @@ package model.relationship;
 import model.GeneologyRules;
 import model.person.IPerson;
 
-import java.util.Optional;
 import java.util.Random;
 
 /**
@@ -12,36 +11,33 @@ import java.util.Random;
 public class RelationshipImpl implements IRelationship {
   private double regard;
   private double desire;
-  private IPerson you;
-  private IPerson other;
+  private IPerson p1;
+  private IPerson p2;
   private int anniversaryYear;
-  private RelationshipType type;
+  private RelationshipType romanticType;
 
-  public RelationshipImpl(IPerson you, IPerson other, int anniversaryYear) {
-    this(you, other, GeneologyRules.computeRegard(you, other), anniversaryYear);
+  public RelationshipImpl(IPerson p1, IPerson p2, int anniversaryYear) {
+    this(p1, p2, GeneologyRules.computeRegard(p1, p2), GeneologyRules.computeDesire(p1, p2), anniversaryYear, null);
   }
 
-  public RelationshipImpl(IPerson you, IPerson other, double regard, int anniversaryYear) {
-    this(you, other, regard, GeneologyRules.computeDesire(you, other), anniversaryYear);
-  }
-
-  public RelationshipImpl(IPerson you, IPerson other, double regard, double desire, int anniversaryYear) {
-    this(you, other, regard, desire, anniversaryYear, null);
-  }
-
-  public RelationshipImpl(IPerson you, IPerson other, double regard, double desire, int anniversaryYear, RelationshipType type) {
+  public RelationshipImpl(IPerson p1, IPerson p2, double regard, double desire, int anniversaryYear, RelationshipType romanticType) {
     this.regard = regard;
     this.desire = desire;
-    this.you = you;
-    this.other = other;
+    this.p1 = p1;
+    this.p2 = p2;
     this.anniversaryYear = anniversaryYear;
-    this.type = type;
+    this.romanticType = romanticType;
   }
 
 
   @Override
-  public IPerson withWhom() {
-    return this.other;
+  public IPerson p1() {
+    return this.p1;
+  }
+
+  @Override
+  public IPerson p2() {
+    return this.p2;
   }
 
   @Override
@@ -51,12 +47,12 @@ public class RelationshipImpl implements IRelationship {
 
   @Override
   public void growRegard() {
-    this.regard += 0.1;
+    this.regard = Math.min(1, this.regard + 0.1);
   }
 
   @Override
   public void lessenRegard() {
-    this.regard -= 0.1;
+    this.regard = Math.max(-1, this.regard - 0.1);
   }
 
   @Override
@@ -66,81 +62,111 @@ public class RelationshipImpl implements IRelationship {
 
   @Override
   public void growDesire() {
-    this.desire += 0.1;
+    this.desire = Math.min(1, this.desire + 0.1);
   }
 
   @Override
   public void lessenDesire() {
-    this.desire -= 0.1;
+    this.desire = Math.max(-1, this.desire - 0.1);
   }
 
   @Override
   public RelationshipType getType() {
-    if (this.type == null) {
-      if (this.regard > 0) {
-        return RelationshipType.FRIEND;
-      } else if (this.regard == 0) {
-        return RelationshipType.UNKNOWN;
-      } else {
-        return RelationshipType.ENEMY;
-      }
+    if (this.romanticType == null) {
+      return RelationshipType.platonicType(regard);
     } else {
-      return this.type;
+      return this.romanticType;
     }
   }
 
   @Override
+  public boolean isRomantic() {
+    return romanticType != null;
+  }
+
+  private boolean rollFor(Random r, double chance) {
+    return r.nextDouble() < chance;
+  }
+
+  @Override
   public void progressRelationship(Random r) {
-    progressPlatonic(r);
-    if (significantOtherType(this.getType())) {
-      double chance = progressRomanticChance();
-      double roll = r.nextDouble();
-      if (roll < chance) {
-        progressRomantic();
+    progressRegard(r);
+    if (rollFor(r, progressDesireChance(r))) {
+      growDesire();
+      if (this.isRomantic()) {
+        if (rollFor(r, progressRomanticTypeChance())) {
+          progressRomanticType();
+        }
+      } else {
+        if (rollFor(r, startDatingChance())) {
+          progressRomanticType();
+        }
+      }
+    } else {
+      lessenDesire();
+      if (this.isRomantic()) {
+        if (rollFor(r, breakUpChance())) {
+          breakUp();
+        }
       }
     }
   }
 
-  private void progressPlatonic(Random r) {
-    //
+  private void progressRegard(Random r) {
+    if (rollFor(r, progressRegardChance(r))) {
+      growRegard();
+    } else {
+      lessenRegard();
+    }
   }
 
-  private double datingChance() {
-    if (this.you.hasSignificantOther() || this.other.hasSignificantOther()) {
-      return 0;
-    }
-    double otherDesire = other.getRelationships().get(you).romanticDesire();
-    if (otherDesire < RelationshipType.PARTNER.getThreshold() || this.desire < RelationshipType.PARTNER.getThreshold()) {
+  private double progressRegardChance(Random r) {
+    return r.nextDouble(); // TODO: add some actual logic
+  }
+
+  private double startDatingChance() {
+    if (this.p1.hasSignificantOther() || this.p2.hasSignificantOther() ||
+        this.p1.isMourningSpouse() || this.p2.isMourningSpouse()) {
       return 0;
     } else {
-      return otherDesire + this.desire / 2; //TODO: will probably change this to include some other factors. maybe.
+      return progressRomanticTypeChance();
     }
   }
 
-  private RelationshipType progressRomantic() {
+  private double progressDesireChance(Random r) {
+    return r.nextDouble(); // TODO: add some actual logic
+  }
+
+  private void progressRomanticType() {
     switch (this.getType()) {
       case FRIEND:
-        this.type = RelationshipType.PARTNER;
+        this.romanticType = RelationshipType.PARTNER;
+        this.p1.setSignificantOther(this);
+        p2.setSignificantOther(this);
         break;
       case PARTNER:
-        this.type = RelationshipType.FIANCE;
+        this.romanticType = RelationshipType.FIANCE;
         break;
       case FIANCE:
-        this.type = RelationshipType.SPOUSE;
+        this.romanticType = RelationshipType.SPOUSE;
         break;
       default:
         break;
     }
-    return this.type;
   }
 
-  private double progressRomanticChance() {
-    return 0; //TODO
+  private double progressRomanticTypeChance() {
+    double upperThreshold = (this.isRomantic()) ? this.getType().getUpperThreshold() : RelationshipType.PARTNER.getLowerThreshold();
+    if (this.desire <= upperThreshold) {
+      return 0;
+    } else {
+      return this.desire; //TODO: add some actual logic
+    }
   }
 
   private double breakUpChance() { // should this also include a random factor?
-    if (significantOtherType(this.getType())) {
-      double reasonsToStay  = this.desire + this.regard/2; // TODO: add how long they've been together
+    if (this.isRomantic()) {
+      double reasonsToStay  = this.desire + this.regard /2; // TODO: add how long they've been together
       double total = 1.5;
       return total - reasonsToStay;
     } else {
@@ -149,13 +175,14 @@ public class RelationshipImpl implements IRelationship {
 
   }
 
-  private boolean significantOtherType(RelationshipType type) {
-    return type == RelationshipType.PARTNER || type == RelationshipType.FIANCE || type == RelationshipType.SPOUSE;
+  private void romanticToPlatonic() {
+    this.romanticType = null;
   }
 
   private void breakUp() {
-    this.you.setSignificantOther(null);
-    this.other.setSignificantOther(null);
+    this.p1.setSignificantOther(null);
+    this.p2.setSignificantOther(null);
+    this.romanticToPlatonic();
     // TODO: isn't there a list of past spouses/significant others? if so, this add to that
   }
 

@@ -4,22 +4,72 @@ package model.relationship;
  * Created by alice on 3/21/2018.
  */
 public enum RelationshipType {
-  ENEMY(.3), ANNOYANCE(.1), UNKNOWN(0), ACQUAINTANCE(.1), FRIEND(.3), PARTNER(.3), FIANCE(.5), SPOUSE(.7);
+  ENEMY(-1.1, -.3, false),
+  ANNOYANCE(-.3, 0, false),
+  UNKNOWN(0, 0, false),
+  ACQUAINTANCE(0, .3, false),
+  FRIEND(.3, 1, false),
+  PARTNER(.3, .5, true),
+  FIANCE(.5, .7, true),
+  SPOUSE(.7, 1, true);
 
-  private double threshold;
+  private final double lowerThreshold;
+  private final double upperThreshold;
+  private final boolean isRomantic;
 
-  RelationshipType(double threshold) {
-    this.threshold = threshold;
+
+  RelationshipType(double lowerThreshold, double upperThreshold, boolean isRomantic) {
+    this.lowerThreshold = lowerThreshold;
+    this.upperThreshold = upperThreshold;
+    this.isRomantic = isRomantic;
   }
 
-  public double getThreshold() {
-    return this.threshold;
+  /**
+   * @return lower threshold (exclusive) for this relationship type
+   */
+  public double getLowerThreshold() {
+    return this.lowerThreshold;
   }
 
-   /*
-   do we want to automatically advance stages based on thresholds, and keep the thresholds in the enums themselves
-   rather than the constants class?
+  /**
+   * @return upper threshold (inclusive) for this relationship type
+   */
+  public double getUpperThreshold() {
+    return this.upperThreshold;
+  }
 
-   do we want the regard ones to be separate from the romantic ones?
-    */
+  public boolean isRomantic() {
+    return this.isRomantic;
+  }
+
+  public RelationshipType getFromStats(double regard, double desire) {
+    if (this.isRomantic) {
+      return romanticType(desire);
+    } else {
+      return platonicType(regard);
+    }
+  }
+
+  public static RelationshipType platonicType(double regard) {
+    if (regard > FRIEND.getLowerThreshold()) {
+      return FRIEND;
+    } else if (regard > ACQUAINTANCE.getLowerThreshold()) {
+      return  ACQUAINTANCE;
+    } else if (regard > ANNOYANCE.getLowerThreshold()) {
+      return ANNOYANCE;
+    } else {
+      return ENEMY;
+    }
+  }
+
+  public static RelationshipType romanticType(double desire) {
+    if (desire > SPOUSE.getLowerThreshold()) {
+      return SPOUSE;
+    } else if (desire > FIANCE.getLowerThreshold()) {
+      return FIANCE;
+    } else {
+      return PARTNER;
+    }
+  }
+
 }

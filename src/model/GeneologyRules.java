@@ -275,7 +275,10 @@ public class GeneologyRules {
 
 		// Trait Attraction
 		double result = founderBasedAttractionModifier(p1, p2) * mChance * BASE_MARRIAGE_CHANCE;
-		return modifyByTraitAttraction(result, p1, p2);
+		double p1Pref= modifyByTraitAttraction(result, p1, p2);
+		double p2Pref = modifyByTraitAttraction(result, p2, p1);
+
+		return (p1Pref + p2Pref) / 2;
 	}
 
 	public static String getRandomLastName(Random r) {

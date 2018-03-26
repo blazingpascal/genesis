@@ -109,9 +109,13 @@ public interface IPerson extends Comparable<IPerson> {
 
 	Optional<HairColorTrait> getPreferredHair();
 
-	HashMap<IPerson, IRelationship> getRelationships();
+	Map<IPerson, IRelationship> getRelationships();
 
-	IRelationship meet(IPerson other, int year);
+	void addRelationship(IPerson other, IRelationship relationship);
+
+	void meet(IPerson other, int year);
+
+	boolean knows(IPerson other);
 
 	void setSignificantOther(IRelationship other);
 

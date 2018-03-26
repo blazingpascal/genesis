@@ -8,7 +8,6 @@ import model.genetics.GeneticsMap;
 import model.genetics.subtypes.*;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
-import model.relationship.SignificantOther;
 
 public abstract class APersonalInfoPerson implements IPerson {
 
@@ -309,15 +308,27 @@ public abstract class APersonalInfoPerson implements IPerson {
     public Optional<HairColorTrait> getPreferredHair() { return this.preferredHair; }
 
 	@Override
-	public HashMap<IPerson, IRelationship> getRelationships() {
+	public Map<IPerson, IRelationship> getRelationships() {
 		return relationships;
 	}
 
 	@Override
-	public IRelationship meet(IPerson other, int year) {
-		IRelationship relationship = new RelationshipImpl(this, other, year);
+	public void addRelationship(IPerson other, IRelationship relationship) {
 		this.relationships.put(other, relationship);
-		return relationship;
+	}
+
+	@Override
+	public void meet(IPerson other, int year) {
+		if (!this.relationships.containsKey(other)) {
+			IRelationship relationship = new RelationshipImpl(this, other, year);
+			this.addRelationship(other, relationship);
+			other.addRelationship(this, relationship);
+		}
+	}
+
+	@Override
+	public boolean knows(IPerson other) {
+		return this.relationships.containsKey(other);
 	}
 
 	@Override

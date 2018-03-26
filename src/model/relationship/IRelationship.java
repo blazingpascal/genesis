@@ -9,7 +9,9 @@ import java.util.Random;
  */
 public interface IRelationship {
 
-  public IPerson withWhom();
+  public IPerson p1();
+
+  public  IPerson p2();
 
   /**
    * @return a number from -1 to 1, where -1 is their worst enemy, 1 is their best friend, and 0 is someone they don't know
@@ -42,6 +44,8 @@ public interface IRelationship {
   public void lessenDesire();
 
   public RelationshipType getType();
+
+  public boolean isRomantic();
 
   /**
    *
