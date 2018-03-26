@@ -5,9 +5,6 @@ import model.person.IPerson;
 
 import java.util.Random;
 
-/**
- * Created by alice on 3/21/2018.
- */
 public class RelationshipImpl implements IRelationship {
   private double regard;
   private double desire;
@@ -141,8 +138,8 @@ public class RelationshipImpl implements IRelationship {
     switch (this.getType()) {
       case FRIEND:
         this.romanticType = RelationshipType.PARTNER;
-        this.p1.setSignificantOther(this);
-        p2.setSignificantOther(this);
+        this.p1.setSignificantOther(p2);
+        p2.setSignificantOther(p1);
         break;
       case PARTNER:
         this.romanticType = RelationshipType.FIANCE;

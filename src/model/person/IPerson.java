@@ -117,9 +117,9 @@ public interface IPerson extends Comparable<IPerson> {
 
 	boolean knows(IPerson other);
 
-	void setSignificantOther(IRelationship other);
+	void setSignificantOther(IPerson other);
 
 	boolean hasSignificantOther();
 
-	IRelationship getSignificantOther();
+	IPerson getSignificantOther();
 }

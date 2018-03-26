@@ -34,7 +34,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 
 	// Relationships
 	protected HashMap<IPerson, IRelationship> relationships;
-	protected IRelationship significantOther;
+	protected IPerson significantOther;
 
 	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
 			String person_id, GeneticsMap genes, Role role) {
@@ -49,6 +49,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.genes = genes;
 		this.role = role;
         this.preferredHair = getRandomPreference(new Random());
+		this.relationships = new HashMap<>();
 	}
 
     Optional<HairColorTrait> getRandomPreference(Random r) {
@@ -332,7 +333,12 @@ public abstract class APersonalInfoPerson implements IPerson {
 	}
 
 	@Override
-	public void setSignificantOther(IRelationship other) {
+	public IPerson getSignificantOther() {
+		return this.significantOther;
+	}
+
+	@Override
+	public void setSignificantOther(IPerson other) {
 		this.significantOther = other;
 	}
 
