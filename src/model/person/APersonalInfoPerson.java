@@ -346,10 +346,5 @@ public abstract class APersonalInfoPerson implements IPerson {
 	public boolean hasSignificantOther() {
 		return this.significantOther != null;
 	}
-
-	@Override
-	public int compareTo(IPerson other) {
-		return this.age - other.getAge();
-	}
 }
 

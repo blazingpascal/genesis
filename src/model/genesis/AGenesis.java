@@ -279,15 +279,13 @@ public abstract class AGenesis implements IGenesis {
 	}
 
 	private void meetPeople(Random r) {
-		// efficiency... I got nothing. so this is a stopgap until we can talk about it some.
 		List<IPerson> people = livingPopulation();
 
 		for (int attempt = 0; attempt < MEETING_ATTEMPTS_PER_YEAR; attempt++) {
-			int max = people.size()/2;
 			Collections.shuffle(people);
-			for (int i = 0; i < max; i++) {
+			for (int i = 0; i < people.size()-1; i+=2) {
 				IPerson p1 = people.get(i);
-				IPerson p2 = people.get(i * 2);
+				IPerson p2 = people.get(i+1);
 				double chance = IRelationship.meetingChance(p1, p2);
 				double roll = r.nextDouble();
 				if (roll < chance) {
@@ -298,10 +296,6 @@ public abstract class AGenesis implements IGenesis {
 	}
 
 	private void progressRelationships(Random r) {
-		// efficiency considerations? because this is gonna somehow have to go through every relationship in the pop
-		// or maybe for every person, it picks a max number of relationships to change?
-		// so like go through each persons' list of relationships, and for the ones that are chosen, progress relationship?
-
 		for (IPerson p : this.livingPopulation()) {
 			int numRelationships = Math.min(p.getRelationships().size(), RELATIONSHIP_CHANGES_PER_YEAR);
 			Iterator<IRelationship> it = p.getRelationships().values().iterator();

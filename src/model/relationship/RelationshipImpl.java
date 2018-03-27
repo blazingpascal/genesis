@@ -11,19 +11,20 @@ public class RelationshipImpl implements IRelationship {
   private IPerson p1;
   private IPerson p2;
   private int anniversaryYear;
-  private RelationshipType romanticType;
+  private RelationshipType type;
+  private final double REGARD_DESIRE_INCREMENT = 0.1;
 
   public RelationshipImpl(IPerson p1, IPerson p2, int anniversaryYear) {
     this(p1, p2, GeneologyRules.computeRegard(p1, p2), GeneologyRules.computeDesire(p1, p2), anniversaryYear, null);
   }
 
-  public RelationshipImpl(IPerson p1, IPerson p2, double regard, double desire, int anniversaryYear, RelationshipType romanticType) {
+  public RelationshipImpl(IPerson p1, IPerson p2, double regard, double desire, int anniversaryYear, RelationshipType type) {
     this.regard = regard;
     this.desire = desire;
     this.p1 = p1;
     this.p2 = p2;
     this.anniversaryYear = anniversaryYear;
-    this.romanticType = romanticType;
+    this.type = (type == null) ? RelationshipType.platonicType(regard) : type;
   }
 
 
@@ -44,12 +45,14 @@ public class RelationshipImpl implements IRelationship {
 
   @Override
   public void growRegard() {
-    this.regard = Math.min(1, this.regard + 0.1);
+    this.regard = Math.min(1, this.regard + REGARD_DESIRE_INCREMENT);
+    this.updateType();
   }
 
   @Override
   public void lessenRegard() {
-    this.regard = Math.max(-1, this.regard - 0.1);
+    this.regard = Math.max(-1, this.regard - REGARD_DESIRE_INCREMENT);
+    this.updateType();
   }
 
   @Override
@@ -59,26 +62,28 @@ public class RelationshipImpl implements IRelationship {
 
   @Override
   public void growDesire() {
-    this.desire = Math.min(1, this.desire + 0.1);
+    this.desire = Math.min(1, this.desire + REGARD_DESIRE_INCREMENT);
   }
 
   @Override
   public void lessenDesire() {
-    this.desire = Math.max(-1, this.desire - 0.1);
+    this.desire = Math.max(-1, this.desire - REGARD_DESIRE_INCREMENT);
   }
 
   @Override
   public RelationshipType getType() {
-    if (this.romanticType == null) {
-      return RelationshipType.platonicType(regard);
-    } else {
-      return this.romanticType;
+    return this.type;
+  }
+
+  public void updateType() {
+    if (!this.isRomantic()) {
+      this.type = RelationshipType.platonicType(regard);
     }
   }
 
   @Override
   public boolean isRomantic() {
-    return romanticType != null;
+    return this.type.isRomantic();
   }
 
   private boolean rollFor(Random r, double chance) {
@@ -137,15 +142,15 @@ public class RelationshipImpl implements IRelationship {
   private void progressRomanticType() {
     switch (this.getType()) {
       case FRIEND:
-        this.romanticType = RelationshipType.PARTNER;
+        this.type = RelationshipType.PARTNER;
         this.p1.setSignificantOther(p2);
         p2.setSignificantOther(p1);
         break;
       case PARTNER:
-        this.romanticType = RelationshipType.FIANCE;
+        this.type = RelationshipType.FIANCE;
         break;
       case FIANCE:
-        this.romanticType = RelationshipType.SPOUSE;
+        this.type = RelationshipType.SPOUSE;
         break;
       default:
         break;
@@ -172,15 +177,10 @@ public class RelationshipImpl implements IRelationship {
 
   }
 
-  private void romanticToPlatonic() {
-    this.romanticType = null;
-  }
-
   private void breakUp() {
     this.p1.setSignificantOther(null);
     this.p2.setSignificantOther(null);
-    this.romanticToPlatonic();
-    // TODO: isn't there a list of past spouses/significant others? if so, this add to that
+    this.type = RelationshipType.platonicType(this.regard);
   }
 
   @Override

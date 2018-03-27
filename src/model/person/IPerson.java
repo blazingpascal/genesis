@@ -9,7 +9,7 @@ import model.person.idbased.IIdBasedPerson;
 import model.relationship.IRelationship;
 import model.spousehistory.ISpouseHistory;
 
-public interface IPerson extends Comparable<IPerson> {
+public interface IPerson {
 
 	String getFullName();
 
