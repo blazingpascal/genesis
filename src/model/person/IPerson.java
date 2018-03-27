@@ -1,15 +1,12 @@
 package model.person;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Optional;
+import java.util.*;
 
 import model.Sex;
 import model.genetics.GeneticsMap;
 import model.genetics.subtypes.HairColorTrait;
 import model.person.idbased.IIdBasedPerson;
+import model.relationship.IRelationship;
 import model.spousehistory.ISpouseHistory;
 
 public interface IPerson {
@@ -110,5 +107,19 @@ public interface IPerson {
 
 	Role getRole();
 
-    Optional<HairColorTrait> getPreferredHair();
+	Optional<HairColorTrait> getPreferredHair();
+
+	Map<IPerson, IRelationship> getRelationships();
+
+	void addRelationship(IPerson other, IRelationship relationship);
+
+	void meet(IPerson other, int year);
+
+	boolean knows(IPerson other);
+
+	void setSignificantOther(IPerson other);
+
+	boolean hasSignificantOther();
+
+	IPerson getSignificantOther();
 }

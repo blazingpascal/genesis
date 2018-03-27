@@ -1,16 +1,13 @@
 package model.person;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Optional;
+import java.util.*;
 
 import model.GeneologyRules;
 import model.Sex;
 import model.genetics.GeneticsMap;
 import model.genetics.subtypes.*;
+import model.relationship.IRelationship;
+import model.relationship.RelationshipImpl;
 
 public abstract class APersonalInfoPerson implements IPerson {
 
@@ -35,6 +32,10 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected Role role;
     protected Optional<HairColorTrait> preferredHair;
 
+	// Relationships
+	protected HashMap<IPerson, IRelationship> relationships;
+	protected IPerson significantOther;
+
 	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
 			String person_id, GeneticsMap genes, Role role) {
 		this.firstName = firstName;
@@ -48,6 +49,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.genes = genes;
 		this.role = role;
         this.preferredHair = getRandomPreference(new Random());
+		this.relationships = new HashMap<>();
 	}
 
     Optional<HairColorTrait> getRandomPreference(Random r) {
@@ -305,4 +307,44 @@ public abstract class APersonalInfoPerson implements IPerson {
 
     @Override
     public Optional<HairColorTrait> getPreferredHair() { return this.preferredHair; }
+
+	@Override
+	public Map<IPerson, IRelationship> getRelationships() {
+		return relationships;
+	}
+
+	@Override
+	public void addRelationship(IPerson other, IRelationship relationship) {
+		this.relationships.put(other, relationship);
+	}
+
+	@Override
+	public void meet(IPerson other, int year) {
+		if (!this.relationships.containsKey(other)) {
+			IRelationship relationship = new RelationshipImpl(this, other, year);
+			this.addRelationship(other, relationship);
+			other.addRelationship(this, relationship);
+		}
+	}
+
+	@Override
+	public boolean knows(IPerson other) {
+		return this.relationships.containsKey(other);
+	}
+
+	@Override
+	public IPerson getSignificantOther() {
+		return this.significantOther;
+	}
+
+	@Override
+	public void setSignificantOther(IPerson other) {
+		this.significantOther = other;
+	}
+
+	@Override
+	public boolean hasSignificantOther() {
+		return this.significantOther != null;
+	}
 }
+
