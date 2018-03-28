@@ -1,15 +1,11 @@
 package model.person;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Optional;
+import java.util.*;
 
 import model.GeneologyRules;
 import model.Sex;
 import model.genetics.GeneticsMap;
+import model.genetics.JSONTraits;
 import model.genetics.subtypes.*;
 
 public abstract class APersonalInfoPerson implements IPerson {
@@ -33,6 +29,8 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected int timeMourningSpouse = 0;
 	protected HashSet<String> foundingLastNames = new HashSet<String>();
 	protected Role role;
+
+    protected HashMap<String, Integer> preferences;
     protected Optional<HairColorTrait> preferredHair;
 
 	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
@@ -47,8 +45,20 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.person_id = person_id;
 		this.genes = genes;
 		this.role = role;
+        this.preferences = getRandomPreferences(new Random());
         this.preferredHair = getRandomPreference(new Random());
 	}
+
+    HashMap<String, Integer> getRandomPreferences(Random r) {
+        HashMap<String, Integer> prefs = new HashMap<>();
+
+        for(String key : JSONTraits.getTraits().keySet()) {
+            double roll = r.nextDouble();
+            if(roll < 0.5) prefs.put(key, JSONTraits.getRandomValue(key, r));
+        }
+
+        return prefs;
+    }
 
     Optional<HairColorTrait> getRandomPreference(Random r) {
         double roll = r.nextDouble();
@@ -304,5 +314,8 @@ public abstract class APersonalInfoPerson implements IPerson {
 	}
 
     @Override
-    public Optional<HairColorTrait> getPreferredHair() { return this.preferredHair; }
+    public int getPreferredHair() {
+        Integer i = this.preferences.get("hair color");
+        return i == null ? -1 : i;
+    }
 }

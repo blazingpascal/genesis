@@ -40,13 +40,14 @@ public class GeneticsMap {
         return new GeneticsMap(hairColorTrait, hair);
 	}
 
-	public HairColorTrait getHairColor() {
-		return hairColor;
+	public int getHairColor() {
+		return hC.get();
 	}
+
+    public String getHairColorName() { return JSONTraits.getName("hair color", hC.get()); }
 
 	public static GeneticsMap randomGenes(Random r) {
         SingleTrait hair = new SingleTrait(JSONTraits.getRandomValue("hair color", r));
-        System.out.println("test: " + JSONTraits.getRandomValue("hair color", r));
 		return new GeneticsMap(HairColorTrait.random(r), hair);
 	}
 

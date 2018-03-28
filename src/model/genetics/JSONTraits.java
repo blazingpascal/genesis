@@ -19,7 +19,7 @@ public class JSONTraits {
             JsonArray t = o.getAsJsonArray("traits");
 
             file = f;
-            traits = new HashMap<String, TraitData>();
+            traits = new HashMap<>();
             for(JsonElement tr : t) {
                 if(!tr.isJsonNull()) {
                     JsonObject obj = tr.getAsJsonObject();
@@ -32,6 +32,14 @@ public class JSONTraits {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public static HashMap<String, TraitData> getTraits() {
+        return traits;
+    }
+
+    public static String getName(String s, int i) {
+        return traits.get(s).getName(i);
     }
 
     public static int getRandomValue(String s, Random r) {

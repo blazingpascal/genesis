@@ -110,5 +110,5 @@ public interface IPerson {
 
 	Role getRole();
 
-    Optional<HairColorTrait> getPreferredHair();
+    int getPreferredHair();
 }

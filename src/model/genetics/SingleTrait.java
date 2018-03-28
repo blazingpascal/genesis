@@ -1,6 +1,5 @@
 package model.genetics;
 
-import java.util.Optional;
 import java.util.Random;
 
 public class SingleTrait {

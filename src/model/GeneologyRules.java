@@ -228,10 +228,10 @@ public class GeneologyRules {
 	}
 
     private static double modifyByTraitAttraction(double chance, IPerson p1, IPerson p2) {
-        Optional<HairColorTrait> pref = p1.getPreferredHair();
-        if(!pref.isPresent()) return chance;
+        int pref = p1.getPreferredHair();
+        if(pref == -1) return chance;
 
-        double target = pref.get().getValue() == p2.getGenes().getHairColor().getValue() ? 1 : 0;
+        double target = pref == p2.getGenes().getHairColor() ? 1 : 0;
         return 0.8 * chance + 0.2 * target;
     }
 

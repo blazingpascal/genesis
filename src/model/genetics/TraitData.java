@@ -11,6 +11,10 @@ public class TraitData {
         this.values = v;
     }
 
+    public String getName(int i) {
+        return values[i];
+    }
+
     public int random(Random r) {
         return r.nextInt(values.length);
     }
