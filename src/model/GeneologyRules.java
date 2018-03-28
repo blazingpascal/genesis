@@ -220,6 +220,7 @@ public class GeneologyRules {
 
         // Trait Attraction
 		double result = founderBasedAttractionModifier(p1, p2) * mChance * BASE_MARRIAGE_CHANCE;
+
         double p1Pref = modifyByTraitAttraction(result, p1, p2);
         double p2Pref = modifyByTraitAttraction(result, p2, p1);
 
@@ -227,12 +228,14 @@ public class GeneologyRules {
 	}
 
     private static double modifyByTraitAttraction(double chance, IPerson p1, IPerson p2) {
+        int sum = p1.sumUpPreferences(p2);
 
-        int pref = p1.getPreferredHair();
-        if(pref == -1) return chance;
+        double result = chance;
+        for(int i = 0; i < sum; i++) {
+            result = 0.9 * result + 0.1;
+        }
 
-        double target = pref == p2.getGenes().getTrait("hair color").get() ? 1 : 0;
-        return 0.8 * chance + 0.2 * target;
+        return result;
     }
 
 	private static double founderBasedAttractionModifier(IPerson p1, IPerson p2) {

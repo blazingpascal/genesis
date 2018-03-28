@@ -24,7 +24,7 @@
 		},
 		{
 			"name": "earlobes",
-			"values": ["attached", "free"],
+			"values": ["attached lobes", "free lobes"],
 			"split": 1
 		},
 		{

@@ -306,8 +306,19 @@ public abstract class APersonalInfoPerson implements IPerson {
 	}
 
     @Override
-    public int getPreferredHair() {
-        Integer i = this.preferences.get("hair color");
+    public int getPreferredTrait(String s) {
+        Integer i = this.preferences.get(s);
         return i == null ? -1 : i;
+    }
+
+    @Override
+    public int sumUpPreferences(IPerson other) {
+        int i = 0;
+
+        for(String key : preferences.keySet()) {
+            if(preferences.get(key) == other.getGenes().getTrait(key).get()) i++;
+        }
+
+        return i;
     }
 }

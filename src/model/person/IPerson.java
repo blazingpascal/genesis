@@ -107,5 +107,7 @@ public interface IPerson {
 
 	Role getRole();
 
-    int getPreferredHair();
+    int getPreferredTrait(String s);
+
+    int sumUpPreferences(IPerson other);
 }
