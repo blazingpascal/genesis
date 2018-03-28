@@ -183,6 +183,7 @@ public abstract class AGenesis implements IGenesis {
 				double chance = GeneologyRules.marriageChance(bachelor, bachelorette);
 				double roll = r.nextDouble();
 				if (roll < chance) {
+                    System.out.println("got married");
 					bachelor.marry(bachelorette, this.timeInYears);
 				}
 			}

@@ -31,7 +31,6 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected Role role;
 
     protected HashMap<String, Integer> preferences;
-    protected Optional<HairColorTrait> preferredHair;
 
 	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
 			String person_id, GeneticsMap genes, Role role) {
@@ -46,7 +45,6 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.genes = genes;
 		this.role = role;
         this.preferences = getRandomPreferences(new Random());
-        this.preferredHair = getRandomPreference(new Random());
 	}
 
     HashMap<String, Integer> getRandomPreferences(Random r) {
@@ -54,16 +52,10 @@ public abstract class APersonalInfoPerson implements IPerson {
 
         for(String key : JSONTraits.getTraits().keySet()) {
             double roll = r.nextDouble();
-            if(roll < 0.5) prefs.put(key, JSONTraits.getRandomValue(key, r));
+            if (roll < 0.5) prefs.put(key, JSONTraits.getRandomValue(key, r));
         }
 
         return prefs;
-    }
-
-    Optional<HairColorTrait> getRandomPreference(Random r) {
-        double roll = r.nextDouble();
-        if(roll < 0.5) return Optional.of(HairColorTrait.random(r));
-        return Optional.empty();
     }
 
 	@Override

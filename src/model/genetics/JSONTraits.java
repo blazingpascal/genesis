@@ -49,12 +49,4 @@ public class JSONTraits {
     public static int getRandomSkewRecessValue(String s, Random r) {
         return traits.get(s).randomSkewRecess(r);
     }
-
-    public static SingleTrait combine(SingleTrait t1, SingleTrait t2, Random r) {
-        int maternal = t1.getRandomHistorical(r);
-        int paternal = t2.getRandomHistorical(r);
-
-        return new SingleTrait(Math.max(maternal, paternal), maternal, paternal);
-    }
-
 }

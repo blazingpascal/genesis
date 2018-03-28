@@ -23,6 +23,14 @@ public class SingleTrait {
         return value;
     }
 
+    public int getMaternal() {
+        return maternal;
+    }
+
+    public int getPaternal() {
+        return paternal;
+    }
+
     public int getRandomHistorical(Random r) {
         return r.nextBoolean() ? maternal : paternal;
     }

@@ -39,8 +39,6 @@ public class Driver {
 
         JSONTraits.loadJSONTraits("resources/genetics/traits.json");
 
-
-
 		for (int i = 0; i < STARTING_MALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.MALE, new Random());
 			String lastName = GeneologyRules.getRandomLastName(new Random());
@@ -244,7 +242,7 @@ public class Driver {
 			sb.append(p.getSex());
 			sb.append(",");
 			// Hair Color
-			sb.append(p.getGenes().getHairColor().getName());
+			sb.append(p.getGenes().getTraitName("hair color"));
 			fileWriter.write(sb.toString() + "\n");
 		}
 		fileWriter.flush();

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-import model.genetics.subtypes.HairColorTrait;
 import model.person.IPerson;
 
 public class GeneologyRules {
@@ -228,10 +227,11 @@ public class GeneologyRules {
 	}
 
     private static double modifyByTraitAttraction(double chance, IPerson p1, IPerson p2) {
+
         int pref = p1.getPreferredHair();
         if(pref == -1) return chance;
 
-        double target = pref == p2.getGenes().getHairColor() ? 1 : 0;
+        double target = pref == p2.getGenes().getTrait("hair color").get() ? 1 : 0;
         return 0.8 * chance + 0.2 * target;
     }
 
