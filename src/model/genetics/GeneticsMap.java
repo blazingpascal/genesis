@@ -16,6 +16,7 @@ import model.genetics.subtypes.TongueRollingTrait;
 public class GeneticsMap {
 	private static float MUTATION_CHANCE = 0.05f;
 	private HairColorTrait hairColor;
+    private SingleTrait hC;
 	/*private EyeColorTrait eyeColor;
 	private SkinColorTrait skinColor;
 	private HairTextureTrait hairTexture;
@@ -27,13 +28,16 @@ public class GeneticsMap {
 	private HandednessTrait handedness;
 	private FrecklesTrait freckles;*/
 	
-	public GeneticsMap(HairColorTrait hairColor) {
+	public GeneticsMap(HairColorTrait hairColor, SingleTrait hC) {
         this.hairColor = hairColor;
+        this.hC = hC;
 	}
 	
 	public GeneticsMap combine(GeneticsMap map, Random r){
 		HairColorTrait hairColorTrait = r.nextDouble() < MUTATION_CHANCE ? HairColorTrait.randomSkewRecess(r) : new HairColorTrait(this.hairColor, map.hairColor, r);
-        return new GeneticsMap(hairColorTrait);
+        SingleTrait hair = r.nextDouble() < MUTATION_CHANCE ? new SingleTrait(JSONTraits.getRandomSkewRecessValue("hair color", r)) : JSONTraits.combine(this.hC, map.hC, r);
+
+        return new GeneticsMap(hairColorTrait, hair);
 	}
 
 	public HairColorTrait getHairColor() {
@@ -41,10 +45,13 @@ public class GeneticsMap {
 	}
 
 	public static GeneticsMap randomGenes(Random r) {
-		return new GeneticsMap(HairColorTrait.random(r));
+        SingleTrait hair = new SingleTrait(JSONTraits.getRandomValue("hair color", r));
+        System.out.println("test: " + JSONTraits.getRandomValue("hair color", r));
+		return new GeneticsMap(HairColorTrait.random(r), hair);
 	}
 
-	public static GeneticsMap randomSkewRecessGenes(Random random) {
-		return new GeneticsMap(HairColorTrait.randomSkewRecess(random));
+	public static GeneticsMap randomSkewRecessGenes(Random r) {
+        SingleTrait hair = new SingleTrait(JSONTraits.getRandomSkewRecessValue("hair color", r));
+		return new GeneticsMap(HairColorTrait.randomSkewRecess(r), hair);
 	}
 }

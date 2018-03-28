@@ -5,6 +5,7 @@ import com.google.gson.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
+import java.util.Random;
 
 
 public class JSONTraits {
@@ -32,4 +33,20 @@ public class JSONTraits {
             e.printStackTrace();
         }
     }
+
+    public static int getRandomValue(String s, Random r) {
+        return traits.get(s).random(r);
+    }
+
+    public static int getRandomSkewRecessValue(String s, Random r) {
+        return traits.get(s).randomSkewRecess(r);
+    }
+
+    public static SingleTrait combine(SingleTrait t1, SingleTrait t2, Random r) {
+        int maternal = t1.getRandomHistorical(r);
+        int paternal = t2.getRandomHistorical(r);
+
+        return new SingleTrait(Math.max(maternal, paternal), maternal, paternal);
+    }
+
 }

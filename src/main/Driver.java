@@ -36,6 +36,11 @@ public class Driver {
 		Scanner s = new Scanner(System.in);
 		List<IPerson> founders = new ArrayList<IPerson>();
 		ILifeEventEnabledGenesis genesis = new LifeEventEnabledGenesisImpl();
+
+        JSONTraits.loadJSONTraits("resources/genetics/traits.json");
+
+
+
 		for (int i = 0; i < STARTING_MALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.MALE, new Random());
 			String lastName = GeneologyRules.getRandomLastName(new Random());
@@ -50,8 +55,6 @@ public class Driver {
 			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, age,
 					GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random())));
 		}
-
-        JSONTraits.loadJSONTraits("resources/genetics/traits.json");
 
 		// genesis.addSinglePerson("Eve", "Godwoman", Sex.FEMALE, 18);
 		// genesis.addSinglePerson("Amy", "Adams", Sex.FEMALE, 18);
