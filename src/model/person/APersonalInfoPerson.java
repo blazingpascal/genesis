@@ -7,6 +7,8 @@ import model.Sex;
 import model.genetics.GeneticsMap;
 import model.genetics.JSONTraits;
 import model.genetics.subtypes.*;
+import model.relationship.IRelationship;
+import model.relationship.RelationshipImpl;
 
 public abstract class APersonalInfoPerson implements IPerson {
 
@@ -29,8 +31,11 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected int timeMourningSpouse = 0;
 	protected HashSet<String> foundingLastNames = new HashSet<String>();
 	protected Role role;
+  protected HashMap<String, Integer> preferences;
 
-    protected HashMap<String, Integer> preferences;
+	// Relationships
+	protected HashMap<IPerson, IRelationship> relationships;
+	protected IPerson significantOther;
 
 	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
 			String person_id, GeneticsMap genes, Role role) {
@@ -44,7 +49,8 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.person_id = person_id;
 		this.genes = genes;
 		this.role = role;
-        this.preferences = getRandomPreferences(new Random());
+    this.preferences = getRandomPreferences(new Random());
+		this.relationships = new HashMap<>();
 	}
 
     HashMap<String, Integer> getRandomPreferences(Random r) {
@@ -305,20 +311,58 @@ public abstract class APersonalInfoPerson implements IPerson {
 		return this.role;
 	}
 
-    @Override
-    public int getPreferredTrait(String s) {
-        Integer i = this.preferences.get(s);
-        return i == null ? -1 : i;
-    }
+  @Override
+  public int getPreferredTrait(String s) {
+      Integer i = this.preferences.get(s);
+      return i == null ? -1 : i;
+  }
 
-    @Override
-    public int sumUpPreferences(IPerson other) {
-        int i = 0;
+  @Override
+  public int sumUpPreferences(IPerson other) {
+      int i = 0;
+      for(String key : preferences.keySet()) {
+          if(preferences.get(key) == other.getGenes().getTrait(key).get()) i++;
+      }
+      return i;
+  }
 
-        for(String key : preferences.keySet()) {
-            if(preferences.get(key) == other.getGenes().getTrait(key).get()) i++;
-        }
+	@Override
+	public Map<IPerson, IRelationship> getRelationships() {
+		return relationships;
+	}
 
-        return i;
-    }
+	@Override
+	public void addRelationship(IPerson other, IRelationship relationship) {
+		this.relationships.put(other, relationship);
+	}
+
+	@Override
+	public void meet(IPerson other, int year) {
+		if (!this.relationships.containsKey(other)) {
+			IRelationship relationship = new RelationshipImpl(this, other, year);
+			this.addRelationship(other, relationship);
+			other.addRelationship(this, relationship);
+		}
+	}
+
+	@Override
+	public boolean knows(IPerson other) {
+		return this.relationships.containsKey(other);
+	}
+
+	@Override
+	public IPerson getSignificantOther() {
+		return this.significantOther;
+	}
+
+	@Override
+	public void setSignificantOther(IPerson other) {
+		this.significantOther = other;
+	}
+
+	@Override
+	public boolean hasSignificantOther() {
+		return this.significantOther != null;
+	}
 }
+

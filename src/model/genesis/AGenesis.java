@@ -1,14 +1,11 @@
 package model.genesis;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import model.GeneologyRules;
 import model.Sex;
 import model.person.IPerson;
+import model.relationship.IRelationship;
 
 public abstract class AGenesis implements IGenesis {
 
@@ -19,6 +16,8 @@ public abstract class AGenesis implements IGenesis {
 
 	private static final int COUPLING_ATTEMPTS_PER_YEAR = 1;
 	private static final int PREGNANCY_ATTEMPTS_PER_YEAR = 2;
+	private static final int MEETING_ATTEMPTS_PER_YEAR = 1;
+	private static final int RELATIONSHIP_CHANGES_PER_YEAR = 5;
 
 	@Override
 	public final void incrementTime(int yearsPast, Random r0) {
@@ -72,6 +71,8 @@ public abstract class AGenesis implements IGenesis {
 		for (IPerson p : livingPopulation()) {
 			p.incrementAge();
 		}
+		progressRelationships(r);
+		meetPeople(r);
 		pairOffCouples(r);
 		tryForBabies(r);
 		evaluateDeath(r);
@@ -275,6 +276,34 @@ public abstract class AGenesis implements IGenesis {
 	
 	public int maxGeneration(){
 		return this.maxGen;
+	}
+
+	private void meetPeople(Random r) {
+		List<IPerson> people = livingPopulation();
+
+		for (int attempt = 0; attempt < MEETING_ATTEMPTS_PER_YEAR; attempt++) {
+			Collections.shuffle(people);
+			for (int i = 0; i < people.size()-1; i+=2) {
+				IPerson p1 = people.get(i);
+				IPerson p2 = people.get(i+1);
+				double chance = IRelationship.meetingChance(p1, p2);
+				double roll = r.nextDouble();
+				if (roll < chance) {
+					p1.meet(p2, this.timeInYears);
+				}
+			}
+		}
+	}
+
+	private void progressRelationships(Random r) {
+		for (IPerson p : this.livingPopulation()) {
+			int numRelationships = Math.min(p.getRelationships().size(), RELATIONSHIP_CHANGES_PER_YEAR);
+			Iterator<IRelationship> it = p.getRelationships().values().iterator();
+			for (int i = 0; i < numRelationships; i++) { //
+				it.next().progressRelationship(r);
+			}
+		}
+
 	}
 
 }

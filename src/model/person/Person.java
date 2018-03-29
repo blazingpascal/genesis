@@ -1,14 +1,13 @@
 package model.person;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import model.GeneologyRules;
 import model.Sex;
 import model.genesis.GenesisImpl;
 import model.genetics.GeneticsMap;
+import model.relationship.IRelationship;
+import model.relationship.RelationshipImpl;
 import model.spousehistory.ISpouseHistory;
 
 class Person extends APersonalInfoPerson{

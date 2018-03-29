@@ -255,6 +255,35 @@ public class GeneologyRules {
 		return mod;
 	}
 
+	public static double computeRegard(IPerson p1, IPerson p2) {
+		Random r = new Random();
+
+		return r.nextDouble() - .4; // eventually this'll use platonic trait but we don't have any of those yet
+	}
+
+	public static double computeDesire(IPerson p1, IPerson p2) {
+		// No kissing cousins here
+		if (p1.atLeastCousins(p2)) {
+			return 0;
+		}
+
+		// Age factor
+		int ageDiff = p1.getAge() - p2.getAge();
+		double mChance;
+		if (ageDiff == 0) {
+			mChance = 1;
+		} else {
+			mChance = Math.pow(Math.abs(ageDiff) + 0.001, -2);
+		}
+
+		// Trait Attraction
+		double result = founderBasedAttractionModifier(p1, p2) * mChance * BASE_MARRIAGE_CHANCE;
+		double p1Pref= modifyByTraitAttraction(result, p1, p2);
+		double p2Pref = modifyByTraitAttraction(result, p2, p1);
+
+		return (p1Pref + p2Pref) / 2;
+	}
+
 	public static String getRandomLastName(Random r) {
 		int rIndex = r.nextInt(lastNames.size());
 		if (alreadyPickedLastNamesIndices.size() == lastNames.size()) {
