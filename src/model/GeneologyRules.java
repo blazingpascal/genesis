@@ -220,11 +220,17 @@ public class GeneologyRules {
 		}
 
         // Trait Attraction
+		return computeOverallAttraction(p1, p2, mChance);
+	}
+
+	private static double computeOverallAttraction(IPerson p1, IPerson p2, double mChance) {
 		double result = founderBasedAttractionModifier(p1, p2) * mChance * BASE_MARRIAGE_CHANCE;
         double p1Pref = modifyByTraitAttraction(result, p1, p2);
         double p2Pref = modifyByTraitAttraction(result, p2, p1);
+        double roleCompatibility = 
+        		p1.getRole().computeRomanticCompatibility(p2.getRole());
 
-        return (p1Pref + p2Pref) / 2;
+        return roleCompatibility * ((p1Pref + p2Pref) / 2);
 	}
 
     private static double modifyByTraitAttraction(double chance, IPerson p1, IPerson p2) {
@@ -273,12 +279,7 @@ public class GeneologyRules {
 			mChance = Math.pow(Math.abs(ageDiff) + 0.001, -2);
 		}
 
-		// Trait Attraction
-		double result = founderBasedAttractionModifier(p1, p2) * mChance * BASE_MARRIAGE_CHANCE;
-		double p1Pref= modifyByTraitAttraction(result, p1, p2);
-		double p2Pref = modifyByTraitAttraction(result, p2, p1);
-
-		return (p1Pref + p2Pref) / 2;
+		return computeOverallAttraction(p1, p2, mChance);
 	}
 
 	public static String getRandomLastName(Random r) {
