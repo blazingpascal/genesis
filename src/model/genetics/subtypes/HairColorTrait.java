@@ -47,16 +47,12 @@ public class HairColorTrait extends AScalingRecessiveGeneticTrait<HairColorTrait
 	public static HairColorTrait random(Random r) {
 		return defaults[r.nextInt(defaults.length)];
 	}
-	
-	public static HairColorTrait randomSkewRecess(Random r){
-		int skew = 3;
-		while(skew > 0){
-			if(r.nextBoolean()){
-				return defaults[r.nextInt(defaults.length/2)];
-			}
-		}
-		return defaults[r.nextInt(defaults.length/2) + defaults.length/2];
-		
-	}
+
+    public static HairColorTrait randomSkewRecess (Random r) {
+        for(int i = 0; i < 3; i++){
+            if(r.nextBoolean()) return defaults[r.nextInt(defaults.length/2)];
+        }
+        return defaults[r.nextInt(defaults.length/2) + defaults.length/2];
+    }
 
 }

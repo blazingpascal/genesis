@@ -21,6 +21,7 @@ import model.genesis.IGenesis;
 import model.genesis.idbased.ILifeEventEnabledGenesis;
 import model.genesis.idbased.LifeEventEnabledGenesisImpl;
 import model.genetics.GeneticsMap;
+import model.genetics.JSONTraits;
 import model.lifeevents.BirthLifeEvent;
 import model.lifeevents.ILifeEvent;
 import model.person.IPerson;
@@ -39,6 +40,9 @@ public class Driver {
 		Scanner s = new Scanner(System.in);
 		List<IPerson> founders = new ArrayList<IPerson>();
 		ILifeEventEnabledGenesis genesis = new LifeEventEnabledGenesisImpl();
+
+        JSONTraits.loadJSONTraits("resources/genetics/traits.json");
+
 		for (int i = 0; i < STARTING_MALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.MALE, new Random());
 			String lastName = GeneologyRules.getRandomLastName(new Random());
@@ -53,6 +57,7 @@ public class Driver {
 			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, age,
 					GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random())));
 		}
+
 		// genesis.addSinglePerson("Eve", "Godwoman", Sex.FEMALE, 18);
 		// genesis.addSinglePerson("Amy", "Adams", Sex.FEMALE, 18);
 		// genesis.addSinglePerson("Bella", "Burke", Sex.FEMALE, 18);
@@ -273,7 +278,7 @@ public class Driver {
 			sb.append(p.getSex());
 			sb.append(",");
 			// Hair Color
-			sb.append(p.getGenes().getHairColor().getName());
+			sb.append(p.getGenes().getTraitName("hair color"));
 			fileWriter.write(sb.toString() + "\n");
 		}
 		fileWriter.flush();
