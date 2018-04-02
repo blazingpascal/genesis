@@ -7,6 +7,7 @@ import model.Sex;
 import model.genetics.GeneticsMap;
 import model.genetics.JSONTraits;
 import model.genetics.subtypes.*;
+import model.personality.IPersonality;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
 
@@ -14,7 +15,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 
 	// Genetics!
 	protected GeneticsMap genes;
-	
+
 	// Personal Info
 	protected String firstName;
 	protected final String birthLastName;
@@ -31,14 +32,15 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected int timeMourningSpouse = 0;
 	protected HashSet<String> foundingLastNames = new HashSet<String>();
 	protected Role role;
-  protected HashMap<String, Integer> preferences;
-
+	protected HashMap<String, Integer> preferences;
+	protected IPersonality personality;
+	
 	// Relationships
 	protected HashMap<IPerson, IRelationship> relationships;
 	protected IPerson significantOther;
 
 	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
-			String person_id, GeneticsMap genes, Role role) {
+			String person_id, GeneticsMap genes, Role role, IPersonality personality) {
 		this.firstName = firstName;
 		this.currentLastName = lastName;
 		this.birthLastName = lastName;
@@ -49,20 +51,22 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.person_id = person_id;
 		this.genes = genes;
 		this.role = role;
-    this.preferences = getRandomPreferences(new Random());
+		this.preferences = getRandomPreferences(new Random());
 		this.relationships = new HashMap<>();
+		this.personality = personality;
 	}
 
-    HashMap<String, Integer> getRandomPreferences(Random r) {
-        HashMap<String, Integer> prefs = new HashMap<>();
+	HashMap<String, Integer> getRandomPreferences(Random r) {
+		HashMap<String, Integer> prefs = new HashMap<>();
 
-        for(String key : JSONTraits.getTraits().keySet()) {
-            double roll = r.nextDouble();
-            if (roll < 0.5) prefs.put(key, JSONTraits.getRandomValue(key, r));
-        }
+		for (String key : JSONTraits.getTraits().keySet()) {
+			double roll = r.nextDouble();
+			if (roll < 0.5)
+				prefs.put(key, JSONTraits.getRandomValue(key, r));
+		}
 
-        return prefs;
-    }
+		return prefs;
+	}
 
 	@Override
 	public int getGeneration() {
@@ -175,14 +179,16 @@ public abstract class APersonalInfoPerson implements IPerson {
 		}
 
 		GeneticsMap childGenes;
-		if(this.sex == Sex.FEMALE){
+		if (this.sex == Sex.FEMALE) {
 			childGenes = this.genes.combine(parent.getGenes(), r);
-		} else{
+		} else {
 			childGenes = parent.getGenes().combine(this.genes, r);
 		}
-		
+
 		APersonalInfoPerson child = createPerson(firstName, this.currentLastName, sex, 0,
-				Math.max(this.generation, parent.getGeneration()) + 1, year, childGenes, Role.calculateRole(this.role, parent.getRole()));
+				Math.max(this.generation, parent.getGeneration()) + 1, year, childGenes,
+				Role.calculateRole(this.role, parent.getRole()),
+				IPersonality.calculatePersonality(this.personality, parent.getPersonality()));
 
 		if (this.sex == Sex.FEMALE) {
 			child.setMother(this);
@@ -210,7 +216,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 	}
 
 	protected abstract APersonalInfoPerson createPerson(String firstName2, String currentLastName2, Sex sex2, int age,
-			int generation, int birthYear, GeneticsMap genes, Role role);
+			int generation, int birthYear, GeneticsMap genes, Role role, IPersonality personlality);
 
 	protected abstract void setFather(IPerson parent);
 
@@ -236,8 +242,8 @@ public abstract class APersonalInfoPerson implements IPerson {
 				|| (theirMother != null && theirMother.equals(myMother))
 				|| (theirFather != null && theirFather.equals(myFather)) || myGrandparents.contains(theirMother)
 				|| myGrandparents.contains(theirFather) || theirGrandparents.contains(myMother)
-				|| theirGrandparents.contains(myFather) 
-				|| theirGrandparents.contains(this) || myGrandparents.contains(p)) {
+				|| theirGrandparents.contains(myFather) || theirGrandparents.contains(this)
+				|| myGrandparents.contains(p)) {
 			return true;
 		}
 		for (IPerson gp : myGrandparents) {
@@ -300,31 +306,32 @@ public abstract class APersonalInfoPerson implements IPerson {
 	public Collection<String> getFoundingLastNames() {
 		return this.foundingLastNames;
 	}
-	
+
 	@Override
-	public GeneticsMap getGenes(){
+	public GeneticsMap getGenes() {
 		return this.genes;
 	}
-	
+
 	@Override
-	public Role getRole(){
+	public Role getRole() {
 		return this.role;
 	}
 
-  @Override
-  public int getPreferredTrait(String s) {
-      Integer i = this.preferences.get(s);
-      return i == null ? -1 : i;
-  }
+	@Override
+	public int getPreferredTrait(String s) {
+		Integer i = this.preferences.get(s);
+		return i == null ? -1 : i;
+	}
 
-  @Override
-  public int sumUpPreferences(IPerson other) {
-      int i = 0;
-      for(String key : preferences.keySet()) {
-          if(preferences.get(key) == other.getGenes().getTrait(key).get()) i++;
-      }
-      return i;
-  }
+	@Override
+	public int sumUpPreferences(IPerson other) {
+		int i = 0;
+		for (String key : preferences.keySet()) {
+			if (preferences.get(key) == other.getGenes().getTrait(key).get())
+				i++;
+		}
+		return i;
+	}
 
 	@Override
 	public Map<IPerson, IRelationship> getRelationships() {
@@ -364,5 +371,9 @@ public abstract class APersonalInfoPerson implements IPerson {
 	public boolean hasSignificantOther() {
 		return this.significantOther != null;
 	}
+	
+	@Override
+	public IPersonality getPersonality(){
+		return this.personality;
+	}
 }
-

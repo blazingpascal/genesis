@@ -6,6 +6,7 @@ import model.GeneologyRules;
 import model.Sex;
 import model.genesis.GenesisImpl;
 import model.genetics.GeneticsMap;
+import model.personality.IPersonality;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
 import model.spousehistory.ISpouseHistory;
@@ -19,7 +20,9 @@ class Person extends APersonalInfoPerson{
 	private List<IPerson> children = new ArrayList<IPerson>();
 	
 	Person(String firstName, String lastName, Sex sex, int age, int generation, int birthYear) {
-		super(firstName, lastName, sex, age, generation, birthYear, firstName + lastName + GenesisImpl.PEOPLE_COUNT, null, null);
+		super(firstName, lastName, sex, age, generation, birthYear, 
+				firstName + lastName + GenesisImpl.PEOPLE_COUNT, null, null, 
+				null);
 	}
 	
 	public String basicFamilyInfo() {
@@ -155,7 +158,8 @@ class Person extends APersonalInfoPerson{
 
 	@Override
 	protected APersonalInfoPerson createPerson(String firstName, String lastName, Sex sex, int age,
-			int generation, int birthYear, GeneticsMap genes, Role role) {
+			int generation, int birthYear, GeneticsMap genes, Role role, 
+			IPersonality personality) {
 		return new Person(firstName, lastName, sex, age, generation, birthYear);
 	}
 

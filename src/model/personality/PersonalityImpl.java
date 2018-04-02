@@ -56,9 +56,4 @@ public class PersonalityImpl implements IPersonality {
 				agreeableness, neuroticism);
 	}
 
-	@Override
-	public IPersonality generatePersonality(Random r) {
-		return new PersonalityImpl(r);
-	}
-
 }
