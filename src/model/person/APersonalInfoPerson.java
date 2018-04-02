@@ -5,6 +5,7 @@ import java.util.*;
 import model.GeneologyRules;
 import model.Sex;
 import model.genetics.GeneticsMap;
+import model.genetics.JSONTraits;
 import model.genetics.subtypes.*;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
@@ -30,7 +31,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected int timeMourningSpouse = 0;
 	protected HashSet<String> foundingLastNames = new HashSet<String>();
 	protected Role role;
-    protected Optional<HairColorTrait> preferredHair;
+  protected HashMap<String, Integer> preferences;
 
 	// Relationships
 	protected HashMap<IPerson, IRelationship> relationships;
@@ -48,14 +49,19 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.person_id = person_id;
 		this.genes = genes;
 		this.role = role;
-        this.preferredHair = getRandomPreference(new Random());
+    this.preferences = getRandomPreferences(new Random());
 		this.relationships = new HashMap<>();
 	}
 
-    Optional<HairColorTrait> getRandomPreference(Random r) {
-        double roll = r.nextDouble();
-        if(roll < 0.5) return Optional.of(HairColorTrait.random(r));
-        return Optional.empty();
+    HashMap<String, Integer> getRandomPreferences(Random r) {
+        HashMap<String, Integer> prefs = new HashMap<>();
+
+        for(String key : JSONTraits.getTraits().keySet()) {
+            double roll = r.nextDouble();
+            if (roll < 0.5) prefs.put(key, JSONTraits.getRandomValue(key, r));
+        }
+
+        return prefs;
     }
 
 	@Override
@@ -306,8 +312,20 @@ public abstract class APersonalInfoPerson implements IPerson {
 		return this.role;
 	}
 
-    @Override
-    public Optional<HairColorTrait> getPreferredHair() { return this.preferredHair; }
+  @Override
+  public int getPreferredTrait(String s) {
+      Integer i = this.preferences.get(s);
+      return i == null ? -1 : i;
+  }
+
+  @Override
+  public int sumUpPreferences(IPerson other) {
+      int i = 0;
+      for(String key : preferences.keySet()) {
+          if(preferences.get(key) == other.getGenes().getTrait(key).get()) i++;
+      }
+      return i;
+  }
 
 	@Override
 	public Map<IPerson, IRelationship> getRelationships() {

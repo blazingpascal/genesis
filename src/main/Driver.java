@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,6 +22,8 @@ import model.genesis.IGenesis;
 import model.genesis.idbased.ILifeEventEnabledGenesis;
 import model.genesis.idbased.LifeEventEnabledGenesisImpl;
 import model.genetics.GeneticsMap;
+import model.genetics.JSONTraits;
+import model.genetics.TraitData;
 import model.lifeevents.BirthLifeEvent;
 import model.lifeevents.ILifeEvent;
 import model.person.IPerson;
@@ -39,22 +42,23 @@ public class Driver {
 		Scanner s = new Scanner(System.in);
 		List<IPerson> founders = new ArrayList<IPerson>();
 		ILifeEventEnabledGenesis genesis = new LifeEventEnabledGenesisImpl();
+
+		JSONTraits.loadJSONTraits("resources/genetics/traits.json");
+
 		for (int i = 0; i < STARTING_MALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.MALE, new Random());
 			String lastName = GeneologyRules.getRandomLastName(new Random());
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
-			founders.add(
-					genesis.addSinglePerson(firstName, lastName, Sex.MALE, age, GeneticsMap.randomGenes(new Random()), 
-							Role.getRandomRole(new Random(), false)));
+			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.MALE, age,
+					GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random(), false)));
 		}
-		
+
 		for (int i = 0; i < STARTING_FEMALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.FEMALE, new Random());
 			String lastName = GeneologyRules.getRandomLastName(new Random());
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
 			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, age,
-					GeneticsMap.randomGenes(new Random()), 
-					Role.getRandomRole(new Random(), false)));
+					GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random(), false)));
 		}
 		// genesis.addSinglePerson("Eve", "Godwoman", Sex.FEMALE, 18);
 		// genesis.addSinglePerson("Amy", "Adams", Sex.FEMALE, 18);
@@ -183,13 +187,13 @@ public class Driver {
 				// Person 2
 				fileWriter.write(other.getId() + ",");
 				// regard
-				fileWriter.write(r.regard()+ ",");
+				fileWriter.write(r.regard() + ",");
 				// desire
-				fileWriter.write(r.romanticDesire()+",");
+				fileWriter.write(r.romanticDesire() + ",");
 				// Start Year
-				fileWriter.write(r.getAnniversaryYear()+",");
+				fileWriter.write(r.getAnniversaryYear() + ",");
 				// Relationship Type
-				fileWriter.write(r.getType()+",");
+				fileWriter.write(r.getType() + ",");
 				// Attraction for Statistical Analysis
 				fileWriter.write(Double.toString(GeneologyRules.computeDesire(p, other)));
 				fileWriter.write("\n");
@@ -218,7 +222,16 @@ public class Driver {
 		fileWriter.write("ID, First Name, Last Name, Birth Last Name, Age, Birth Year, "
 				+ "Spouse, Mother, Father, Generation, Living, Death Year, "
 				+ "Spouse History, Number of Children, Founding Last Names, "
-				+ "Number of Founding Heritages, Sex, Hair Color, Role\n");
+				+ "Number of Founding Heritages, Sex, Role");
+		// genes header component
+		HashMap<String, TraitData> traits = JSONTraits.getTraits();
+		List<String> traitsNames = new ArrayList<String>();
+		traitsNames.addAll(traits.keySet());
+		for(String t : traitsNames){
+			fileWriter.write(",");
+			fileWriter.write(t);
+		}
+		fileWriter.write("\n");
 		for (IPerson p : population) {
 			StringBuilder sb = new StringBuilder();
 			// PersonID
@@ -275,10 +288,14 @@ public class Driver {
 			// Sex
 			sb.append(p.getSex());
 			sb.append(",");
-			// Hair Color
-			sb.append(p.getGenes().getHairColor().getName());
-			sb.append(",");
+			// Role
 			sb.append(p.getRole());
+			// Genes
+			GeneticsMap genes = p.getGenes();
+			for (String t : traitsNames) {
+				sb.append(",");
+				sb.append(genes.getTraitName(t));
+			}
 			fileWriter.write(sb.toString() + "\n");
 		}
 		fileWriter.flush();

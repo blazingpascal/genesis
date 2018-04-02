@@ -4,7 +4,6 @@ import java.util.*;
 
 import model.Sex;
 import model.genetics.GeneticsMap;
-import model.genetics.subtypes.HairColorTrait;
 import model.person.idbased.IIdBasedPerson;
 import model.relationship.IRelationship;
 import model.spousehistory.ISpouseHistory;
@@ -107,7 +106,9 @@ public interface IPerson {
 
 	Role getRole();
 
-	Optional<HairColorTrait> getPreferredHair();
+  int getPreferredTrait(String s);
+
+  int sumUpPreferences(IPerson other);
 
 	Map<IPerson, IRelationship> getRelationships();
 

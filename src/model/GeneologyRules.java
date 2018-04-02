@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-import model.genetics.subtypes.HairColorTrait;
 import model.person.IPerson;
 
 public class GeneologyRules {
@@ -225,6 +224,7 @@ public class GeneologyRules {
 
 	private static double computeOverallAttraction(IPerson p1, IPerson p2, double mChance) {
 		double result = founderBasedAttractionModifier(p1, p2) * mChance * BASE_MARRIAGE_CHANCE;
+
         double p1Pref = modifyByTraitAttraction(result, p1, p2);
         double p2Pref = modifyByTraitAttraction(result, p2, p1);
         double roleCompatibility = 
@@ -234,11 +234,14 @@ public class GeneologyRules {
 	}
 
     private static double modifyByTraitAttraction(double chance, IPerson p1, IPerson p2) {
-        Optional<HairColorTrait> pref = p1.getPreferredHair();
-        if(!pref.isPresent()) return chance;
+        int sum = p1.sumUpPreferences(p2);
 
-        double target = pref.get().getValue() == p2.getGenes().getHairColor().getValue() ? 1 : 0;
-        return 0.8 * chance + 0.2 * target;
+        double result = chance;
+        for(int i = 0; i < sum; i++) {
+            result = 0.9 * result + 0.1;
+        }
+
+        return result;
     }
 
 	private static double founderBasedAttractionModifier(IPerson p1, IPerson p2) {

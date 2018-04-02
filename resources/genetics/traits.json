@@ -1,0 +1,51 @@
+{
+	"traits": [
+		{
+			"name": "hair color",
+			"values": ["orange red", "dark red", "light blonde", "blonde", "light brown", "brown", "dark brown", "black"],
+			"split": 4
+		},
+
+		{
+			"name": "eye color",
+			"values": ["brown", "dark brown", "dark blue", "light blue", "hazel", "green", "gray"],
+			"split": 2
+		},
+
+		{
+			"name": "cleft chin",
+			"values": ["no cleft", "cleft"],
+			"split": 1
+		},
+		{
+			"name": "dimples",
+			"values": ["no dimples", "dimples"],
+			"split": 1
+		},
+		{
+			"name": "earlobes",
+			"values": ["attached lobes", "free lobes"],
+			"split": 1
+		},
+		{
+			"name": "freckles",
+			"values": ["no freckles", "freckles"],
+			"split": 1
+		},
+		{
+			"name": "handedness",
+			"values": ["right-handed", "left-handed"],
+			"split": 1
+		},
+		{
+			"name": "cleft chin",
+			"values": ["no cleft", "cleft"],
+			"split": 1
+		},
+		{
+			"name": "widow's peak",
+			"values": ["widow's peak", "no widow's peak"],
+			"split": 1
+		}
+	]
+}
