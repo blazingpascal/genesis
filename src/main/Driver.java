@@ -28,13 +28,15 @@ import model.lifeevents.BirthLifeEvent;
 import model.lifeevents.ILifeEvent;
 import model.person.IPerson;
 import model.person.Role;
+import model.personality.IPersonality;
+import model.personality.PersonalityTrait;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipType;
 import model.spousehistory.ISpouseHistory;
 
 public class Driver {
-	public static final int STARTING_MALE_FOUNDERS = 100;
-	public static final int STARTING_FEMALE_FOUNDERS = 100;
+	public static final int STARTING_MALE_FOUNDERS = 250;
+	public static final int STARTING_FEMALE_FOUNDERS = 250;
 	public static final int MINIMUM_FOUNDER_AGE = 18;
 	public static final int MAXIMUM_FOUNDER_AGE = 25;
 
@@ -43,23 +45,24 @@ public class Driver {
 		List<IPerson> founders = new ArrayList<IPerson>();
 		ILifeEventEnabledGenesis genesis = new LifeEventEnabledGenesisImpl();
 
-		JSONTraits.loadJSONTraits("resources/genetics/traits.json");
+        JSONTraits.loadJSONTraits("resources/genetics/traits.json");
 
 		for (int i = 0; i < STARTING_MALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.MALE, new Random());
 			String lastName = GeneologyRules.getRandomLastName(new Random());
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
 			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.MALE, age,
-					GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random(), false)));
+					GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
 		}
-
 		for (int i = 0; i < STARTING_FEMALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.FEMALE, new Random());
 			String lastName = GeneologyRules.getRandomLastName(new Random());
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
-			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, age,
-					GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random(), false)));
+			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, 
+					age, GeneticsMap.randomGenes(new Random()), 
+					Role.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
 		}
+
 		// genesis.addSinglePerson("Eve", "Godwoman", Sex.FEMALE, 18);
 		// genesis.addSinglePerson("Amy", "Adams", Sex.FEMALE, 18);
 		// genesis.addSinglePerson("Bella", "Burke", Sex.FEMALE, 18);
@@ -187,13 +190,13 @@ public class Driver {
 				// Person 2
 				fileWriter.write(other.getId() + ",");
 				// regard
-				fileWriter.write(r.regard() + ",");
+				fileWriter.write(r.regard()+ ",");
 				// desire
-				fileWriter.write(r.romanticDesire() + ",");
+				fileWriter.write(r.romanticDesire()+",");
 				// Start Year
-				fileWriter.write(r.getAnniversaryYear() + ",");
+				fileWriter.write(r.getAnniversaryYear()+",");
 				// Relationship Type
-				fileWriter.write(r.getType() + ",");
+				fileWriter.write(r.getType()+",");
 				// Attraction for Statistical Analysis
 				fileWriter.write(Double.toString(GeneologyRules.computeDesire(p, other)));
 				fileWriter.write("\n");
@@ -223,6 +226,10 @@ public class Driver {
 				+ "Spouse, Mother, Father, Generation, Living, Death Year, "
 				+ "Spouse History, Number of Children, Founding Last Names, "
 				+ "Number of Founding Heritages, Sex, Role");
+		// Add Personality Traits Header
+		for(PersonalityTrait pt : PersonalityTrait.values()){
+			fileWriter.write("," + pt);
+		}
 		// genes header component
 		HashMap<String, TraitData> traits = JSONTraits.getTraits();
 		List<String> traitsNames = new ArrayList<String>();
@@ -290,6 +297,11 @@ public class Driver {
 			sb.append(",");
 			// Role
 			sb.append(p.getRole());
+			// Personality Traits
+			IPersonality personality = p.getPersonality();
+			for(PersonalityTrait pt : PersonalityTrait.values()){
+				sb.append("," + personality.getTraitValue(pt));
+			}
 			// Genes
 			GeneticsMap genes = p.getGenes();
 			for (String t : traitsNames) {

@@ -14,6 +14,7 @@ import model.lifeevents.ImmigrationLifeEvent;
 import model.lifeevents.MarriageLifeEvent;
 import model.person.IPerson;
 import model.person.Role;
+import model.personality.IPersonality;
 
 public class LifeEventEnabledGenesisImpl extends AGenesis implements IIdBasedGenesis, ILifeEventEnabledGenesis {
 	private final IdBasedGenesisImpl subGenesis;
@@ -26,8 +27,9 @@ public class LifeEventEnabledGenesisImpl extends AGenesis implements IIdBasedGen
 	}
 	
 	@Override
-	public IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age, GeneticsMap genes, Role r) {
-		IPerson p = this.subGenesis.addSinglePerson(firstName, lastName, sex, age, genes, r);
+	public IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age, GeneticsMap genes, Role r, IPersonality personality) {
+		IPerson p = this.subGenesis.addSinglePerson(firstName, lastName, sex, 
+				age, genes, r, personality);
 		this.lifeEvents.add(new ImmigrationLifeEvent(p, getYear()));
 		return p;
 	}
