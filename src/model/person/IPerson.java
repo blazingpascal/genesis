@@ -109,8 +109,6 @@ public interface IPerson {
   int getPreferredTrait(String s);
 
   int sumUpPreferences(IPerson other);
-  
-	Optional<HairColorTrait> getPreferredHair();
 
 	Map<IPerson, IRelationship> getRelationships();
 
