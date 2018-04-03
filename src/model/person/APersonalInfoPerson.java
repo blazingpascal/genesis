@@ -187,7 +187,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 
 		APersonalInfoPerson child = createPerson(firstName, this.currentLastName, sex, 0,
 				Math.max(this.generation, parent.getGeneration()) + 1, year, childGenes,
-				Role.calculateRole(this.role, parent.getRole()),
+				Role.calculateRole(this.role, parent.getRole(), new Random()),
 				IPersonality.calculatePersonality(this.personality, parent.getPersonality()));
 
 		if (this.sex == Sex.FEMALE) {

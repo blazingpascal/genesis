@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,6 +23,7 @@ import model.genesis.idbased.ILifeEventEnabledGenesis;
 import model.genesis.idbased.LifeEventEnabledGenesisImpl;
 import model.genetics.GeneticsMap;
 import model.genetics.JSONTraits;
+import model.genetics.TraitData;
 import model.lifeevents.BirthLifeEvent;
 import model.lifeevents.ILifeEvent;
 import model.person.IPerson;
@@ -50,7 +52,7 @@ public class Driver {
 			String lastName = GeneologyRules.getRandomLastName(new Random());
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
 			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.MALE, age,
-					GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random()), IPersonality.randomPersonality(new Random())));
+					GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
 		}
 		for (int i = 0; i < STARTING_FEMALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.FEMALE, new Random());
@@ -58,7 +60,7 @@ public class Driver {
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
 			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, 
 					age, GeneticsMap.randomGenes(new Random()), 
-					Role.getRandomRole(new Random()), IPersonality.randomPersonality(new Random())));
+					Role.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
 		}
 
 		// genesis.addSinglePerson("Eve", "Godwoman", Sex.FEMALE, 18);
@@ -223,10 +225,18 @@ public class Driver {
 		fileWriter.write("ID, First Name, Last Name, Birth Last Name, Age, Birth Year, "
 				+ "Spouse, Mother, Father, Generation, Living, Death Year, "
 				+ "Spouse History, Number of Children, Founding Last Names, "
-				+ "Number of Founding Heritages, Sex,");
+				+ "Number of Founding Heritages, Sex, Role");
 		// Add Personality Traits Header
 		for(PersonalityTrait pt : PersonalityTrait.values()){
 			fileWriter.write("," + pt);
+		}
+		// genes header component
+		HashMap<String, TraitData> traits = JSONTraits.getTraits();
+		List<String> traitsNames = new ArrayList<String>();
+		traitsNames.addAll(traits.keySet());
+		for(String t : traitsNames){
+			fileWriter.write(",");
+			fileWriter.write(t);
 		}
 		fileWriter.write("\n");
 		for (IPerson p : population) {
@@ -285,10 +295,18 @@ public class Driver {
 			// Sex
 			sb.append(p.getSex());
 			sb.append(",");
+			// Role
+			sb.append(p.getRole());
 			// Personality Traits
 			IPersonality personality = p.getPersonality();
 			for(PersonalityTrait pt : PersonalityTrait.values()){
 				sb.append("," + personality.getTraitValue(pt));
+			}
+			// Genes
+			GeneticsMap genes = p.getGenes();
+			for (String t : traitsNames) {
+				sb.append(",");
+				sb.append(genes.getTraitName(t));
 			}
 			fileWriter.write(sb.toString() + "\n");
 		}
