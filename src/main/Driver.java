@@ -27,6 +27,7 @@ import model.lifeevents.ILifeEvent;
 import model.person.IPerson;
 import model.person.Role;
 import model.personality.IPersonality;
+import model.personality.PersonalityTrait;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipType;
 import model.spousehistory.ISpouseHistory;
@@ -222,7 +223,12 @@ public class Driver {
 		fileWriter.write("ID, First Name, Last Name, Birth Last Name, Age, Birth Year, "
 				+ "Spouse, Mother, Father, Generation, Living, Death Year, "
 				+ "Spouse History, Number of Children, Founding Last Names, "
-				+ "Number of Founding Heritages, Sex, Hair Color\n");
+				+ "Number of Founding Heritages, Sex,");
+		// Add Personality Traits Header
+		for(PersonalityTrait pt : PersonalityTrait.values()){
+			fileWriter.write("," + pt);
+		}
+		fileWriter.write("\n");
 		for (IPerson p : population) {
 			StringBuilder sb = new StringBuilder();
 			// PersonID
@@ -279,8 +285,11 @@ public class Driver {
 			// Sex
 			sb.append(p.getSex());
 			sb.append(",");
-			// Hair Color
-			sb.append(p.getGenes().getTraitName("hair color"));
+			// Personality Traits
+			IPersonality personality = p.getPersonality();
+			for(PersonalityTrait pt : PersonalityTrait.values()){
+				sb.append("," + personality.getTraitValue(pt));
+			}
 			fileWriter.write(sb.toString() + "\n");
 		}
 		fileWriter.flush();
