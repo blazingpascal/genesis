@@ -10,7 +10,8 @@ import model.Sex;
 import model.genesis.AGenesis;
 import model.genetics.GeneticsMap;
 import model.person.IPerson;
-import model.person.Role;
+import model.person.ARole;
+import model.personality.IPersonality;
 
 class IdBasedGenesisImpl extends AGenesis implements IIdBasedGenesis {
 
@@ -32,8 +33,11 @@ class IdBasedGenesisImpl extends AGenesis implements IIdBasedGenesis {
 	}
 
 	@Override
-	public IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age, GeneticsMap genes, Role r) {
-		IPerson person = IPerson.createIdBasedPerson(firstName, lastName, sex, age, 0, timeInYears - age, genesis_id, genes, r);
+	public IPerson addSinglePerson(String firstName, String lastName, Sex sex, 
+			int age, GeneticsMap genes, ARole r, IPersonality p) {
+		IPerson person = IPerson.createIdBasedPerson(firstName, lastName, sex, 
+				age, 0, timeInYears - age, genesis_id,
+				genes, r, p);
 		String id = person.getId();
 		map.put(id, person);
 		livingMap.put(id, person);

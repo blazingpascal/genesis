@@ -5,6 +5,7 @@ import java.util.*;
 import model.Sex;
 import model.genetics.GeneticsMap;
 import model.person.idbased.IIdBasedPerson;
+import model.personality.IPersonality;
 import model.relationship.IRelationship;
 import model.spousehistory.ISpouseHistory;
 
@@ -37,13 +38,13 @@ public interface IPerson {
 	void addSpouse(IPerson person, int anniversaryYear);
 
 	String getId();
-	
+
 	IPerson getSpouse();
-	
+
 	void marry(IPerson fiance, int anniversaryYear);
 
 	boolean isLiving();
-	
+
 	public void incrementAge();
 
 	IPerson createChildWith(IPerson candidate2, int timeInYears, Random random);
@@ -55,9 +56,9 @@ public interface IPerson {
 	int getGeneration();
 
 	void kill(int deathYear);
-	
+
 	IPerson getMother();
-	
+
 	IPerson getFather();
 
 	String getFirstName();
@@ -67,16 +68,19 @@ public interface IPerson {
 	int getDeathYear();
 
 	int getBirthYear();
-	
+
 	List<ISpouseHistory> getSpousalHistory();
 
 	boolean atLeastCousins(IPerson p2);
 
 	List<IPerson> getGrandparents();
-	
+
 	IPerson getMaternalGrandmother();
+
 	IPerson getPaternalGrandmother();
+
 	IPerson getMaternalGrandfather();
+
 	IPerson getPaternalGrandfather();
 
 	void makeWidow(int endYear);
@@ -89,13 +93,15 @@ public interface IPerson {
 
 	void stopMourning();
 
-	public static IPerson createBasicPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear){
+	public static IPerson createBasicPerson(String firstName, String lastName, Sex sex, int age, int generation,
+			int birthYear) {
 		// TODO fix this
 		return new Person(firstName, lastName, sex, age, generation, birthYear);
 	}
-	
-	public static IPerson createIdBasedPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear, int genesis_id, GeneticsMap genes, Role r){
-		return IIdBasedPerson.create(firstName, lastName, sex, age, generation, birthYear, genesis_id, genes, r);
+
+	public static IPerson createIdBasedPerson(String firstName, String lastName, Sex sex, int age, int generation,
+			int birthYear, int genesis_id, GeneticsMap genes, ARole r, IPersonality personality) {
+		return IIdBasedPerson.create(firstName, lastName, sex, age, generation, birthYear, genesis_id, genes, r, personality);
 	}
 
 	String getFullBirthName();
@@ -104,11 +110,11 @@ public interface IPerson {
 
 	GeneticsMap getGenes();
 
-	Role getRole();
+	ARole getRole();
 
-  int getPreferredTrait(String s);
+	int getPreferredTrait(String s);
 
-  int sumUpPreferences(IPerson other);
+	int sumUpPreferences(IPerson other);
 
 	Map<IPerson, IRelationship> getRelationships();
 
@@ -123,6 +129,8 @@ public interface IPerson {
 	boolean hasSignificantOther();
 
 	IPerson getSignificantOther();
+	
+	IPersonality getPersonality();
 
     void tempDoCareer();
 }
