@@ -6,12 +6,12 @@ import java.util.Random;
 import model.Sex;
 import model.genetics.GeneticsMap;
 import model.person.IPerson;
-import model.person.Role;
+import model.person.ARole;
 import model.personality.IPersonality;
 
 public interface IGenesis {
 	IPerson addSinglePerson(String firstName, String lastName, Sex sex, int age,
-			GeneticsMap genes, Role r, IPersonality p);
+			GeneticsMap genes, ARole r, IPersonality p);
 	void incrementTime(Random r);
 	void incrementTime(int yearsPast, Random r0);
 	long livingPopulationCount();

@@ -31,7 +31,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected boolean isMourningSpouse = false;
 	protected int timeMourningSpouse = 0;
 	protected HashSet<String> foundingLastNames = new HashSet<String>();
-	protected Role role;
+	protected ARole role;
 	protected HashMap<String, Integer> preferences;
 	protected IPersonality personality;
 	
@@ -40,7 +40,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected IPerson significantOther;
 
 	protected APersonalInfoPerson(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
-			String person_id, GeneticsMap genes, Role role, IPersonality personality) {
+			String person_id, GeneticsMap genes, ARole role, IPersonality personality) {
 		this.firstName = firstName;
 		this.currentLastName = lastName;
 		this.birthLastName = lastName;
@@ -187,7 +187,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 
 		APersonalInfoPerson child = createPerson(firstName, this.currentLastName, sex, 0,
 				Math.max(this.generation, parent.getGeneration()) + 1, year, childGenes,
-				Role.calculateRole(this.role, parent.getRole(), new Random()),
+				ARole.calculateRole(this.role, parent.getRole(), new Random()),
 				IPersonality.calculatePersonality(this.personality, parent.getPersonality()));
 
 		if (this.sex == Sex.FEMALE) {
@@ -216,7 +216,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 	}
 
 	protected abstract APersonalInfoPerson createPerson(String firstName2, String currentLastName2, Sex sex2, int age,
-			int generation, int birthYear, GeneticsMap genes, Role role, IPersonality personlality);
+			int generation, int birthYear, GeneticsMap genes, ARole role, IPersonality personlality);
 
 	protected abstract void setFather(IPerson parent);
 
@@ -313,7 +313,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 	}
 
 	@Override
-	public Role getRole() {
+	public ARole getRole() {
 		return this.role;
 	}
 
