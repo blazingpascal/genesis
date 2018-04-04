@@ -4,9 +4,9 @@ import java.util.*;
 
 import model.GeneologyRules;
 import model.Sex;
+import model.career.CareerManager;
 import model.genetics.GeneticsMap;
 import model.genetics.JSONTraits;
-import model.genetics.subtypes.*;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
 
@@ -31,7 +31,8 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected int timeMourningSpouse = 0;
 	protected HashSet<String> foundingLastNames = new HashSet<String>();
 	protected Role role;
-  protected HashMap<String, Integer> preferences;
+    protected HashMap<String, Integer> preferences;
+    protected CareerManager career;
 
 	// Relationships
 	protected HashMap<IPerson, IRelationship> relationships;
@@ -49,7 +50,8 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.person_id = person_id;
 		this.genes = genes;
 		this.role = role;
-    this.preferences = getRandomPreferences(new Random());
+        this.preferences = getRandomPreferences(new Random());
+        this.career = new CareerManager();
 		this.relationships = new HashMap<>();
 	}
 
