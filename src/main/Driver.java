@@ -27,7 +27,7 @@ import model.genetics.TraitData;
 import model.lifeevents.BirthLifeEvent;
 import model.lifeevents.ILifeEvent;
 import model.person.IPerson;
-import model.person.Role;
+import model.person.ARole;
 import model.personality.IPersonality;
 import model.personality.PersonalityTrait;
 import model.relationship.IRelationship;
@@ -52,7 +52,7 @@ public class Driver {
 			String lastName = GeneologyRules.getRandomLastName(new Random());
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
 			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.MALE, age,
-					GeneticsMap.randomGenes(new Random()), Role.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
+					GeneticsMap.randomGenes(new Random()), ARole.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
 		}
 		for (int i = 0; i < STARTING_FEMALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.FEMALE, new Random());
@@ -60,7 +60,7 @@ public class Driver {
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
 			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, 
 					age, GeneticsMap.randomGenes(new Random()), 
-					Role.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
+					ARole.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
 		}
 
 		// genesis.addSinglePerson("Eve", "Godwoman", Sex.FEMALE, 18);

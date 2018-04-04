@@ -100,7 +100,7 @@ public interface IPerson {
 	}
 
 	public static IPerson createIdBasedPerson(String firstName, String lastName, Sex sex, int age, int generation,
-			int birthYear, int genesis_id, GeneticsMap genes, Role r, IPersonality personality) {
+			int birthYear, int genesis_id, GeneticsMap genes, ARole r, IPersonality personality) {
 		return IIdBasedPerson.create(firstName, lastName, sex, age, generation, birthYear, genesis_id, genes, r, personality);
 	}
 
@@ -110,7 +110,7 @@ public interface IPerson {
 
 	GeneticsMap getGenes();
 
-	Role getRole();
+	ARole getRole();
 
 	int getPreferredTrait(String s);
 

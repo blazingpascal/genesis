@@ -2,7 +2,7 @@ package model.person;
 
 import java.util.Random;
 
-public class RomanticRole extends Role {
+public class RomanticRole extends ARole {
 
 	public static final RomanticRole SoulmateSeeker = new RomanticRole("Soulmate Seeker", 1f, 0.5f, 1);
 	public static final RomanticRole Casanova = new RomanticRole("Casanova", 1f, 0.0f, 1);
@@ -27,12 +27,12 @@ public class RomanticRole extends Role {
 		this.flirtation = flirtation;
 	}
 
-	public static Role getRandomRole(Random r, boolean canBeCelibate) {
+	public static RomanticRole getRandomRole(Random r, boolean canBeCelibate) {
 		int rIndex = r.nextInt(opts.length + (!canBeCelibate ? -1 : 0));
 		return opts[rIndex];
 	}
 
-	public double computeRomanticCompatibility(Role r) {
+	public double computeRomanticCompatibility(ARole r) {
 		return r.computeRomanticCompatibilityRR(this);
 	}
 
@@ -46,11 +46,11 @@ public class RomanticRole extends Role {
 	}
 
 	@Override
-	Role merge(Role r) {
+	ARole merge(ARole r) {
 		return r.mergeRR(this);
 	}
 
-	public Role mergeRR(RomanticRole r) {
+	public ARole mergeRR(RomanticRole r) {
 		float monogamy = (this.strength * this.monogamy + r.strength * r.monogamy) / 2f;
 		float flirtation = (this.strength * this.flirtation + r.strength * r.flirtation) / 2f;
 		return new RomanticRole(calculateTitle(monogamy, flirtation), flirtation, monogamy,

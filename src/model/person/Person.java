@@ -158,7 +158,7 @@ class Person extends APersonalInfoPerson{
 
 	@Override
 	protected APersonalInfoPerson createPerson(String firstName, String lastName, Sex sex, int age,
-			int generation, int birthYear, GeneticsMap genes, Role role, 
+			int generation, int birthYear, GeneticsMap genes, ARole role, 
 			IPersonality personality) {
 		return new Person(firstName, lastName, sex, age, generation, birthYear);
 	}
