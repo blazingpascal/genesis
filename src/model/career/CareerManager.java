@@ -15,6 +15,7 @@ public class CareerManager {
     private AOccupation occupation;
     private boolean retired;
     private Random r;
+    private int jobAttempts;
 
     public CareerManager(APersonalInfoPerson person) {
         this.person = person;
@@ -26,13 +27,13 @@ public class CareerManager {
 
     public void manageCareer() {
         if(!retired) {
-            System.out.println(person.getFullName());
-            if(occupation == null) {
+            if(occupation == null || jobAttempts >= 3) {
                 occupation = chooseCareer();
                 currentJob = attemptFindJob();
             } else if(!currentJob.isPresent()) {
                 currentJob = attemptFindJob();
             } else {
+                jobAttempts = 0;
                 if(attemptQuit()) return;
                 attemptTakeLeave();
 
@@ -47,11 +48,23 @@ public class CareerManager {
     }
 
     public AOccupation chooseCareer() {
-        return AOccupation.JOURNALISM;
+        //temp. chooses at random
+        jobAttempts = 0;
+
+        int i = r.nextInt(4);
+        switch(i) {
+            case 0: return AOccupation.JOURNALISM;
+            case 1: return AOccupation.MEDICAL;
+            case 2: return AOccupation.VISUAL_ART;
+            case 3: return AOccupation.TEACHING;
+            default: return AOccupation.LAW_ENFORCEMENT;
+        }
     }
 
     public Optional<Job> attemptFindJob() {
-        return occupation.interview(person) ? Optional.of(new Job(occupation)) : Optional.empty();
+        Optional<Job> j = occupation.interview(person) ? Optional.of(new Job(occupation)) : Optional.empty();
+        if(!j.isPresent()) jobAttempts++;
+        return j;
     }
 
     public boolean attemptRetire() {
