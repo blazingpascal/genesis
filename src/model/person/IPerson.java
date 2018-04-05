@@ -131,4 +131,6 @@ public interface IPerson {
 	IPerson getSignificantOther();
 	
 	IPersonality getPersonality();
+
+    void doCareer();
 }
