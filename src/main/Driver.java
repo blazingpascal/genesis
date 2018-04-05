@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -45,22 +46,23 @@ public class Driver {
 		List<IPerson> founders = new ArrayList<IPerson>();
 		ILifeEventEnabledGenesis genesis = new LifeEventEnabledGenesisImpl();
 
-        JSONTraits.loadJSONTraits("resources/genetics/traits.json");
+		JSONTraits.loadJSONTraits("resources/genetics/traits.json");
 
 		for (int i = 0; i < STARTING_MALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.MALE, new Random());
 			String lastName = GeneologyRules.getRandomLastName(new Random());
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
-			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.MALE, age,
-					GeneticsMap.randomGenes(new Random()), ARole.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
+			founders.add(
+					genesis.addSinglePerson(firstName, lastName, Sex.MALE, age, GeneticsMap.randomGenes(new Random()),
+							ARole.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
 		}
 		for (int i = 0; i < STARTING_FEMALE_FOUNDERS; i++) {
 			String firstName = GeneologyRules.getRandomFirstName(Sex.FEMALE, new Random());
 			String lastName = GeneologyRules.getRandomLastName(new Random());
 			int age = MINIMUM_FOUNDER_AGE + new Random().nextInt(MAXIMUM_FOUNDER_AGE - MINIMUM_FOUNDER_AGE);
-			founders.add(genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, 
-					age, GeneticsMap.randomGenes(new Random()), 
-					ARole.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
+			founders.add(
+					genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, age, GeneticsMap.randomGenes(new Random()),
+							ARole.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
 		}
 
 		// genesis.addSinglePerson("Eve", "Godwoman", Sex.FEMALE, 18);
@@ -172,15 +174,113 @@ public class Driver {
 		System.out.println("Founder stats outputted");
 		outputRelationshipInfo(prefix, genesis);
 		System.out.println("Relationship info stats outputted");
+		outputStats(prefix, genesis);
 		System.out.println("All files outputted!");
 
+	}
+
+	private static void outputStats(String prefix, ILifeEventEnabledGenesis genesis) throws IOException {
+		File file = new File("output/" + prefix + "-statsInfo.csv");
+		FileWriter fileWriter = new FileWriter(file);
+		fileWriter.write("Relationship Type, Mean Attraction, Median Attraction, "
+				+ "Mean Compatibility, Median Compatibility, Mean Regard, "
+				+ "Median Regard, Mean Desire, Median Desire, Count\n");
+		HashMap<RelationshipType, List<IRelationship>> map = new HashMap<RelationshipType, List<IRelationship>>();
+		for (RelationshipType rt : RelationshipType.values()) {
+			map.put(rt, new ArrayList<IRelationship>());
+		}
+		for (IPerson p : genesis.historicalPopulation()) {
+			for (IRelationship r : p.getRelationships().values()) {
+				map.get(r.getType()).add(r);
+			}
+		}
+		for (RelationshipType rt : RelationshipType.values()) {
+			List<IRelationship> rs = map.get(rt);
+			List<Double> attractions = new ArrayList<Double>();
+			List<Double> compatibilities = new ArrayList<Double>();
+			List<Double> regards = new ArrayList<Double>();
+			List<Double> desires = new ArrayList<Double>();
+			for (IRelationship r : rs) {
+				IPerson p1 = r.p1();
+				IPerson p2 = r.p2();
+				if (!p1.isSingle()) {
+					p1.makeWidow(0);
+					p1.stopMourning();
+				}
+				if (!p2.isSingle()) {
+					p2.makeWidow(0);
+					p2.stopMourning();
+				}
+				attractions.add(GeneologyRules.marriageChance(p1, p2));
+				compatibilities.add(GeneologyRules.computeRegard(p1, p2));
+				regards.add(r.regard());
+				desires.add(r.romanticDesire());
+			}
+			fileWriter.write(rt.toString());
+			fileWriter.write(",");
+			// Mean Attraction
+			fileWriter.write(Double.toString(mean(attractions)));
+			fileWriter.write(",");
+			// Median Attraction
+			fileWriter.write(Double.toString(median(attractions)));
+			fileWriter.write(",");
+			// Mean Compatibility
+			fileWriter.write(Double.toString(mean(compatibilities)));
+			fileWriter.write(",");
+			// Median Compatibility
+			fileWriter.write(Double.toString(median(compatibilities)));
+			fileWriter.write(",");
+			// Mean Regard
+			fileWriter.write(Double.toString(mean(regards)));
+			fileWriter.write(",");
+			// Median Regard
+			fileWriter.write(Double.toString(median(regards)));
+			fileWriter.write(",");
+			// Mean Desire
+			fileWriter.write(Double.toString(mean(desires)));
+			fileWriter.write(",");
+			// Median Desire
+			fileWriter.write(Double.toString(median(desires)));
+			fileWriter.write(",");
+			// Number of Relationships of This Type
+			fileWriter.write(Integer.toString(rs.size()));
+			fileWriter.write("\n");
+		}
+		fileWriter.close();
+
+	}
+
+	private static double median(List<Double> lst) {
+		if (lst.isEmpty()) {
+			return Integer.MIN_VALUE;
+		}
+		List<Double> cloneLst = new ArrayList<Double>();
+		cloneLst.addAll(lst);
+		Collections.sort(cloneLst);
+		return cloneLst.get(lst.size() / 2);
+
+	}
+
+	private static double mean(List<Double> lst) {
+		double sum = sum(lst);
+		return sum / lst.size();
+	}
+
+	private static double sum(List<Double> lst) {
+		double sum = 0;
+		for (Number n : lst) {
+			sum += n.doubleValue();
+		}
+		return sum;
 	}
 
 	private static void outputRelationshipInfo(String prefix, ILifeEventEnabledGenesis genesis) throws IOException {
 		File file = new File("output/" + prefix + "-relationshipInfo.csv");
 		FileWriter fileWriter = new FileWriter(file);
-		fileWriter.write("Person1,Person2,Regard,Desire,StartYear,RelationshipType,Desire\n");
-		for (IPerson p : genesis.historicalPopulation()) {
+		fileWriter.write("Person1,Person2,Regard,Desire,StartYear,RelationshipType,Attraction,Compatability\n");
+		List<IPerson> historicalPopulation = genesis.historicalPopulation();
+		int i = 0;
+		for (IPerson p : historicalPopulation) {
 			Map<IPerson, IRelationship> relationships = p.getRelationships();
 			for (Entry<IPerson, IRelationship> pair : relationships.entrySet()) {
 				IPerson other = pair.getKey();
@@ -190,17 +290,20 @@ public class Driver {
 				// Person 2
 				fileWriter.write(other.getId() + ",");
 				// regard
-				fileWriter.write(r.regard()+ ",");
+				fileWriter.write(r.regard() + ",");
 				// desire
-				fileWriter.write(r.romanticDesire()+",");
+				fileWriter.write(r.romanticDesire() + ",");
 				// Start Year
-				fileWriter.write(r.getAnniversaryYear()+",");
+				fileWriter.write(r.getAnniversaryYear() + ",");
 				// Relationship Type
-				fileWriter.write(r.getType()+",");
+				fileWriter.write(r.getType() + ",");
 				// Attraction for Statistical Analysis
-				fileWriter.write(Double.toString(GeneologyRules.computeDesire(p, other)));
+				fileWriter.write(Double.toString(GeneologyRules.computeOverallAttraction(p, other, 1)) + ",");
+				// Compatibility for Statistical Analysis
+				fileWriter.write(Double.toString(GeneologyRules.computeRegard(p, other)));
 				fileWriter.write("\n");
 			}
+			i++;
 		}
 		fileWriter.close();
 
@@ -227,14 +330,14 @@ public class Driver {
 				+ "Spouse History, Number of Children, Founding Last Names, "
 				+ "Number of Founding Heritages, Sex, Role");
 		// Add Personality Traits Header
-		for(PersonalityTrait pt : PersonalityTrait.values()){
+		for (PersonalityTrait pt : PersonalityTrait.values()) {
 			fileWriter.write("," + pt);
 		}
 		// genes header component
 		HashMap<String, TraitData> traits = JSONTraits.getTraits();
 		List<String> traitsNames = new ArrayList<String>();
 		traitsNames.addAll(traits.keySet());
-		for(String t : traitsNames){
+		for (String t : traitsNames) {
 			fileWriter.write(",");
 			fileWriter.write(t);
 		}
@@ -299,7 +402,7 @@ public class Driver {
 			sb.append(p.getRole());
 			// Personality Traits
 			IPersonality personality = p.getPersonality();
-			for(PersonalityTrait pt : PersonalityTrait.values()){
+			for (PersonalityTrait pt : PersonalityTrait.values()) {
 				sb.append("," + personality.getTraitValue(pt));
 			}
 			// Genes
