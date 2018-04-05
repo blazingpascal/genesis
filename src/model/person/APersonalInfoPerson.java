@@ -53,7 +53,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.genes = genes;
 		this.role = role;
         this.preferences = getRandomPreferences(new Random());
-        this.career = new CareerManager();
+        this.career = new CareerManager(this);
 		this.relationships = new HashMap<>();
 		this.personality = personality;
 	}
@@ -378,4 +378,11 @@ public abstract class APersonalInfoPerson implements IPerson {
 	public IPersonality getPersonality(){
 		return this.personality;
 	}
+
+    @Override
+    public void doCareer() {
+        if(this.age > 18) {
+            career.manageCareer();
+        }
+    }
 }

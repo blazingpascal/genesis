@@ -132,5 +132,5 @@ public interface IPerson {
 	
 	IPersonality getPersonality();
 
-    void tempDoCareer();
+    void doCareer();
 }

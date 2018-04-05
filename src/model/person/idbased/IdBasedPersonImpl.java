@@ -300,13 +300,6 @@ class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
 		}
 	}
 
-    @Override
-    public void tempDoCareer() {
-        if(this.age > 18) {
-            //manage career
-        }
-    }
-
 	private void notifyGenesisOfInfertility(int year) {
 		getHomeGenesis().reactToInfertility(this, year);
 
