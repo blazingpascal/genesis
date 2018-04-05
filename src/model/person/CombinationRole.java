@@ -2,7 +2,7 @@ package model.person;
 
 import java.util.Random;
 
-class CombinationRole extends ARole {
+public class CombinationRole extends ARole {
 
 	private final RomanticRole romantic;
 	private final PlatonicRole platonic;
@@ -54,5 +54,13 @@ class CombinationRole extends ARole {
 		CareerRole career = (CareerRole) this.career.merge(cr.career);
 		NarrativeRole narrative = (NarrativeRole) this.narrative.merge(cr.narrative);
 		return new CombinationRole(romantic, platonic, career, narrative);
+	}
+
+	public Double tenacity() {
+		return career.tenacity();
+	}
+	
+	public Double focus(){
+		return career.focus();
 	}
 }

@@ -51,4 +51,12 @@ class CareerRole extends ARole {
 				ARole.adverbModifier(focus));
 	}
 
+	public Double tenacity() {
+		return (double) this.tenacity;
+	}
+	
+	public Double focus(){
+		return (double) this.focus;
+	}
+
 }
