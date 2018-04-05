@@ -39,8 +39,8 @@ public class RomanticRole extends ARole {
 	@Override
 	public double computeRomanticCompatibilityRR(RomanticRole romanticRole) {
 		if (this.flirtation > 0) {
-			return 1-((2.0 * Math.abs(romanticRole.monogamy - this.monogamy)
-					+ Math.abs(romanticRole.flirtation - this.flirtation)) / 3.0);
+			return (2.0 * Math.abs(romanticRole.monogamy - this.monogamy)
+					+ Math.abs(romanticRole.flirtation - this.flirtation)) / 3.0;
 		}
 		return 0;
 	}

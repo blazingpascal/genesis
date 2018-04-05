@@ -7,7 +7,7 @@ import java.util.*;
 import model.person.IPerson;
 
 public class GeneologyRules {
-	private static final double BASE_MARRIAGE_CHANCE = 1;
+	private static final double BASE_MARRIAGE_CHANCE = .7;
 	public static final int FEMALE_MIN_FERTILE_AGE = 18;
 	public static final int FEMALE_MAX_FERTILE_AGE = 50;
 	private static final int FEMALE_FERTILITY_AGE_RANGE = FEMALE_MAX_FERTILE_AGE - FEMALE_MIN_FERTILE_AGE;
@@ -208,7 +208,7 @@ public class GeneologyRules {
 		if (ageDiff == 0) {
 			mChance = 1;
 		} else {
-			mChance = Math.pow(Math.abs(ageDiff), -0.1);
+			mChance = Math.pow(Math.abs(ageDiff) + 0.001, -2);
 		}
 		// Widowhood Factor
 		if (p1.isMourningSpouse()) {
@@ -222,10 +222,7 @@ public class GeneologyRules {
 		return computeOverallAttraction(p1, p2, mChance);
 	}
 
-	public static double computeOverallAttraction(IPerson p1, IPerson p2, double mChance) {
-		if(p1.atLeastCousins(p2)){
-			return 0;
-		}
+	private static double computeOverallAttraction(IPerson p1, IPerson p2, double mChance) {
 		double result = founderBasedAttractionModifier(p1, p2) * mChance * BASE_MARRIAGE_CHANCE;
 
         double p1Pref = modifyByTraitAttraction(result, p1, p2);
