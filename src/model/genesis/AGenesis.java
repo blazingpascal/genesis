@@ -68,15 +68,25 @@ public abstract class AGenesis implements IGenesis {
 		// reset cache.
 		this.livingCache = null;
 		timeInYears++;
+
+		List<List<IRelationship>> relationshipsToProgress = new ArrayList<>();
 		for (IPerson p : livingPopulation()) {
 			p.incrementAge();
+			addTofriendshipPool(p, relationshipsToProgress);
 		}
-		progressRelationships(r);
+		progressRelationships(r, relationshipsToProgress);
 		meetPeople(r);
 		pairOffCouples(r);
 		tryForBabies(r);
 		evaluateDeath(r);
 		cleanUp();
+	}
+
+	void addTofriendshipPool(IPerson p, List<List<IRelationship>> relationshipsToProgress) {
+		List<IRelationship> relationships = p.getYearlyGoals().friendshipsToNurture();
+		if (!relationships.isEmpty()) {
+			relationshipsToProgress.add(relationships);
+		}
 	}
 
 	protected void cleanUp() {
@@ -280,7 +290,6 @@ public abstract class AGenesis implements IGenesis {
 
 	private void meetPeople(Random r) {
 		List<IPerson> people = livingPopulation();
-
 		for (int attempt = 0; attempt < MEETING_ATTEMPTS_PER_YEAR; attempt++) {
 			Collections.shuffle(people);
 			for (int i = 0; i < people.size()-1; i+=2) {
@@ -295,11 +304,10 @@ public abstract class AGenesis implements IGenesis {
 		}
 	}
 
-	private void progressRelationships(Random r) {
-		for (IPerson p : this.livingPopulation()) {
-			int numRelationships = Math.min(p.getRelationships().size(), RELATIONSHIP_CHANGES_PER_YEAR);
-			Iterator<IRelationship> it = p.getRelationships().values().iterator();
-			for (int i = 0; i < numRelationships; i++) { //
+	private void progressRelationships(Random r, List<List<IRelationship>> allRelationships) {
+		for (List<IRelationship> relationships : allRelationships) {
+			Iterator<IRelationship> it = relationships.iterator();
+			for (int i = 0; i < relationships.size(); i++) { //
 				it.next().progressRelationship(r);
 			}
 		}

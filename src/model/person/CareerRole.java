@@ -51,4 +51,8 @@ class CareerRole extends ARole {
 				ARole.adverbModifier(focus));
 	}
 
+	void setActionPoints(int actionPoints) {
+		this.actionPoints = actionPoints;
+	}
+
 }

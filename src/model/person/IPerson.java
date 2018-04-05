@@ -4,6 +4,7 @@ import java.util.*;
 
 import model.Sex;
 import model.genetics.GeneticsMap;
+import model.goals.IGoals;
 import model.person.idbased.IIdBasedPerson;
 import model.personality.IPersonality;
 import model.relationship.IRelationship;
@@ -131,4 +132,6 @@ public interface IPerson {
 	IPerson getSignificantOther();
 	
 	IPersonality getPersonality();
+
+	IGoals getYearlyGoals();
 }

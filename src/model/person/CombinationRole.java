@@ -1,6 +1,9 @@
 package model.person;
 
-import java.util.Random;
+import model.goals.GoalsImpl;
+import model.relationship.IRelationship;
+
+import java.util.List;
 
 class CombinationRole extends ARole {
 
@@ -26,6 +29,14 @@ class CombinationRole extends ARole {
 		this.narrative = narrative;
 		this.title = calculateTitle();
 		this.strength = calculateStrength();
+	}
+
+	private void distributeActionPoints() {
+		int actionPoints = this.narrative.getActionPoints();
+		int platonicAP = (int)(this.platonic.strength/this.strength * actionPoints);
+		int romanticAP = (int) (this.romantic.strength/this.strength * actionPoints);
+		int careerAP = (int) (this.career.strength/this.strength * actionPoints);
+		this.platonic.setActionPoints(platonicAP);
 	}
 
 	private float calculateStrength() {
@@ -55,4 +66,10 @@ class CombinationRole extends ARole {
 		NarrativeRole narrative = (NarrativeRole) this.narrative.merge(cr.narrative);
 		return new CombinationRole(romantic, platonic, career, narrative);
 	}
+
+	public void setGoals(GoalsImpl goals, List<IRelationship> relationships, IRelationship significantOther) {
+		this.platonic.setGoals(goals, relationships);
+		this.romantic.setGoals(goals, relationships, significantOther);
+	}
+
 }

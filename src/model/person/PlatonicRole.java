@@ -1,5 +1,12 @@
 package model.person;
 
+import model.goals.GoalsImpl;
+import model.relationship.IRelationship;
+import model.relationship.RegardHighToLow;
+import model.relationship.RegardLowToHigh;
+
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 class PlatonicRole extends ARole {
@@ -55,6 +62,53 @@ class PlatonicRole extends ARole {
 
 	public static PlatonicRole getRandomRole(Random r) {
 		return opts[r.nextInt(opts.length)];
+	}
+
+	void setActionPoints(int actionPoints) {
+		this.actionPoints = actionPoints;
+	}
+
+	public void setGoals(GoalsImpl goals, List<IRelationship> relationships) {
+		if (relationships.isEmpty()) {
+			return;
+		}
+		int actionPoints = this.actionPoints;
+		if (this.friendliness > 0.5) {
+			this.nurtureFriendships(goals, relationships, actionPoints);
+		} else if (this.friendliness == 0.5) {
+			this.nurtureFriendships(goals, relationships, actionPoints/2);
+			this.antagonizePeople(goals, relationships, actionPoints/2);
+		} else {
+			this.antagonizePeople(goals, relationships, actionPoints);
+		}
+	}
+
+	private void nurtureFriendships(GoalsImpl goals, List<IRelationship> relationships, int actionPoints) {
+		relationships.sort(new RegardHighToLow());
+		if (this.depth >= 0.75) {
+			while (actionPoints > 0) {
+				// try to create a best friend by adding them multiple times to the lottery
+				actionPoints = goals.nurtureFriendship(relationships.get(0), actionPoints);
+			}
+		} else {
+			for (int i = 0; i < relationships.size() && actionPoints > 0; i++) {
+				actionPoints = goals.nurtureFriendship(relationships.get(i), actionPoints);
+			}
+		}
+	}
+
+	private void antagonizePeople(GoalsImpl goals, List<IRelationship> relationships, int actionPoints) {
+		relationships.sort(new RegardLowToHigh());
+		if (this.depth >= 0.5) {
+			while (actionPoints > 0) {
+				// try to create a worst rival by adding them multiple times to the lottery
+				actionPoints = goals.antagonize(relationships.get(0), actionPoints);
+			}
+		} else {
+			for (int i = 0; i < relationships.size() && actionPoints > 0; i++) {
+				actionPoints = goals.antagonize(relationships.get(i), actionPoints);
+			}
+		}
 	}
 
 }

@@ -1,5 +1,10 @@
 package model.person;
 
+import model.goals.GoalsImpl;
+import model.relationship.DesireHighToLow;
+import model.relationship.IRelationship;
+
+import java.util.List;
 import java.util.Random;
 
 public class RomanticRole extends ARole {
@@ -114,4 +119,31 @@ public class RomanticRole extends ARole {
 		}
 		return "Amorous";
 	}
+
+	void setActionPoints(int actionPoints) {
+		this.actionPoints = actionPoints;
+	}
+
+	public void setGoals(GoalsImpl goals, List<IRelationship> relationships, IRelationship significantOther) {
+		if (this.flirtation > 0 && !relationships.isEmpty()) {
+			this.woo(goals, relationships, this.actionPoints, significantOther);
+		}
+	}
+
+	private void woo(GoalsImpl goals, List<IRelationship> relationships, int actionPoints, IRelationship significantOther) {
+		relationships.sort(new DesireHighToLow());
+		if (this.monogamy >= 0.75) {
+			IRelationship target = (significantOther != null) ? significantOther : relationships.get(0);
+			while (actionPoints > 0) {
+				actionPoints = goals.woo(target, actionPoints);
+				actionPoints = goals.takeTheNextStep(target, actionPoints);
+			}
+		} else {
+			for (int i = 0; i < relationships.size() && actionPoints > 0; i++) {
+				actionPoints = goals.woo(relationships.get(i), actionPoints);
+			}
+			actionPoints = goals.takeTheNextStep(relationships.get(0), actionPoints);
+		}
+	}
+
 }

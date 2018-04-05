@@ -1,15 +1,25 @@
 package model.person;
 
+import model.goals.GoalsImpl;
+import model.relationship.IRelationship;
+
+import java.util.List;
 import java.util.Random;
 
 public abstract class ARole implements Comparable<ARole> {
 	protected String title;
 	protected float strength;
+	protected int actionPoints;
 	final static double MUTATION_CHANCE = .05f;
 
 	public ARole(String title, float strength) {
+		this(title, strength, 0);
+	}
+
+	ARole(String title, float strength, int actionPoints) {
 		this.title = title;
 		this.strength = strength;
+		this.actionPoints = actionPoints;
 	}
 
 	@Override
@@ -97,6 +107,14 @@ public abstract class ARole implements Comparable<ARole> {
 			return "very";
 		}
 		return "incredibly";
+	}
+
+	public int getActionPoints() {
+		return this.actionPoints;
+	}
+
+	public void setGoals(GoalsImpl goals, List<IRelationship> relationships, IRelationship significantOther) {
+		// does nothing by default, specific implementations can override it
 	}
 
 }

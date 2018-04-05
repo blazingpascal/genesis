@@ -7,6 +7,8 @@ import model.Sex;
 import model.genetics.GeneticsMap;
 import model.genetics.JSONTraits;
 import model.genetics.subtypes.*;
+import model.goals.GoalsImpl;
+import model.goals.IGoals;
 import model.personality.IPersonality;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
@@ -376,4 +378,14 @@ public abstract class APersonalInfoPerson implements IPerson {
 	public IPersonality getPersonality(){
 		return this.personality;
 	}
+
+	@Override
+	public IGoals getYearlyGoals() {
+		GoalsImpl goals = new GoalsImpl();
+		this.role.setGoals(goals, new ArrayList<IRelationship>(this.relationships.values()),
+				this.relationships.get(this.significantOther));
+		return goals;
+	}
+
+
 }
