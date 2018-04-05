@@ -19,6 +19,8 @@ import java.util.Scanner;
 
 import model.GeneologyRules;
 import model.Sex;
+import model.career.CareerManager;
+import model.career.Job;
 import model.genesis.IGenesis;
 import model.genesis.idbased.ILifeEventEnabledGenesis;
 import model.genesis.idbased.LifeEventEnabledGenesisImpl;
@@ -328,7 +330,7 @@ public class Driver {
 		fileWriter.write("ID, First Name, Last Name, Birth Last Name, Age, Birth Year, "
 				+ "Spouse, Mother, Father, Generation, Living, Death Year, "
 				+ "Spouse History, Number of Children, Founding Last Names, "
-				+ "Number of Founding Heritages, Sex, Role");
+				+ "Number of Founding Heritages, Sex, Role,Job Type Title, Job Rank, Job Performance, Job Status");
 		// Add Personality Traits Header
 		for (PersonalityTrait pt : PersonalityTrait.values()) {
 			fileWriter.write("," + pt);
@@ -400,6 +402,21 @@ public class Driver {
 			sb.append(",");
 			// Role
 			sb.append(p.getRole());
+			sb.append(",");
+			CareerManager cm = p.getCareer();
+			Job job = cm.currentJob();
+			// Job Type Title
+			sb.append(job != null ? job.getJobTypeTitle() : "-");
+			sb.append(",");
+			// Job Rank
+			sb.append(job != null ? job.getRank() : "-");
+			sb.append(",");
+			// Job Performance
+			sb.append(job != null ? job.getPerformance() : "-");
+			sb.append(",");
+			// Job Status
+			sb.append(job != null ? job.getStatus() : "-");
+
 			// Personality Traits
 			IPersonality personality = p.getPersonality();
 			for (PersonalityTrait pt : PersonalityTrait.values()) {

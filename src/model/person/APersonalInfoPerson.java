@@ -36,6 +36,10 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected IPersonality personality;
     protected CareerManager career;
 
+	public CareerManager getCareer() {
+		return career;
+	}
+
 	// Relationships
 	protected HashMap<IPerson, IRelationship> relationships;
 	protected IPerson significantOther;
