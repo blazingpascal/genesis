@@ -7,6 +7,8 @@ import model.Sex;
 import model.genetics.GeneticsMap;
 import model.genetics.JSONTraits;
 import model.genetics.subtypes.*;
+import model.goals.GoalTrackerImpl;
+import model.goals.IGoalTracker;
 import model.personality.IPersonality;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
@@ -34,7 +36,12 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected ARole role;
 	protected HashMap<String, Integer> preferences;
 	protected IPersonality personality;
+	protected IGoalTracker goalTracker;
 	
+	public IGoalTracker getGoalTracker() {
+		return goalTracker;
+	}
+
 	// Relationships
 	protected HashMap<IPerson, IRelationship> relationships;
 	protected IPerson significantOther;
@@ -54,6 +61,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.preferences = getRandomPreferences(new Random());
 		this.relationships = new HashMap<>();
 		this.personality = personality;
+		this.goalTracker = new GoalTrackerImpl(this, new Random());
 	}
 
 	HashMap<String, Integer> getRandomPreferences(Random r) {
