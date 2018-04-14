@@ -16,6 +16,7 @@ public class CareerManager {
     private boolean retired;
     private Random r;
     private int jobAttempts;
+    private int maxAttempts;
 
     public CareerManager(APersonalInfoPerson person) {
         this.person = person;
@@ -23,11 +24,17 @@ public class CareerManager {
         this.previousJobs = new ArrayList<>();
         this.retired = false;
         this.r = new Random();
+        this.maxAttempts = calculateMaxAttempts();
+    }
+
+    private int calculateMaxAttempts() {
+        double focus = Math.pow(person.getRole().getCareerFocus(), 1.5);
+        return (int) Math.round(focus * 6) + 1;
     }
 
     public void manageCareer() {
         if(!retired) {
-            if(occupation == null || jobAttempts >= 3) {
+            if(occupation == null || jobAttempts >= maxAttempts) {
                 occupation = chooseCareer();
                 currentJob = attemptFindJob();
             } else if(!currentJob.isPresent()) {
@@ -68,11 +75,15 @@ public class CareerManager {
     }
 
     public boolean attemptRetire() {
-        return r.nextDouble() < 0.33;
+        double tenacity = person.getRole().getCareerTenacity();
+        double chance = (1 - tenacity) / 2 + 0.1;
+        return r.nextDouble() < chance;
     }
 
     public boolean attemptQuit() {
-        boolean b = r.nextDouble() < 0.1;
+        double focus = person.getRole().getCareerFocus();
+        double chance = Math.pow((1 - focus) / 2, 2) + 0.05;
+        boolean b = r.nextDouble() < chance;
         if(b) quitJob();
         return b;
     }

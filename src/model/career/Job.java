@@ -23,6 +23,7 @@ public class Job {
     public void work(CareerManager manager) {
         if(status == 0) {
             performance += progressJob();
+            performance += manager.getPerson().getRole().computeCareerProgressionModifier();
             if (performance >= 1) {
                 if (level < 9) {
                     level++;
