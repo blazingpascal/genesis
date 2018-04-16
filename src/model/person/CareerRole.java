@@ -59,4 +59,18 @@ class CareerRole extends ARole {
 		return (double) this.focus;
 	}
 
+  @Override
+  public double computeCareerProgressionModifier() {
+      return (this.tenacity - 0.5) * .4;
+  }
+
+  @Override
+  public double getCareerFocus() {
+      return this.focus;
+  }
+
+  @Override
+  public double getCareerTenacity() {
+      return this.tenacity;
+  }
 }

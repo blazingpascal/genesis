@@ -4,10 +4,10 @@ import model.person.APersonalInfoPerson;
 import model.personality.IPersonality;
 import model.personality.PersonalityTrait;
 
-public class Journalism extends AOccupation {
+public class VisualArt extends AOccupation {
 
-    public Journalism() {
-        super("Journalism", 0.5);
+    public VisualArt() {
+        super("Visual Art", 0.25);
     }
 
     @Override
@@ -15,8 +15,9 @@ public class Journalism extends AOccupation {
         IPersonality personality = person.getPersonality();
         double ranking = 0;
 
-        ranking += addValue(personality, PersonalityTrait.OPENNESS);
-        ranking += addValue(personality, PersonalityTrait.EXTRAVERSION);
+        ranking += addValueAdditional(personality, PersonalityTrait.OPENNESS);
+        ranking += addValueAbsence(personality, PersonalityTrait.CONSCIENTIOUSNESS);
+        ranking += addValueAbsence(personality, PersonalityTrait.EXTRAVERSION);
 
         return ranking;
     }
