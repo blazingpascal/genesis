@@ -4,6 +4,7 @@ import model.career.occupations.AOccupation;
 import model.person.APersonalInfoPerson;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
 
@@ -17,6 +18,7 @@ public class CareerManager {
     private Random r;
     private int jobAttempts;
     private int maxAttempts;
+    private AOccupation[] careerRanking;
 
     public CareerManager(APersonalInfoPerson person) {
         this.person = person;
@@ -25,11 +27,21 @@ public class CareerManager {
         this.retired = false;
         this.r = new Random();
         this.maxAttempts = calculateMaxAttempts();
+        this.careerRanking = rankCareers();
     }
 
     private int calculateMaxAttempts() {
         double focus = Math.pow(person.getRole().getCareerFocus(), 1.5);
         return (int) Math.round(focus * 6) + 1;
+    }
+
+    private AOccupation[] rankCareers() {
+        AOccupation[] sorted = AOccupation.opts.clone();
+        Arrays.sort(sorted, (a1, a2) -> {
+            double d = a1.evaluateFit(person) - a2.evaluateFit(person);
+            return d < 0 ? 1 : d > 0 ? -1 : 0;
+        });
+        return sorted;
     }
 
     public void manageCareer() {
@@ -55,23 +67,50 @@ public class CareerManager {
     }
 
     public AOccupation chooseCareer() {
-        //temp. chooses at random
         jobAttempts = 0;
-
-        int i = r.nextInt(4);
-        switch(i) {
-            case 0: return AOccupation.JOURNALISM;
-            case 1: return AOccupation.MEDICAL;
-            case 2: return AOccupation.VISUAL_ART;
-            case 3: return AOccupation.TEACHING;
-            default: return AOccupation.LAW_ENFORCEMENT;
+        if(occupation != null) {
+            for(int i = 0; i < careerRanking.length - 1; i++) {
+                if(occupation.getName() == careerRanking[i].getName()) {
+                    careerRanking[i] = careerRanking[i + 1];
+                    careerRanking[i + 1] = occupation;
+                }
+            }
         }
+
+        for(AOccupation oc : careerRanking) {
+            if(occupation == null || occupation.getName() != oc.getName()) {
+                double roll = r.nextDouble();
+                if(roll < 0.7) return oc;
+            }
+        }
+
+        for(AOccupation oc : careerRanking) {
+            if(occupation == null || occupation.getName() != oc.getName()) {
+                return oc;
+            }
+        }
+
+        return careerRanking[0];
     }
 
     public Optional<Job> attemptFindJob() {
-        Optional<Job> j = occupation.interview(person) ? Optional.of(new Job(occupation)) : Optional.empty();
-        if(!j.isPresent()) jobAttempts++;
-        return j;
+        if(occupation.interview(person)) {
+            int level = 0;
+            if(!previousJobs.isEmpty()) {
+                for(int i = previousJobs.size() - 1; i >= 0; i--) {
+                    if(previousJobs.get(i).getOccupation().getName() == occupation.getName()) {
+                        double roll = r.nextDouble();
+                        int levelMod = roll < 0.4 ? roll < 0.15 ? -1 : 1 : 0;
+                        level = previousJobs.get(previousJobs.size() - 1).getLevel() + levelMod;
+                        level = Math.max(0, Math.min(level, 9));
+                        break;
+                    }
+                }
+            }
+            return Optional.of(new Job(occupation, level));
+        }
+        jobAttempts++;
+        return Optional.empty();
     }
 
     public boolean attemptRetire() {

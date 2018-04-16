@@ -14,6 +14,16 @@ public abstract class AOccupation {
     public static final Teaching TEACHING = new Teaching();
     public static final LawEnforcement LAW_ENFORCEMENT = new LawEnforcement();
 
+    public static final AOccupation[] opts = new AOccupation[5];
+
+    static{
+        opts[0] = JOURNALISM;
+        opts[1] = MEDICAL;
+        opts[2] = VISUAL_ART;
+        opts[3] = TEACHING;
+        opts[4] = LAW_ENFORCEMENT;
+    }
+
     protected Random r;
     private String name;
     private double evalAmount;

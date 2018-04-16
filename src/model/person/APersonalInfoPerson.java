@@ -53,9 +53,9 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.genes = genes;
 		this.role = role;
         this.preferences = getRandomPreferences(new Random());
-        this.career = new CareerManager(this);
 		this.relationships = new HashMap<>();
 		this.personality = personality;
+        this.career = new CareerManager(this);
 	}
 
 	HashMap<String, Integer> getRandomPreferences(Random r) {
