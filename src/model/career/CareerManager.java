@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.Random;
 
 public class CareerManager {
-
     private APersonalInfoPerson person;
     private Optional<Job> currentJob;
     private ArrayList<Job> previousJobs;
@@ -140,5 +139,12 @@ public class CareerManager {
         currentJob.get().sendResignation();
         previousJobs.add(currentJob.get());
         currentJob = Optional.empty();
+    }
+  
+  	public Job currentJob() {
+      if (currentJob.isPresent()) {
+        return currentJob.get();
+      }
+      return null;
     }
 }

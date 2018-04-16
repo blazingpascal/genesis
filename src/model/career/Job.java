@@ -5,7 +5,6 @@ import model.career.occupations.AOccupation;
 import java.util.Random;
 
 public class Job {
-
     private AOccupation occupation;
     private int level;
     private double performance;
@@ -46,21 +45,48 @@ public class Job {
     public void takeLeave() {
         status = 3;
     }
+  
+    private double progressJob() {
+      double p = (double)(r.nextInt(8) - 2) / 10;
+      double roll = r.nextDouble();
+      if(roll < 0.3) {
+          p += roll < 0.1 ? 0.8 : -0.8;
+      }
+      return p;
+    }
 
     public int getLevel() {
         return level;
+    }
+  
+  	public Integer getRank() {
+      return level;
+    }
+
+    public Double getPerformance() {
+      return performance;
     }
 
     public AOccupation getOccupation() {
         return occupation;
     }
-
-    private double progressJob() {
-        double p = (double)(r.nextInt(8) - 2) / 10;
-        double roll = r.nextDouble();
-        if(roll < 0.3) {
-            p += roll < 0.1 ? 0.8 : -0.8;
-        }
-        return p;
+  
+  	public String getJobTypeTitle() {
+      return occupation.getName();
+    }
+  
+  	public String getStatus() {
+      switch (status) {
+      case 0:
+        return "Active";
+      case 1:
+        return "Fired";
+      case 2:
+        return "Quit";
+      case 3:
+        return "On Leave";
+      default:
+        throw new IllegalStateException("Invalid state: " + status);
+      }
     }
 }
