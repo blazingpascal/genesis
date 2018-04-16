@@ -76,6 +76,10 @@ public abstract class AGenesis implements IGenesis {
 		pairOffCouples(r);
 		tryForBabies(r);
 		evaluateDeath(r);
+
+        for(IPerson p : livingPopulation()) {
+            p.doCareer();
+        }
 		cleanUp();
 	}
 

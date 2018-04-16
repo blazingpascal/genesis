@@ -4,9 +4,9 @@ import java.util.*;
 
 import model.GeneologyRules;
 import model.Sex;
+import model.career.CareerManager;
 import model.genetics.GeneticsMap;
 import model.genetics.JSONTraits;
-import model.genetics.subtypes.*;
 import model.personality.IPersonality;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
@@ -34,7 +34,8 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected ARole role;
 	protected HashMap<String, Integer> preferences;
 	protected IPersonality personality;
-	
+    protected CareerManager career;
+
 	// Relationships
 	protected HashMap<IPerson, IRelationship> relationships;
 	protected IPerson significantOther;
@@ -51,9 +52,10 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.person_id = person_id;
 		this.genes = genes;
 		this.role = role;
-		this.preferences = getRandomPreferences(new Random());
+        this.preferences = getRandomPreferences(new Random());
 		this.relationships = new HashMap<>();
 		this.personality = personality;
+        this.career = new CareerManager(this);
 	}
 
 	HashMap<String, Integer> getRandomPreferences(Random r) {
@@ -376,4 +378,11 @@ public abstract class APersonalInfoPerson implements IPerson {
 	public IPersonality getPersonality(){
 		return this.personality;
 	}
+
+    @Override
+    public void doCareer() {
+        if(this.age > 18) {
+            career.manageCareer();
+        }
+    }
 }
