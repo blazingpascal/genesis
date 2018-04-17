@@ -1,6 +1,6 @@
 package model.goals;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+//import static org.hamcrest.CoreMatchers.instanceOf;
 
 import java.util.ArrayList;
 import java.util.Collection;
