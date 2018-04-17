@@ -20,16 +20,6 @@ public interface IRelationship {
   public double regard();
 
   /**
-   * increments the regard between the people in this relationship
-   */
-  public void growRegard();
-
-  /**
-   * decrements the regard between the people in this relationship
-   */
-  public void lessenRegard();
-
-  /**
    * @return a number from -1 to 1, where -1 means they'd never ever date, 1 is means they're completely in love
    */
   public double romanticDesire();
@@ -56,7 +46,11 @@ public interface IRelationship {
     return 1; //TODO
   }
 
-  public void progressRelationship(Random r);
-
   public int getAnniversaryYear();
+
+void growRegard(int year);
+
+void lessenRegard(int year);
+
+void progressRelationship(Random r, int year);
 }

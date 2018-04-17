@@ -2,7 +2,7 @@ package model.person;
 
 import java.util.Random;
 
-class PlatonicRole extends ARole {
+public class PlatonicRole extends ARole {
 
 	//Friendly Neighbor, Close Circle Keeper, Friendly Enough, 
 	// Frenemy Seeker, Common Enemy, Actually Hates Everyone
@@ -10,7 +10,7 @@ class PlatonicRole extends ARole {
 	public static final PlatonicRole CloseCircleKeeper = new PlatonicRole("Close Circle Keeper", 1, 1, 1);
 	public static final PlatonicRole FriendlyEnough = new PlatonicRole("Friendly Enough", 1f, 0f, 0.5f);
 	public static final PlatonicRole FrenemySeeker = new PlatonicRole("Frenemy Seeker", 1f, 0.5f, 0.5f);
-	public static final PlatonicRole CommonEnemy = new PlatonicRole("Common Enemy", 1f, 0.5f, 1);
+	public static final PlatonicRole CommonEnemy = new PlatonicRole("Common Enemy", 1f, 0.5f, 0);
 	public static final PlatonicRole ActuallyHatesEveryone = new PlatonicRole("Actually Hates Everyone", 1f, 0f, 0f);
 	
 	private static final PlatonicRole[] opts = new PlatonicRole[6];
@@ -40,7 +40,7 @@ class PlatonicRole extends ARole {
 
 	@Override
 	protected ARole mergePR(PlatonicRole pr) {
-		float depth = (this.depth + pr.depth)/2;
+		float depth = (this.getDepth() + pr.getDepth())/2;
 		float friendliness = (this.friendliness + pr.friendliness)/2;
 		float strength = (this.strength + pr.strength)/2;
 		String title = calculateTitle(depth, friendliness);
@@ -55,6 +55,14 @@ class PlatonicRole extends ARole {
 
 	public static PlatonicRole getRandomRole(Random r) {
 		return opts[r.nextInt(opts.length)];
+	}
+
+	public float getDepth() {
+		return depth;
+	}
+	
+	public float getFriendliness(){
+		return friendliness;
 	}
 
 }

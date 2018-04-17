@@ -2,7 +2,7 @@ package model.person;
 
 import java.util.Random;
 
-class CareerRole extends ARole {
+public class CareerRole extends ARole {
 	public static final CareerRole Workaholic = new CareerRole("Workaholic", 1, 1, 1);
 	public static final CareerRole Slacker = new CareerRole("Slacker", 0, 0, 1);
 	public static final CareerRole JackOfAllTrades = new CareerRole("Jack of All Trades", 1, 1f, 0.5f);
