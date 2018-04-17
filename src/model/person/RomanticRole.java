@@ -56,6 +56,15 @@ public class RomanticRole extends ARole {
 		return new RomanticRole(calculateTitle(monogamy, flirtation), flirtation, monogamy,
 				(this.strength + r.strength) / 2);
 	}
+	
+
+	public float getFlirtation() {
+		return flirtation;
+	}
+
+	public float getMonogamy() {
+		return monogamy;
+	}
 
 	final static String calculateTitle(float monogamy, float flirtation) {
 		if (flirtation > 0) {

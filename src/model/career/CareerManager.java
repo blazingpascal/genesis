@@ -12,7 +12,11 @@ public class CareerManager {
     private APersonalInfoPerson person;
     private Optional<Job> currentJob;
     private ArrayList<Job> previousJobs;
-    private AOccupation occupation;
+    public ArrayList<Job> getPreviousJobs() {
+		return previousJobs;
+	}
+
+	private AOccupation occupation;
     private boolean retired;
     private Random r;
     private int jobAttempts;
