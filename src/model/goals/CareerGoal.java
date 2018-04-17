@@ -42,12 +42,15 @@ public class CareerGoal extends AGoal {
 		CareerManager career = this.refPerson.getCareer();
 		Job currentJob = career.currentJob();
 		ArrayList<Job> previousJobs = career.getPreviousJobs();
+		if(previousJobs == null){
+			previousJobs = new ArrayList<Job>();
+		}
 		if (currentJob != null) {
 			previousJobs.add(currentJob);
 		}
 		HashMap<String, Integer> careerTypes = new HashMap<String, Integer>();
 		for (Job j : previousJobs) {
-			int level = j.getLevel();
+			int level = j.getRank();
 			String name = j.getOccupation().getName();
 			careerTypes.put(name, careerTypes.containsKey(name) ? Math.max(careerTypes.get(name), level) : level);
 		}

@@ -19,7 +19,7 @@ public class QuitJobEvent implements ILifeEvent {
 	
 	public QuitJobEvent(IPerson person, Job job, int year) {
 		this.name = person.getFullName();
-		this.level = job.getLevel();
+		this.level = job.getRank();
 		this.jobTitle = job.getJobTypeTitle();
 		this.occupation = job.getOccupation().getName();
 		this.year = year;

@@ -20,7 +20,7 @@ public class RetirementEvent implements ILifeEvent {
 	
 	public RetirementEvent(APersonalInfoPerson person, Job job, int year) {
 		this.name = person.getFullName();
-		this.level = job.getLevel();
+		this.level = job.getRank();
 		this.jobTitle = job.getJobTypeTitle();
 		this.occupation = job.getOccupation().getName();
 		this.year = year;
