@@ -8,10 +8,41 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
 
+class JobGroup {
+    private AOccupation occupation;
+    private ArrayList<Job> jobs;
+
+    public JobGroup(AOccupation o, Job j) {
+        this.occupation = o;
+        this.jobs = new ArrayList<>();
+        this.jobs.add(j);
+    }
+
+    public void addJob(Job j) {
+        jobs.add(j);
+    }
+
+    public ArrayList<Job> getJobs() {
+        return jobs;
+    }
+
+    public AOccupation getOccupation() {
+        return occupation;
+    }
+
+    public boolean sameOccupation(AOccupation o) {
+        return o.getName() == occupation.getName();
+    }
+
+    public Job getMostRecentJob() {
+        return jobs.get(jobs.size() - 1);
+    }
+}
+
 public class CareerManager {
     private APersonalInfoPerson person;
     private Optional<Job> currentJob;
-    private ArrayList<Job> previousJobs;
+    private ArrayList<JobGroup> previousJobGroups;
     private AOccupation occupation;
     private boolean retired;
     private Random r;
@@ -22,7 +53,7 @@ public class CareerManager {
     public CareerManager(APersonalInfoPerson person) {
         this.person = person;
         this.currentJob = Optional.empty();
-        this.previousJobs = new ArrayList<>();
+        this.previousJobGroups = new ArrayList<>();
         this.retired = false;
         this.r = new Random();
         this.maxAttempts = calculateMaxAttempts();
@@ -95,17 +126,19 @@ public class CareerManager {
     public Optional<Job> attemptFindJob() {
         if(occupation.interview(person)) {
             int level = 0;
-            if(!previousJobs.isEmpty()) {
-                for(int i = previousJobs.size() - 1; i >= 0; i--) {
-                    if(previousJobs.get(i).getOccupation().getName() == occupation.getName()) {
+
+            if(!previousJobGroups.isEmpty()) {
+                for(int i = previousJobGroups.size() - 1; i >= 0; i--) {
+                    if(previousJobGroups.get(i).sameOccupation(occupation)) {
                         double roll = r.nextDouble();
-                        int levelMod = roll < 0.4 ? roll < 0.15 ? -1 : 1 : 0;
-                        level = previousJobs.get(previousJobs.size() - 1).getLevel() + levelMod;
+                        level = roll < 0.4 ? roll < 0.15 ? -1 : 1 : 0;
+                        level += previousJobGroups.get(i).getMostRecentJob().getRank();
                         level = Math.max(0, Math.min(level, 9));
                         break;
                     }
                 }
             }
+
             return Optional.of(new Job(occupation, level));
         }
         jobAttempts++;
@@ -130,21 +163,34 @@ public class CareerManager {
         if(r.nextDouble() < 0.1) currentJob.get().takeLeave();
     }
 
-    public void fired(Job j) {
-        previousJobs.add(j);
+    public void fired() {
+        addToPreviousJobs(currentJob.get());
         currentJob = Optional.empty();
     }
 
     public void quitJob() {
         currentJob.get().sendResignation();
-        previousJobs.add(currentJob.get());
+        addToPreviousJobs(currentJob.get());
         currentJob = Optional.empty();
+    }
+
+    void addToPreviousJobs(Job j) {
+        if(previousJobGroups.size() > 0) {
+            JobGroup last = previousJobGroups.get(previousJobGroups.size() - 1);
+            if(last.sameOccupation(j.getOccupation())) {
+                last.addJob(j);
+                return;
+            }
+        }
+        previousJobGroups.add(new JobGroup(occupation, j));
+
     }
   
   	public Job currentJob() {
-      if (currentJob.isPresent()) {
-        return currentJob.get();
-      }
-      return null;
+      return currentJob.orElse(null);
+    }
+
+    public boolean isRetired() {
+        return retired;
     }
 }
