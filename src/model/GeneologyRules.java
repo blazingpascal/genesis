@@ -222,7 +222,7 @@ public class GeneologyRules {
 		return computeOverallAttraction(p1, p2, mChance);
 	}
 
-	private static double computeOverallAttraction(IPerson p1, IPerson p2, double mChance) {
+	public static double computeOverallAttraction(IPerson p1, IPerson p2, double mChance) {
 		double result = founderBasedAttractionModifier(p1, p2) * mChance * BASE_MARRIAGE_CHANCE;
 
         double p1Pref = modifyByTraitAttraction(result, p1, p2);

@@ -11,7 +11,7 @@ import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
 import model.spousehistory.ISpouseHistory;
 
-class Person extends APersonalInfoPerson{
+class Person extends APersonalInfoPerson {
 	// Family details
 	IPerson spouse = null;
 	IPerson mother = null;
@@ -204,5 +204,4 @@ class Person extends APersonalInfoPerson{
 	public void makeWidow(int endYear) {
 		this.spouse = null;
 	}
-
 }

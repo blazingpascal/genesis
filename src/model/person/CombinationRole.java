@@ -2,7 +2,7 @@ package model.person;
 
 import java.util.Random;
 
-class CombinationRole extends ARole {
+public class CombinationRole extends ARole {
 
 	private final RomanticRole romantic;
 	private final PlatonicRole platonic;
@@ -48,11 +48,34 @@ class CombinationRole extends ARole {
 		return this.romantic.computeRomanticCompatibility(r);
 	}
 
+    @Override
+    public double computeCareerProgressionModifier() {
+        return this.career.computeCareerProgressionModifier();
+    }
+
+    @Override
+    public double getCareerFocus() {
+        return this.career.getCareerFocus();
+    }
+
+    @Override
+    public double getCareerTenacity() {
+        return this.career.getCareerTenacity();
+    }
+
 	protected ARole mergeCoR(CombinationRole cr) {
 		RomanticRole romantic = (RomanticRole) this.romantic.merge(cr.romantic);
 		PlatonicRole platonic = (PlatonicRole) this.platonic.merge(cr.platonic);
 		CareerRole career = (CareerRole) this.career.merge(cr.career);
 		NarrativeRole narrative = (NarrativeRole) this.narrative.merge(cr.narrative);
 		return new CombinationRole(romantic, platonic, career, narrative);
+	}
+
+	public Double tenacity() {
+		return career.tenacity();
+	}
+	
+	public Double focus(){
+		return career.focus();
 	}
 }

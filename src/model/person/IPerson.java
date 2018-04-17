@@ -3,6 +3,7 @@ package model.person;
 import java.util.*;
 
 import model.Sex;
+import model.career.CareerManager;
 import model.genetics.GeneticsMap;
 import model.person.idbased.IIdBasedPerson;
 import model.personality.IPersonality;
@@ -131,4 +132,8 @@ public interface IPerson {
 	IPerson getSignificantOther();
 	
 	IPersonality getPersonality();
+
+    void doCareer();
+
+	CareerManager getCareer();
 }
