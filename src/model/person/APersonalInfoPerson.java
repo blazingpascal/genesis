@@ -1,17 +1,33 @@
 package model.person;
 
 import java.util.*;
+import org.jgrapht.*;
+import org.jgrapht.alg.shortestpath.AStarShortestPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.traverse.*;
 
 import model.GeneologyRules;
 import model.Sex;
 import model.career.CareerManager;
 import model.genetics.GeneticsMap;
 import model.genetics.JSONTraits;
+<<<<<<< Updated upstream
+=======
+import model.genetics.subtypes.*;
+import model.goals.ActionEdge;
+>>>>>>> Stashed changes
 import model.goals.GoalTrackerImpl;
+import model.goals.IAction;
 import model.goals.IGoalTracker;
+import model.goals.RelationshipStartAction;
 import model.personality.IPersonality;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
+import model.spousehistory.ISpouseHistory;
+import model.goals.RelationshipProgressAction;
 
 public abstract class APersonalInfoPerson implements IPerson {
 
@@ -37,11 +53,17 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected HashMap<String, Integer> preferences;
 	protected IPersonality personality;
 	protected IGoalTracker goalTracker;
+<<<<<<< Updated upstream
     protected CareerManager career;
 
 	public CareerManager getCareer() {
 		return career;
 	}
+=======
+	// Closer to 1 means tend to romance same sex. Closer to 0 means tend to
+	// romance different sex.
+	protected final double kinseyScaleValue;
+>>>>>>> Stashed changes
 
 	public IGoalTracker getGoalTracker() {
 		return goalTracker;
@@ -67,7 +89,11 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.relationships = new HashMap<>();
 		this.personality = personality;
 		this.goalTracker = new GoalTrackerImpl(this, new Random());
+<<<<<<< Updated upstream
         this.career = new CareerManager(this);
+=======
+		this.kinseyScaleValue = GeneologyRules.computeKinseyScaleValue(new Random());
+>>>>>>> Stashed changes
 	}
 
 	HashMap<String, Integer> getRandomPreferences(Random r) {
@@ -385,16 +411,135 @@ public abstract class APersonalInfoPerson implements IPerson {
 	public boolean hasSignificantOther() {
 		return this.significantOther != null;
 	}
-	
+
 	@Override
-	public IPersonality getPersonality(){
+	public IPersonality getPersonality() {
 		return this.personality;
 	}
 
+<<<<<<< Updated upstream
     @Override
     public void doCareer() {
         if(this.age > 18) {
             career.manageCareer();
         }
     }
+=======
+	@Override
+	public double kinseyScaleValue() {
+		return this.kinseyScaleValue;
+	}
+
+	public void doBestRelationshipActions(int timeInYears, List<IPerson> candidates) {
+		Random originalRandom = new Random();
+		int actionPoints = 500; // TODO
+		double currentProgress = this.goalTracker.computeGoalProgress(timeInYears);
+		List<RelationshipGoalProgressState> firstStates = new ArrayList<RelationshipGoalProgressState>();
+		List<IAction> actions = new ArrayList<IAction>();
+		for (IPerson c : candidates) {
+			if (!c.equals(this) && !this.knows(c)) {
+				actions.add(new RelationshipStartAction(this, c));
+			}
+		}
+		Graph<RelationshipGoalProgressState, ActionEdge> g = new DefaultDirectedWeightedGraph<RelationshipGoalProgressState, ActionEdge>(
+				ActionEdge.class);
+		Set<IPerson> known = this.relationships.keySet();
+		RelationshipGoalProgressState start = new RelationshipGoalProgressState(currentProgress, actionPoints,
+				new ArrayList<>());
+		g.addVertex(start);
+		HashSet<Integer> progresses = new HashSet<Integer>();
+		for (IAction action : actions) {
+			double progress = this.goalTracker.computeHypotheticalProgress(Arrays.asList(action), timeInYears,
+					originalRandom);
+
+			RelationshipGoalProgressState state = new RelationshipGoalProgressState(progress,
+					actionPoints - action.actionPointValue(), Arrays.asList(action));
+			if (!progresses.contains(state.samenessNumber())) {
+				progresses.add(state.samenessNumber());
+				g.addVertex(state);
+				g.addEdge(start, state, new ActionEdge(start, state, action, action.actionPointValue()));
+				if (!progresses.contains(progress)) {
+					firstStates.add(state);
+				}
+			}
+		}
+		for (IPerson p : known) {
+			RelationshipProgressAction action = new RelationshipProgressAction(this, p);
+			actions.add(action);
+			double progress = this.goalTracker.computeHypotheticalProgress(Arrays.asList(action), timeInYears,
+					originalRandom);
+			RelationshipGoalProgressState state = new RelationshipGoalProgressState(progress,
+					actionPoints - action.actionPointValue(), Arrays.asList(action));
+			if (!progresses.contains(state.samenessNumber())) {
+				progresses.add(state.samenessNumber());
+				g.addVertex(state);
+				g.addEdge(start, state, new ActionEdge(start, state, action, action.actionPointValue()));
+				firstStates.add(state);
+			}
+		}
+		/*
+		 * while (firstStates.stream().anyMatch(s -> s.actionPointsLeft > 0)) {
+		 * List<RelationshipGoalProgressState> nextLevel = new
+		 * ArrayList<RelationshipGoalProgressState>(); for
+		 * (RelationshipGoalProgressState s : firstStates) { for (IAction action
+		 * : actions) { if (s.actionPointsLeft >= action.actionPointValue()) {
+		 * double progress =
+		 * this.goalTracker.computeHypotheticalProgress(Arrays.asList(action),
+		 * timeInYears);
+		 * 
+		 * RelationshipGoalProgressState state = new
+		 * RelationshipGoalProgressState(progress, s.actionPointsLeft -
+		 * action.actionPointValue()); if (!progresses.contains(progress)) {
+		 * g.addVertex(state); g.addEdge(start, state, new ActionEdge(start,
+		 * state, action, action.actionPointValue())); if (progress >=
+		 * s.progress) { nextLevel.add(state); } } } } }
+		 * System.out.println(nextLevel.size()); firstStates = nextLevel; }
+		 */
+		// Depth First
+
+		// HashMap<RelationshipGoalProgressState, ActionEdge> cameFromEdge = new
+		// HashMap<RelationshipGoalProgressState, ActionEdge>();
+		Stack<RelationshipGoalProgressState> workLst = new Stack<RelationshipGoalProgressState>();
+		workLst.push(start);
+
+		while (!workLst.isEmpty()) {
+			RelationshipGoalProgressState state = workLst.pop();
+			if (!progresses.contains(state.hashCode())) {
+				for (IAction action : actions) {
+					if (state.actionPointsLeft >= action.actionPointValue()) {
+						double progress = this.goalTracker.computeHypotheticalProgress(Arrays.asList(action),
+								timeInYears, originalRandom);
+						if (!progresses.contains(progress)) {
+							List<IAction> actionList = new ArrayList<IAction>();
+							actionList.add(action);
+							actionList.addAll(state.actions);
+							RelationshipGoalProgressState next = new RelationshipGoalProgressState(progress,
+									state.actionPointsLeft - action.actionPointValue(), actionList);
+							g.addVertex(next);
+							ActionEdge edge = new ActionEdge(state, next, action, action.actionPointValue());
+							g.addEdge(state, next, edge);
+							if (progress > state.progress) {
+								workLst.push(next);
+							}
+						}
+					}
+				}
+			}
+		}
+		RelationshipGoalProgressState best = g.vertexSet().stream()
+				.max((v1, v2) -> Double.compare(v1.progress, v2.progress)).get();
+		for (IAction action : best.actions) {
+			action.enact(timeInYears, originalRandom);
+		}
+/*		if (this.isSingle()) {
+			System.out.println(this.isSingle());
+		}*/
+		goalTracker.updateMaxSuccess(timeInYears);
+	}
+
+	public boolean isSingle() {
+		return this.significantOther == null;
+	}
+
+>>>>>>> Stashed changes
 }

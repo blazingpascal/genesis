@@ -29,5 +29,17 @@ public class GoalTrackerImpl implements IGoalTracker{
 	public double computeGoalProgress(int year) {
 		return (romanticGoal.computeProgress(year) + platonicGoal.computeProgress(year))/2;
 	}
+
+	@Override
+	public double computeHypotheticalProgress(List<IAction> actions, int year, Random r) {
+		return (this.romanticGoal.computeHypotheticalProgress(actions, year, r) + 
+				this.platonicGoal.computeHypotheticalProgress(actions, year, r)) / 2;
+	}
+
+	@Override
+	public void updateMaxSuccess(int year) {
+		this.romanticGoal.updateCurrentMaxSuccess(year);
+		this.platonicGoal.updateCurrentMaxSuccess(year);
+	}
 	
 }

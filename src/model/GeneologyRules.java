@@ -5,9 +5,12 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 import model.person.IPerson;
+import model.relationship.RelationshipType;
 
 public class GeneologyRules {
-	private static final double BASE_MARRIAGE_CHANCE = .7;
+	public static final KinseyScaleType KINSEY_SCALE_TYPE = KinseyScaleType.HETERONORMATIVE;
+	
+	private static final double BASE_MARRIAGE_CHANCE = 1;
 	public static final int FEMALE_MIN_FERTILE_AGE = 18;
 	public static final int FEMALE_MAX_FERTILE_AGE = 50;
 	private static final int FEMALE_FERTILITY_AGE_RANGE = FEMALE_MAX_FERTILE_AGE - FEMALE_MIN_FERTILE_AGE;
@@ -15,7 +18,7 @@ public class GeneologyRules {
 	public static final int MALE_MAX_FERTILE_AGE = 50;
 	private static final int MALE_FERTILITY_AGE_RANGE = MALE_MAX_FERTILE_AGE - MALE_MIN_FERTILE_AGE;
 	private static final int MAX_MARRIAGE_AGE_GAP = 6;
-	private static final double BASE_PREGNANCY_CHANCE = .50;
+	private static final double BASE_PREGNANCY_CHANCE = 1;
 	private static final int PREFERRED_WIDOW_MOURNING_PERIOD = 3;
 
 	/*
@@ -79,7 +82,9 @@ public class GeneologyRules {
 			return 0;
 		}
 
-		double coupleChance = fertilityChance(p1) * fertilityChance(p2);
+		double coupleChance = fertilityChance(p1) * fertilityChance(p2) * 
+				// If they don't know each other how are they supposed to have kids?
+				(p1.knows(p2) ? p1.getRelationships().get(p2).romanticDesire() : 0);
 		boolean outOfWedlock = !p1.isMarriedTo(p2);
 		if (outOfWedlock) {
 			if (p1.isSingle() && p2.isSingle()) {
@@ -217,6 +222,10 @@ public class GeneologyRules {
 		if (p2.isMourningSpouse()) {
 			mChance *= Math.min(1, ((double) (p2.getTimeMourningSpouse() / PREFERRED_WIDOW_MOURNING_PERIOD)));
 		}
+		
+		if(p1.knows(p2) && p1.getRelationships().get(p2).getType() == RelationshipType.EX){
+			mChance *= 0.1;
+		}
 
         // Trait Attraction
 		return computeOverallAttraction(p1, p2, mChance);
@@ -230,7 +239,7 @@ public class GeneologyRules {
         double roleCompatibility = 
         		p1.getRole().computeRomanticCompatibility(p2.getRole());
 
-        return roleCompatibility * ((p1Pref + p2Pref) / 2);
+        return result * roleCompatibility * ((p1Pref + p2Pref) / 2);
 	}
 
     private static double modifyByTraitAttraction(double chance, IPerson p1, IPerson p2) {
@@ -264,7 +273,7 @@ public class GeneologyRules {
 	public static double computeRegard(IPerson p1, IPerson p2) {
 		Random r = new Random();
 
-		return r.nextDouble() - .4; // eventually this'll use platonic trait but we don't have any of those yet
+		return r.nextDouble() ; // eventually this'll use platonic trait but we don't have any of those yet
 	}
 
 	public static double computeDesire(IPerson p1, IPerson p2) {
@@ -279,10 +288,10 @@ public class GeneologyRules {
 		if (ageDiff == 0) {
 			mChance = 1;
 		} else {
-			mChance = Math.pow(Math.abs(ageDiff) + 0.001, -2);
+			mChance = Math.pow(Math.abs(ageDiff) + 0.001, -.15);
 		}
 
-		return computeOverallAttraction(p1, p2, mChance);
+		return Math.min(1, 2 * computeOverallAttraction(p1, p2, mChance));
 	}
 
 	public static String getRandomLastName(Random r) {
@@ -323,5 +332,19 @@ public class GeneologyRules {
 		 */
 		int rIndex = r.nextInt(femaleNames.size());
 		return femaleNames.get(rIndex);
+	}
+
+	public static double computeKinseyScaleValue(Random random) {
+		switch(KINSEY_SCALE_TYPE){
+		case HETERONORMATIVE:
+			return 0;
+		case MIXED:
+			return random.nextDouble();
+		case SKEWEXTREME:
+			return random.nextBoolean() ? 1 : 0;
+		default:
+			throw new IllegalStateException("Kinsey Scale type not supported");
+		
+		}
 	}
 }

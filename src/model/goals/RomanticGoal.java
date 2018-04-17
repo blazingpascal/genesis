@@ -9,6 +9,8 @@ import model.person.CombinationRole;
 import model.person.IPerson;
 import model.person.RomanticRole;
 import model.relationship.IRelationship;
+import model.relationship.RelationshipType;
+import model.spousehistory.ISpouseHistory;
 
 public class RomanticGoal extends AGoal {
 
@@ -59,7 +61,12 @@ public class RomanticGoal extends AGoal {
 			if(i >= romanticRelationships.size()){
 				break;
 			}
-			long duration = year - romanticRelationships.get(i).getAnniversaryYear();
+			IRelationship relationship = romanticRelationships.get(i);
+			long duration = year - relationship.getAnniversaryYear();
+			if(relationship.getType() == RelationshipType.WIDOW || relationship.getType() == RelationshipType.EX){
+				ISpouseHistory widower = refPerson.getSpousalHistory().stream().filter(sh -> sh.getSpouse().equals(relationship.p2())).findFirst().get();
+				duration = widower.getEndingYear() - widower.getAnniversaryYear();
+			}
 			double success = Math.min(1, (double)duration / desiredDurationPerRelationship);
 			rValue += success * (1.0 / desiredNumberOfRomanticRelationships);
 		}
@@ -67,8 +74,18 @@ public class RomanticGoal extends AGoal {
 	}
 
 	@Override
-	public double computeHypotheticalProgress(List<IAction> actions, long year) {
-		throw new IllegalStateException("Not implemented yet sorry");
+	public double computeHypotheticalProgress(List<IAction> actions, long year, Random r) {
+		List<IAction> reversed = new ArrayList<IAction>();
+		for(IAction action : actions){
+			action.enact((int)year, r);
+			reversed.add(0, action);
+		}
+		double progress = this.computeProgress(year);
+		for(IAction action : reversed){
+			action.reverse();
+		}
+		return progress;
 	}
+
 
 }

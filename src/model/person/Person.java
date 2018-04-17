@@ -213,8 +213,22 @@ class Person extends APersonalInfoPerson {
 	}
 
 	@Override
+<<<<<<< Updated upstream
 	public void doCareer() {
 		// TODO Auto-generated method stub
 		
 	}
+=======
+	public boolean divorce(int endyear) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setSpouseHistory(List<ISpouseHistory> sh) {
+		// TODO Auto-generated method stub
+		
+	}
+
+>>>>>>> Stashed changes
 }

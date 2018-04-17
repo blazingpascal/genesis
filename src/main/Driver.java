@@ -38,10 +38,10 @@ import model.relationship.RelationshipType;
 import model.spousehistory.ISpouseHistory;
 
 public class Driver {
-	public static final int STARTING_MALE_FOUNDERS = 250;
-	public static final int STARTING_FEMALE_FOUNDERS = 250;
+	public static final int STARTING_MALE_FOUNDERS = 50;
+	public static final int STARTING_FEMALE_FOUNDERS = 50;
 	public static final int MINIMUM_FOUNDER_AGE = 18;
-	public static final int MAXIMUM_FOUNDER_AGE = 25;
+	public static final int MAXIMUM_FOUNDER_AGE = 19;
 
 	public static void main(String[] args) throws IOException {
 		Scanner s = new Scanner(System.in);
@@ -66,61 +66,6 @@ public class Driver {
 					genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, age, GeneticsMap.randomGenes(new Random()),
 							ARole.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
 		}
-
-		// genesis.addSinglePerson("Eve", "Godwoman", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Amy", "Adams", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Bella", "Burke", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Catherine", "Collins", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Dina", "Driver", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Fiona", "Foreman", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Geraldine", "Gordon", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Hailey", "Henderson", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Illiana", "Irvin", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Jane", "Jones", Sex.FEMALE, 18);
-		// // More diversity
-		// genesis.addSinglePerson("Kathleen", "Knott", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Lily", "Locke", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Molly", "Merritt", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Natalie", "Nelson", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Ophelia", "Oakes", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Polly", "Peterson", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Quita", "Quest", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Rhonda", "Richardson", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Sally", "Saylor", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Tanya", "Thomas", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Uma", "Udell", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Valerie", "Vendell", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Wanda", "Walters", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Xena", "Xie", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Yolanda", "Yale", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Zarah", "Zimmerer", Sex.FEMALE, 18);
-		//
-		// genesis.addSinglePerson("Adam", "Godman", Sex.MALE, 18);
-		// genesis.addSinglePerson("Bob", "Bones", Sex.MALE, 18);
-		// genesis.addSinglePerson("Colin", "Carter", Sex.MALE, 18);
-		// genesis.addSinglePerson("David", "Darrell", Sex.MALE, 18);
-		// genesis.addSinglePerson("Fred", "Fontes", Sex.MALE, 18);
-		// genesis.addSinglePerson("Gino", "Giovanni", Sex.MALE, 18);
-		// genesis.addSinglePerson("Harold", "Harris", Sex.MALE, 18);
-		// genesis.addSinglePerson("Ivan", "Irvine", Sex.MALE, 18);
-		// genesis.addSinglePerson("Joe", "Jenkins", Sex.MALE, 18);
-		// // More Diversity
-		// genesis.addSinglePerson("Karl", "Kirk", Sex.MALE, 18);
-		// genesis.addSinglePerson("Leigh", "Larson", Sex.MALE, 18);
-		// genesis.addSinglePerson("Marvin", "Morrison", Sex.MALE, 18);
-		// genesis.addSinglePerson("Neil", "Neace", Sex.MALE, 18);
-		// genesis.addSinglePerson("Oliver", "O'Bryan", Sex.MALE, 18);
-		// genesis.addSinglePerson("Peter", "Polk", Sex.MALE, 18);
-		// genesis.addSinglePerson("Quinten", "Qua", Sex.MALE, 18);
-		// genesis.addSinglePerson("Richard", "Rockwell", Sex.MALE, 18);
-		// genesis.addSinglePerson("Samuel", "Sole", Sex.MALE, 18);
-		// genesis.addSinglePerson("Theodore", "Tucker", Sex.MALE, 18);
-		// genesis.addSinglePerson("Ulysses", "Ubel", Sex.MALE, 18);
-		// genesis.addSinglePerson("Victor", "Varaldi", Sex.MALE, 18);
-		// genesis.addSinglePerson("Winston", "Walker", Sex.MALE, 18);
-		// genesis.addSinglePerson("Xavier", "Xenos", Sex.MALE, 18);
-		// genesis.addSinglePerson("Yahir", "Yorrick", Sex.MALE, 18);
-		// genesis.addSinglePerson("Zachary", "Zuckerberg", Sex.MALE, 18);
 
 		int target = Integer.parseInt(args[1]);
 		StopCondition condition;
@@ -168,8 +113,8 @@ public class Driver {
 		System.out.println("Now printing output.");
 		outputFamilyScript(prefix, genesis);
 		System.out.println("Family script outputted");
-		outputLifeEvents(prefix, genesis);
-		System.out.println("Life events outputted.");
+	/*	outputLifeEvents(prefix, genesis);
+		System.out.println("Life events outputted.");*/
 		outputPersonStats(prefix, genesis);
 		System.out.println("Person stats outputted");
 		outputFounderInfo(prefix, founders);
@@ -428,7 +373,7 @@ public class Driver {
 				lst.add(Boolean.toString(p.isLiving()));
 				lst.add(g.getTitle());
 				lst.add(g.getDescription());
-				lst.add(Double.toString(g.computeProgress(genesis.getYear())));
+				lst.add(Double.toString(g.getCurrentMaxSuccess()));
 				writer.write(String.join(",", lst));
 				writer.flush();
 				writer.write("\n");

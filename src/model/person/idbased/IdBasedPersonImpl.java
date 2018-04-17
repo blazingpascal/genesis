@@ -12,9 +12,10 @@ import model.person.APersonalInfoPerson;
 import model.person.IPerson;
 import model.person.ARole;
 import model.personality.IPersonality;
+import model.relationship.RelationshipType;
 import model.spousehistory.ISpouseHistory;
 
-class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
+class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson {
 
 	int genesisId;
 	String motherId = null;
@@ -32,16 +33,10 @@ class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
 	protected IdBasedPersonImpl(String firstName, String lastName, Sex sex, int age, int generation, int birthYear,
 			int genesisId, GeneticsMap genes, ARole role, IPersonality personality) {
 		super(firstName, lastName, sex, age, generation, birthYear,
-				firstName + lastName + 
-				IdGenesisMapCollection.getGenesisIdCount(genesisId), 
-				genes, role, personality);
+				firstName + lastName + IdGenesisMapCollection.getGenesisIdCount(genesisId), genes, role, personality);
 		this.genesisId = genesisId;
 	}
 
-	@Override
-	public boolean isSingle() {
-		return spouseId == null;
-	}
 
 	@Override
 	public boolean relationLevelMax(IPerson p2, int depth) {
@@ -176,10 +171,10 @@ class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
 		fiance.stopMourning();
 		this.spouseId = fiance.getId();
 		notifyGenesisOfMarriage(this, fiance, year);
-		
+
 	}
 
-	private void notifyGenesisOfMarriage(IPerson s1,IPerson s2, int anniversaryYear) {
+	private void notifyGenesisOfMarriage(IPerson s1, IPerson s2, int anniversaryYear) {
 		getHomeGenesis().reactToMarriage(s1, s2, anniversaryYear);
 	}
 
@@ -235,6 +230,7 @@ class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
 	@Override
 	protected void makeSpouseWidow(int deathYear) {
 		if (getSpouse() != null) {
+			this.relationships.get(getSpouse()).setType(RelationshipType.WIDOW);
 			getSpouse().makeWidow(deathYear);
 			getSpouse().startMourning();
 			notifyGenesisOfWidowhood(deathYear);
@@ -243,7 +239,7 @@ class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
 
 	private void notifyGenesisOfWidowhood(int widowYear) {
 		getHomeGenesis().reactToWidowhood(this, widowYear);
-		
+
 	}
 
 	@Override
@@ -263,7 +259,8 @@ class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
 	@Override
 	protected APersonalInfoPerson createPerson(String firstName, String lastName, Sex sex, int age, int generation,
 			int birthYear, GeneticsMap genes, ARole role, IPersonality personality) {
-		return new IdBasedPersonImpl(firstName, lastName, sex, age, generation, birthYear, this.genesisId, genes, role, personality);
+		return new IdBasedPersonImpl(firstName, lastName, sex, age, generation, birthYear, this.genesisId, genes, role,
+				personality);
 	}
 
 	@Override
@@ -279,7 +276,7 @@ class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
 	@Override
 	public void incrementAge() {
 		super.incrementAge();
-		int year = (int)getHomeGenesis().getYear();
+		int year = (int) getHomeGenesis().getYear();
 		if (this.age == GeneologyRules.MIN_MARRIAGE_AGE) {
 			notifyGenesisOfPairablePerson(year);
 		}
@@ -354,7 +351,31 @@ class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
 
 	@Override
 	public void makeWidow(int endYear) {
+		this.relationships.get(this.getSpouse()).setType(RelationshipType.WIDOW);
 		this.spouseId = null;
-		this.spouseHistory.get(this.spouseHistory.size() - 1).setEndingYear(endYear);
+		//this.spouseHistory.get(this.spouseHistory.size() - 1).setEndingYear(endYear);
 	}
+
+	@Override
+	public boolean divorce(int endYear) {
+		if (this.spouseId != null && !this.spouseHistory.isEmpty()) {
+			this.spouseHistory.get(this.spouseHistory.size() - 1).setEndingYear(endYear);
+			List<ISpouseHistory> exSpouseHistory = this.getSpouse().getSpousalHistory();
+			exSpouseHistory.get(exSpouseHistory.size() - 1).setEndingYear(endYear);
+			this.relationships.get(getSpouse()).setType(RelationshipType.EX);
+			this.relationships.get(getSpouse()).setType(RelationshipType.EX);
+			this.getSpouse().setSpouse(null);
+			this.spouseId = null;
+			
+			return true;
+		}
+		return false;
+
+	}
+
+	@Override
+	public void setSpouseHistory(List<ISpouseHistory> sh) {
+		this.spouseHistory = sh;
+	}
+
 }

@@ -11,7 +11,9 @@ public enum RelationshipType {
   FRIEND(.3, 1, false),
   PARTNER(.3, .5, true),
   FIANCE(.5, .7, true),
-  SPOUSE(.7, 1, true);
+  SPOUSE(.7, 1, true), 
+  WIDOW(-100, -100, true), 
+  EX(-100, -100, true);
 
   private final double lowerThreshold;
   private final double upperThreshold;

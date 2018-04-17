@@ -67,12 +67,15 @@ public class PlatonicGoal extends AGoal {
 
 	@Override
 	public double computeProgress(long year) {
-		double rValue = 0;
+		Collection<IRelationship> relationships = refPerson.getRelationships().values();
+		double rValue = Math.min(1, relationships.size() / (double) (numFriends + numEnemies)) * .1;
 		List<IRelationship> positives = new ArrayList<IRelationship>();
 		List<IRelationship> negatives = new ArrayList<IRelationship>();
-		float friendContributor =  (1f/numFriends) * ((float) numFriends / (numFriends + numEnemies));
-		float enemyContributor = (1f/numEnemies) * ((float) numEnemies / (numFriends + numEnemies));
-		for (IRelationship r : refPerson.getRelationships().values()) {
+		// Relations are most but not all the battle
+		float friendContributor =  (1f/numFriends) * ((float) numFriends / (numFriends + numEnemies)) * .9f;
+		float enemyContributor = (1f/numEnemies) * ((float) numEnemies / (numFriends + numEnemies)) * .9f;
+
+		for (IRelationship r : relationships) {
 			if (r.regard() > 0) {
 				positives.add(r);
 			} else if (r.regard() < 0) {
@@ -97,7 +100,16 @@ public class PlatonicGoal extends AGoal {
 	}
 
 	@Override
-	public double computeHypotheticalProgress(List<IAction> actions, long year) {
-		throw new IllegalStateException("Not implemented yet sorry");
+	public double computeHypotheticalProgress(List<IAction> actions, long year, Random r) {
+		List<IAction> reversed = new ArrayList<IAction>();
+		for(IAction action : actions){
+			action.enact((int)year, r);
+			reversed.add(0, action);
+		}
+		double progress = this.computeProgress(year);
+		for(IAction action : reversed){
+			action.reverse();
+		}
+		return progress;
 	}
 }

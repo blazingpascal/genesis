@@ -136,7 +136,17 @@ public interface IPerson {
 	
 	IGoalTracker getGoalTracker();
 
+<<<<<<< Updated upstream
     void doCareer();
 
 	CareerManager getCareer();
+=======
+	boolean divorce(int endYear);
+	
+	double kinseyScaleValue();
+
+	void doBestRelationshipActions(int timeInYears, List<IPerson> candidates);
+
+	void setSpouseHistory(List<ISpouseHistory> sh);
+>>>>>>> Stashed changes
 }

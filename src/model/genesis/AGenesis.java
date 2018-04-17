@@ -71,6 +71,19 @@ public abstract class AGenesis implements IGenesis {
 		for (IPerson p : livingPopulation()) {
 			p.incrementAge();
 			p.doCareer();
+			List<IPerson> possibleCandidates = new ArrayList<IPerson>();
+			possibleCandidates.addAll(livingPopulation);
+			List<IPerson> candidates = new ArrayList<IPerson>();
+			Collections.shuffle(possibleCandidates);
+			possibleCandidates.removeIf(o -> p.knows(o));
+			for (int i = 0; i < 20 && i < possibleCandidates.size(); i++) {
+				candidates.add(possibleCandidates.get(i));
+			}
+			p.doBestRelationshipActions(this.timeInYears, candidates);
+			/*
+			 * if(!p.isSingle()){ System.out.printf("%s/%s\n", p.getId(),
+			 * p.getSignificantOther().getId()); }
+			 */
 		}
 		progressRelationships(r);
 		meetPeople(r);
