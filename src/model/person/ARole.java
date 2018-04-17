@@ -40,6 +40,18 @@ public abstract class ARole implements Comparable<ARole> {
 		throw new IllegalStateException("Only other Romantic Roles should be used to compute compatibility");
 	}
 
+    public double computeCareerProgressionModifier() {
+        throw new IllegalStateException("This is not the job of this role");
+    }
+
+    public double getCareerFocus() {
+        throw new IllegalStateException("This is not the job of this role");
+    }
+
+    public double getCareerTenacity() {
+        throw new IllegalStateException("This is not the job of this role");
+    }
+
 	@Override
 	public String toString() {
 		return this.title;

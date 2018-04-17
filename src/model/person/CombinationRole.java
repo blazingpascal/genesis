@@ -48,6 +48,21 @@ public class CombinationRole extends ARole {
 		return this.romantic.computeRomanticCompatibility(r);
 	}
 
+    @Override
+    public double computeCareerProgressionModifier() {
+        return this.career.computeCareerProgressionModifier();
+    }
+
+    @Override
+    public double getCareerFocus() {
+        return this.career.getCareerFocus();
+    }
+
+    @Override
+    public double getCareerTenacity() {
+        return this.career.getCareerTenacity();
+    }
+
 	protected ARole mergeCoR(CombinationRole cr) {
 		RomanticRole romantic = (RomanticRole) this.romantic.merge(cr.romantic);
 		PlatonicRole platonic = (PlatonicRole) this.platonic.merge(cr.platonic);
@@ -71,4 +86,12 @@ public class CombinationRole extends ARole {
 		return narrative;
 	}
 
+
+	public Double tenacity() {
+		return career.tenacity();
+	}
+	
+	public Double focus(){
+		return career.focus();
+	}
 }

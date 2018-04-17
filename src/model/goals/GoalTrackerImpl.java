@@ -10,17 +10,18 @@ public class GoalTrackerImpl implements IGoalTracker{
 
 	private final RomanticGoal romanticGoal;
 	private final PlatonicGoal platonicGoal;
-	//private final CareerGoal careerGoal;
+	private final CareerGoal careerGoal;
 	//private final NarrativeGoal narrativeGoal;
 	
 	public GoalTrackerImpl(IPerson p, Random r){
 		romanticGoal = new RomanticGoal(p, r);
 		platonicGoal = new PlatonicGoal(p, r);
+		careerGoal = new CareerGoal(p, r);
 	}
 	
 	@Override
 	public List<IGoal> getGoals() {
-		return Arrays.asList(romanticGoal, platonicGoal);
+		return Arrays.asList(romanticGoal, platonicGoal, careerGoal);
 	}
 
 	@Override

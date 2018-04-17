@@ -18,6 +18,7 @@ import java.util.Scanner;
 
 import model.GeneologyRules;
 import model.Sex;
+import model.career.Job;
 import model.genesis.IGenesis;
 import model.genesis.idbased.ILifeEventEnabledGenesis;
 import model.genesis.idbased.LifeEventEnabledGenesisImpl;
@@ -29,6 +30,7 @@ import model.lifeevents.BirthLifeEvent;
 import model.lifeevents.ILifeEvent;
 import model.person.IPerson;
 import model.person.ARole;
+import model.person.CombinationRole;
 import model.personality.IPersonality;
 import model.personality.PersonalityTrait;
 import model.relationship.IRelationship;
@@ -434,6 +436,93 @@ public class Driver {
 			}
 		}
 		writer.close();
+	}
+
+	private static void outputCareerStats(String prefix, IGenesis genesis) throws IOException {
+		File file = new File("output/" + prefix + "-careerStats.csv");
+		FileWriter fileWriter = new FileWriter(file);
+		List<IPerson> population = genesis.historicalPopulation();
+		HashMap<String, List<IPerson>> map = new HashMap<String, List<IPerson>>();
+		// TODO This is such a band-aid solution
+		map.put("Journalism", new ArrayList<IPerson>());
+		map.put("Unemployed", new ArrayList<IPerson>());
+		for (IPerson p : population) {
+			Job j = p.getCareer().currentJob();
+			String jobName = j == null ? "Unemployed" : j.getJobTypeTitle();
+			map.get(jobName).add(p);
+		}
+		fileWriter.write("Occupation,Average Age, Number of Men, Number of Women, " + "Average Openness, "
+				+ "Average Conscientiousness, Average Extraversion," + " Average Agressableness, Average Neuroticism, "
+				+ "Average Tenacity, Average Focus\n");
+		for (Entry<String, List<IPerson>> e : map.entrySet()) {
+			List<IPerson> employees = e.getValue();
+			List<Double> ageLst = new ArrayList<Double>();
+			List<Double> oLst = new ArrayList<Double>();
+			List<Double> cLst = new ArrayList<Double>();
+			List<Double> eLst = new ArrayList<Double>();
+			List<Double> agrLst = new ArrayList<Double>();
+			List<Double> nLst = new ArrayList<Double>();
+			List<Double> tLst = new ArrayList<Double>();
+			List<Double> fLst = new ArrayList<Double>();
+			for (IPerson p : employees) {
+				ageLst.add((double) p.getAge());
+				IPersonality personality = p.getPersonality();
+				oLst.add(personality.getTraitValue(PersonalityTrait.OPENNESS));
+				cLst.add(personality.getTraitValue(PersonalityTrait.CONSCIENTIOUSNESS));
+				eLst.add(personality.getTraitValue(PersonalityTrait.EXTRAVERSION));
+				agrLst.add(personality.getTraitValue(PersonalityTrait.AGREEABLENESS));
+				nLst.add(personality.getTraitValue(PersonalityTrait.NEUROTICISM));
+				CombinationRole role = (CombinationRole) p.getRole();
+				tLst.add(role.tenacity());
+				fLst.add(role.focus());
+			}
+			fileWriter.write(e.getKey());
+			fileWriter.write(",");
+			// Average age
+			fileWriter.write(Double.toString(mean(ageLst)));
+			fileWriter.write(",");
+			// Number of Men
+			fileWriter.write(Long.toString(employees.stream().filter(empl -> empl.getSex() == Sex.MALE).count()));
+			fileWriter.write(",");
+			// Number of Women
+			fileWriter.write(Long.toString(employees.stream().filter(empl -> empl.getSex() == Sex.FEMALE).count()));
+			fileWriter.write(",");
+			// Average Openness
+			fileWriter.write(Double.toString(mean(oLst)));
+			fileWriter.write(",");
+			// Average Conscientiousness
+			fileWriter.write(Double.toString(mean(cLst)));
+			fileWriter.write(",");
+			// Average Extraversion
+			fileWriter.write(Double.toString(mean(eLst)));
+			fileWriter.write(",");
+			// Average Agreeableness
+			fileWriter.write(Double.toString(mean(agrLst)));
+			fileWriter.write(",");
+			// Average Neuroticism
+			fileWriter.write(Double.toString(mean(nLst)));
+			fileWriter.write(",");
+			// Average Role Tenacity
+			fileWriter.write(Double.toString(mean(tLst)));
+			fileWriter.write(",");
+			// Average Role Focus
+			fileWriter.write(Double.toString(mean(fLst)));
+			fileWriter.write("\n");
+		}
+		fileWriter.close();
+	}
+
+	private static double mean(List<Double> lst) {
+		double sum = sum(lst);
+		return sum / lst.size();
+	}
+
+	private static double sum(List<Double> lst) {
+		double sum = 0;
+		for (Number n : lst) {
+			sum += n.doubleValue();
+		}
+		return sum;
 	}
 
 }

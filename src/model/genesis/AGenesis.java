@@ -70,6 +70,7 @@ public abstract class AGenesis implements IGenesis {
 		timeInYears++;
 		for (IPerson p : livingPopulation()) {
 			p.incrementAge();
+			p.doCareer();
 		}
 		progressRelationships(r);
 		meetPeople(r);
