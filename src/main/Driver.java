@@ -124,6 +124,9 @@ public class Driver {
 		// genesis.addSinglePerson("Yahir", "Yorrick", Sex.MALE, 18);
 		// genesis.addSinglePerson("Zachary", "Zuckerberg", Sex.MALE, 18);
 
+
+        if(args.length == 0) args = new String[] {"years", "100", "output"};
+
 		int target = Integer.parseInt(args[1]);
 		StopCondition condition;
 		String mode = args[0];
@@ -572,8 +575,8 @@ public class Driver {
 				agrLst.add(personality.getTraitValue(PersonalityTrait.AGREEABLENESS));
 				nLst.add(personality.getTraitValue(PersonalityTrait.NEUROTICISM));
 				CombinationRole role = (CombinationRole) p.getRole();
-				tLst.add(role.tenacity());
-				fLst.add(role.focus());
+				tLst.add(role.getCareerTenacity());
+				fLst.add(role.getCareerFocus());
 			}
 			fileWriter.write(e.getKey());
 			fileWriter.write(",");
