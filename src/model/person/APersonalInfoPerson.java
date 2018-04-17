@@ -7,6 +7,8 @@ import model.Sex;
 import model.career.CareerManager;
 import model.genetics.GeneticsMap;
 import model.genetics.JSONTraits;
+import model.goals.GoalTrackerImpl;
+import model.goals.IGoalTracker;
 import model.personality.IPersonality;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
@@ -34,10 +36,15 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected ARole role;
 	protected HashMap<String, Integer> preferences;
 	protected IPersonality personality;
+	protected IGoalTracker goalTracker;
     protected CareerManager career;
 
 	public CareerManager getCareer() {
 		return career;
+	}
+
+	public IGoalTracker getGoalTracker() {
+		return goalTracker;
 	}
 
 	// Relationships
@@ -59,6 +66,7 @@ public abstract class APersonalInfoPerson implements IPerson {
         this.preferences = getRandomPreferences(new Random());
 		this.relationships = new HashMap<>();
 		this.personality = personality;
+		this.goalTracker = new GoalTrackerImpl(this, new Random());
         this.career = new CareerManager(this);
 	}
 

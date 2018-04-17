@@ -6,6 +6,7 @@ import model.GeneologyRules;
 import model.Sex;
 import model.genesis.GenesisImpl;
 import model.genetics.GeneticsMap;
+import model.goals.IGoalTracker;
 import model.personality.IPersonality;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
@@ -203,5 +204,17 @@ class Person extends APersonalInfoPerson {
 	@Override
 	public void makeWidow(int endYear) {
 		this.spouse = null;
+	}
+
+	@Override
+	public IGoalTracker getGoalTracker() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void doCareer() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -27,7 +27,7 @@ public class Job {
                 if (level < 9) {
                     level++;
                     performance = 0;
-                    System.out.println(manager.getPerson().getFullName() + " promoted to " + level);
+                    //System.out.println(manager.getPerson().getFullName() + " promoted to " + level);
                 }
             } else if (performance <= -1) {
                 this.status = 1;

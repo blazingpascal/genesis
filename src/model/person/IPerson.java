@@ -5,6 +5,7 @@ import java.util.*;
 import model.Sex;
 import model.career.CareerManager;
 import model.genetics.GeneticsMap;
+import model.goals.IGoalTracker;
 import model.person.idbased.IIdBasedPerson;
 import model.personality.IPersonality;
 import model.relationship.IRelationship;
@@ -132,6 +133,8 @@ public interface IPerson {
 	IPerson getSignificantOther();
 	
 	IPersonality getPersonality();
+	
+	IGoalTracker getGoalTracker();
 
     void doCareer();
 

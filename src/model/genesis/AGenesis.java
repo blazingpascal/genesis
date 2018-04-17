@@ -14,10 +14,10 @@ public abstract class AGenesis implements IGenesis {
 	protected int timeInYears = 1900;
 	int maxGen = 0;
 
-	private static final int COUPLING_ATTEMPTS_PER_YEAR = 1;
-	private static final int PREGNANCY_ATTEMPTS_PER_YEAR = 2;
-	private static final int MEETING_ATTEMPTS_PER_YEAR = 1;
-	private static final int RELATIONSHIP_CHANGES_PER_YEAR = 5;
+	private static final int COUPLING_ATTEMPTS_PER_YEAR = 5;
+	private static final int PREGNANCY_ATTEMPTS_PER_YEAR = 5;
+	private static final int MEETING_ATTEMPTS_PER_YEAR = 10;
+	private static final int RELATIONSHIP_CHANGES_PER_YEAR = 20;
 
 	@Override
 	public final void incrementTime(int yearsPast, Random r0) {
@@ -70,16 +70,13 @@ public abstract class AGenesis implements IGenesis {
 		timeInYears++;
 		for (IPerson p : livingPopulation()) {
 			p.incrementAge();
+			p.doCareer();
 		}
 		progressRelationships(r);
 		meetPeople(r);
 		pairOffCouples(r);
 		tryForBabies(r);
 		evaluateDeath(r);
-
-        for(IPerson p : livingPopulation()) {
-            p.doCareer();
-        }
 		cleanUp();
 	}
 
