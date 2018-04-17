@@ -1,6 +1,10 @@
 package model.career;
 
 import model.career.occupations.AOccupation;
+import model.goals.JoinedJobEvent;
+import model.lifeevents.QuitJobEvent;
+import model.lifeevents.RetirementEvent;
+import model.lifeevents.TakeLeaveEvent;
 import model.person.APersonalInfoPerson;
 
 import java.util.ArrayList;
@@ -49,6 +53,8 @@ public class CareerManager {
     private int jobAttempts;
     private int maxAttempts;
     private AOccupation[] careerRanking;
+  
+  	private ArrayList<Job> previousJobs;
 
     public CareerManager(APersonalInfoPerson person) {
         this.person = person;
@@ -59,6 +65,11 @@ public class CareerManager {
         this.maxAttempts = calculateMaxAttempts();
         this.careerRanking = rankCareers();
     }
+  
+  	public ArrayList<Job> getPreviousJobs() {
+      return previousJobs;
+    }
+
 
     private int calculateMaxAttempts() {
         double focus = Math.pow(person.getRole().getCareerFocus(), 1.5);
@@ -138,29 +149,38 @@ public class CareerManager {
                     }
                 }
             }
-
-            return Optional.of(new Job(occupation, level));
+            Job j = new Job(occupation, level);
+  					person.addLifeEvent(new JoinedJobEvent(person, j, year));
+            return Optional.of(j);
         }
         jobAttempts++;
         return Optional.empty();
+    }
+  
+  	public boolean attemptQuit(int year) {
+      double focus = person.getRole().getCareerFocus();
+      double chance = Math.pow((1 - focus) / 2, 2) + 0.05;
+      boolean b = r.nextDouble() < chance;
+      if (b) {
+        this.person.addLifeEvent(new QuitJobEvent(this.person, currentJob.get(), year));
+        quitJob();
+      }
+      return b;
+    }
+
+    public void attemptTakeLeave(int year) {
+      if (r.nextDouble() < 0.1) {
+        currentJob.get().takeLeave();
+        this.person.addLifeEvent(new TakeLeaveEvent(this.person, this.currentJob.get(), year));
+      }
     }
 
     public boolean attemptRetire() {
         double tenacity = person.getRole().getCareerTenacity();
         double chance = (1 - tenacity) / 2 + 0.1;
-        return r.nextDouble() < chance;
-    }
-
-    public boolean attemptQuit() {
-        double focus = person.getRole().getCareerFocus();
-        double chance = Math.pow((1 - focus) / 2, 2) + 0.05;
         boolean b = r.nextDouble() < chance;
-        if(b) quitJob();
+			  if(b) person.addLifeEvent(new RetirementEvent(person, currentJob.get(), year));
         return b;
-    }
-
-    public void attemptTakeLeave() {
-        if(r.nextDouble() < 0.1) currentJob.get().takeLeave();
     }
 
     public void fired() {

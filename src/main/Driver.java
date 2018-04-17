@@ -19,15 +19,14 @@ import java.util.Scanner;
 
 import model.GeneologyRules;
 import model.Sex;
-import model.career.CareerManager;
 import model.career.Job;
-import model.career.occupations.AOccupation;
 import model.genesis.IGenesis;
 import model.genesis.idbased.ILifeEventEnabledGenesis;
 import model.genesis.idbased.LifeEventEnabledGenesisImpl;
 import model.genetics.GeneticsMap;
 import model.genetics.JSONTraits;
 import model.genetics.TraitData;
+import model.goals.IGoal;
 import model.lifeevents.BirthLifeEvent;
 import model.lifeevents.ILifeEvent;
 import model.person.IPerson;
@@ -68,61 +67,6 @@ public class Driver {
 					genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, age, GeneticsMap.randomGenes(new Random()),
 							ARole.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
 		}
-
-		// genesis.addSinglePerson("Eve", "Godwoman", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Amy", "Adams", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Bella", "Burke", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Catherine", "Collins", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Dina", "Driver", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Fiona", "Foreman", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Geraldine", "Gordon", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Hailey", "Henderson", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Illiana", "Irvin", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Jane", "Jones", Sex.FEMALE, 18);
-		// // More diversity
-		// genesis.addSinglePerson("Kathleen", "Knott", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Lily", "Locke", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Molly", "Merritt", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Natalie", "Nelson", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Ophelia", "Oakes", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Polly", "Peterson", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Quita", "Quest", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Rhonda", "Richardson", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Sally", "Saylor", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Tanya", "Thomas", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Uma", "Udell", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Valerie", "Vendell", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Wanda", "Walters", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Xena", "Xie", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Yolanda", "Yale", Sex.FEMALE, 18);
-		// genesis.addSinglePerson("Zarah", "Zimmerer", Sex.FEMALE, 18);
-		//
-		// genesis.addSinglePerson("Adam", "Godman", Sex.MALE, 18);
-		// genesis.addSinglePerson("Bob", "Bones", Sex.MALE, 18);
-		// genesis.addSinglePerson("Colin", "Carter", Sex.MALE, 18);
-		// genesis.addSinglePerson("David", "Darrell", Sex.MALE, 18);
-		// genesis.addSinglePerson("Fred", "Fontes", Sex.MALE, 18);
-		// genesis.addSinglePerson("Gino", "Giovanni", Sex.MALE, 18);
-		// genesis.addSinglePerson("Harold", "Harris", Sex.MALE, 18);
-		// genesis.addSinglePerson("Ivan", "Irvine", Sex.MALE, 18);
-		// genesis.addSinglePerson("Joe", "Jenkins", Sex.MALE, 18);
-		// // More Diversity
-		// genesis.addSinglePerson("Karl", "Kirk", Sex.MALE, 18);
-		// genesis.addSinglePerson("Leigh", "Larson", Sex.MALE, 18);
-		// genesis.addSinglePerson("Marvin", "Morrison", Sex.MALE, 18);
-		// genesis.addSinglePerson("Neil", "Neace", Sex.MALE, 18);
-		// genesis.addSinglePerson("Oliver", "O'Bryan", Sex.MALE, 18);
-		// genesis.addSinglePerson("Peter", "Polk", Sex.MALE, 18);
-		// genesis.addSinglePerson("Quinten", "Qua", Sex.MALE, 18);
-		// genesis.addSinglePerson("Richard", "Rockwell", Sex.MALE, 18);
-		// genesis.addSinglePerson("Samuel", "Sole", Sex.MALE, 18);
-		// genesis.addSinglePerson("Theodore", "Tucker", Sex.MALE, 18);
-		// genesis.addSinglePerson("Ulysses", "Ubel", Sex.MALE, 18);
-		// genesis.addSinglePerson("Victor", "Varaldi", Sex.MALE, 18);
-		// genesis.addSinglePerson("Winston", "Walker", Sex.MALE, 18);
-		// genesis.addSinglePerson("Xavier", "Xenos", Sex.MALE, 18);
-		// genesis.addSinglePerson("Yahir", "Yorrick", Sex.MALE, 18);
-		// genesis.addSinglePerson("Zachary", "Zuckerberg", Sex.MALE, 18);
 
 		int target = Integer.parseInt(args[1]);
 		StopCondition condition;
@@ -178,117 +122,52 @@ public class Driver {
 		System.out.println("Founder stats outputted");
 		outputRelationshipInfo(prefix, genesis);
 		System.out.println("Relationship info stats outputted");
-		outputStats(prefix, genesis);
-		System.out.println("Relationship stats outputted");
-		outputCareerStats(prefix, genesis);
-		System.out.println("Career stats outputted");
+		outputGoals(prefix, genesis);
+		System.out.println("Goal Success Stats outputted");
+		outputDiverseSampleActions(prefix, genesis);
+		System.out.println("Diverse Samples Outputted");
+
 		System.out.println("All files outputted!");
-		
 
 	}
 
-	private static void outputStats(String prefix, ILifeEventEnabledGenesis genesis) throws IOException {
-		File file = new File("output/" + prefix + "-statsInfo.csv");
-		FileWriter fileWriter = new FileWriter(file);
-		fileWriter.write("Relationship Type, Mean Attraction, Median Attraction, "
-				+ "Mean Compatibility, Median Compatibility, Mean Regard, "
-				+ "Median Regard, Mean Desire, Median Desire, Count\n");
-		HashMap<RelationshipType, List<IRelationship>> map = new HashMap<RelationshipType, List<IRelationship>>();
-		for (RelationshipType rt : RelationshipType.values()) {
-			map.put(rt, new ArrayList<IRelationship>());
+	private static void outputDiverseSampleActions(String prefix, ILifeEventEnabledGenesis genesis) throws IOException {
+		File dir = new File("output/" + prefix + "-diverseSamples/");
+		dir.mkdir();
+		List<IPerson> historicalPopulation = genesis.historicalPopulation();
+		historicalPopulation.removeIf(p -> p.getAge() > 50);
+		Collections.shuffle(historicalPopulation);
+		List<IPerson> sample = new ArrayList<IPerson>();
+		for (int i = 0; i < 20; i++) {
+			sample.add(historicalPopulation.get(i));
 		}
-		for (IPerson p : genesis.historicalPopulation()) {
-			for (IRelationship r : p.getRelationships().values()) {
-				map.get(r.getType()).add(r);
+
+		for (IPerson p : sample) {
+			String personID = p.getId();
+			File file = new File("output/" + prefix + "-diverseSamples/" + personID + "-lifeEvents.csv");
+			FileWriter fileWriter = new FileWriter(file);
+			fileWriter.write("Date, Type, Title, Description\n");
+			DateFormat df = new SimpleDateFormat("dd/mm/yyyy");
+			for (ILifeEvent le : p.getLifeEvents()) {
+				// Year
+				fileWriter.write(df.format(le.getLifeEventDate()) + ",");
+				// Type
+				fileWriter.write(le.getLifeEventType() + ",");
+				// Title
+				fileWriter.write(le.getLifeEventTitle() + ",");
+				// Description
+				fileWriter.write(le.getLifeEventDescription() + "\n");
 			}
+			fileWriter.flush();
+			fileWriter.close();
 		}
-		for (RelationshipType rt : RelationshipType.values()) {
-			List<IRelationship> rs = map.get(rt);
-			List<Double> attractions = new ArrayList<Double>();
-			List<Double> compatibilities = new ArrayList<Double>();
-			List<Double> regards = new ArrayList<Double>();
-			List<Double> desires = new ArrayList<Double>();
-			for (IRelationship r : rs) {
-				IPerson p1 = r.p1();
-				IPerson p2 = r.p2();
-				if (!p1.isSingle()) {
-					p1.makeWidow(0);
-					p1.stopMourning();
-				}
-				if (!p2.isSingle()) {
-					p2.makeWidow(0);
-					p2.stopMourning();
-				}
-				attractions.add(GeneologyRules.marriageChance(p1, p2));
-				compatibilities.add(GeneologyRules.computeRegard(p1, p2));
-				regards.add(r.regard());
-				desires.add(r.romanticDesire());
-			}
-			fileWriter.write(rt.toString());
-			fileWriter.write(",");
-			// Mean Attraction
-			fileWriter.write(Double.toString(mean(attractions)));
-			fileWriter.write(",");
-			// Median Attraction
-			fileWriter.write(Double.toString(median(attractions)));
-			fileWriter.write(",");
-			// Mean Compatibility
-			fileWriter.write(Double.toString(mean(compatibilities)));
-			fileWriter.write(",");
-			// Median Compatibility
-			fileWriter.write(Double.toString(median(compatibilities)));
-			fileWriter.write(",");
-			// Mean Regard
-			fileWriter.write(Double.toString(mean(regards)));
-			fileWriter.write(",");
-			// Median Regard
-			fileWriter.write(Double.toString(median(regards)));
-			fileWriter.write(",");
-			// Mean Desire
-			fileWriter.write(Double.toString(mean(desires)));
-			fileWriter.write(",");
-			// Median Desire
-			fileWriter.write(Double.toString(median(desires)));
-			fileWriter.write(",");
-			// Number of Relationships of This Type
-			fileWriter.write(Integer.toString(rs.size()));
-			fileWriter.write("\n");
-		}
-		fileWriter.close();
-
-	}
-
-	private static double median(List<Double> lst) {
-		if (lst.isEmpty()) {
-			return Integer.MIN_VALUE;
-		}
-		List<Double> cloneLst = new ArrayList<Double>();
-		cloneLst.addAll(lst);
-		Collections.sort(cloneLst);
-		return cloneLst.get(lst.size() / 2);
-
-	}
-
-	private static double mean(List<Double> lst) {
-		double sum = sum(lst);
-		return sum / lst.size();
-	}
-
-	private static double sum(List<Double> lst) {
-		double sum = 0;
-		for (Number n : lst) {
-			sum += n.doubleValue();
-		}
-		return sum;
 	}
 
 	private static void outputRelationshipInfo(String prefix, ILifeEventEnabledGenesis genesis) throws IOException {
 		File file = new File("output/" + prefix + "-relationshipInfo.csv");
 		FileWriter fileWriter = new FileWriter(file);
-		fileWriter.write("Person1,Person2,Regard,Desire,StartYear,RelationshipType,Attraction,Compatability\n");
-		List<IPerson> historicalPopulation = genesis.historicalPopulation();
-		int i = 0;
-		for (IPerson p : historicalPopulation) {
+		fileWriter.write("Person1,Person2,Regard,Desire,StartYear,RelationshipType,Desire\n");
+		for (IPerson p : genesis.historicalPopulation()) {
 			Map<IPerson, IRelationship> relationships = p.getRelationships();
 			for (Entry<IPerson, IRelationship> pair : relationships.entrySet()) {
 				IPerson other = pair.getKey();
@@ -306,12 +185,9 @@ public class Driver {
 				// Relationship Type
 				fileWriter.write(r.getType() + ",");
 				// Attraction for Statistical Analysis
-				fileWriter.write(Double.toString(GeneologyRules.computeOverallAttraction(p, other, 1)) + ",");
-				// Compatibility for Statistical Analysis
-				fileWriter.write(Double.toString(GeneologyRules.computeRegard(p, other)));
+				fileWriter.write(Double.toString(GeneologyRules.computeDesire(p, other)));
 				fileWriter.write("\n");
 			}
-			i++;
 		}
 		fileWriter.close();
 
@@ -336,7 +212,7 @@ public class Driver {
 		fileWriter.write("ID, First Name, Last Name, Birth Last Name, Age, Birth Year, "
 				+ "Spouse, Mother, Father, Generation, Living, Death Year, "
 				+ "Spouse History, Number of Children, Founding Last Names, "
-				+ "Number of Founding Heritages, Sex, Role,Job Type Title, Job Rank, Job Performance, Job Status");
+				+ "Number of Founding Heritages, Sex, Role");
 		// Add Personality Traits Header
 		for (PersonalityTrait pt : PersonalityTrait.values()) {
 			fileWriter.write("," + pt);
@@ -408,21 +284,6 @@ public class Driver {
 			sb.append(",");
 			// Role
 			sb.append(p.getRole());
-			sb.append(",");
-			CareerManager cm = p.getCareer();
-			Job job = cm.currentJob();
-			// Job Type Title
-			sb.append(job != null ? job.getJobTypeTitle() : "-");
-			sb.append(",");
-			// Job Rank
-			sb.append(job != null ? job.getRank() : "-");
-			sb.append(",");
-			// Job Performance
-			sb.append(job != null ? job.getPerformance() : "-");
-			sb.append(",");
-			// Job Status
-			sb.append(job != null ? job.getStatus() : "-");
-
 			// Personality Traits
 			IPersonality personality = p.getPersonality();
 			for (PersonalityTrait pt : PersonalityTrait.values()) {
@@ -535,6 +396,29 @@ public class Driver {
 		fileWriter.close();
 	}
 
+	private static void outputGoals(String prefix, IGenesis genesis) throws IOException {
+		File file = new File("output/" + prefix + "-goalStats.csv");
+		FileWriter writer = new FileWriter(file);
+		List<IPerson> historicalPopulation = genesis.historicalPopulation();
+		writer.write("PersonID,Age,Living,Goal Title,Goal Description,Success\n");
+		for (IPerson p : historicalPopulation) {
+			for (IGoal g : p.getGoalTracker().getGoals()) {
+				List<String> lst = new ArrayList<String>();
+				lst.add(p.getId());
+				lst.add(Integer.toString(p.getAge()));
+				lst.add(Boolean.toString(p.isLiving()));
+				lst.add(g.getTitle());
+				lst.add(g.getDescription());
+				lst.add(Double.toString(g.computeProgress(genesis.getYear())));
+				writer.write(String.join(",", lst));
+				writer.flush();
+				writer.write("\n");
+				writer.flush();
+			}
+		}
+		writer.close();
+	}
+
 	private static void outputCareerStats(String prefix, IGenesis genesis) throws IOException {
 		File file = new File("output/" + prefix + "-careerStats.csv");
 		FileWriter fileWriter = new FileWriter(file);
@@ -548,10 +432,8 @@ public class Driver {
 			String jobName = j == null ? "Unemployed" : j.getJobTypeTitle();
 			map.get(jobName).add(p);
 		}
-		fileWriter.write("Occupation,Average Age, Number of Men, Number of Women, "
-				+ "Average Openness, "
-				+ "Average Conscientiousness, Average Extraversion,"
-				+ " Average Agressableness, Average Neuroticism, "
+		fileWriter.write("Occupation,Average Age, Number of Men, Number of Women, " + "Average Openness, "
+				+ "Average Conscientiousness, Average Extraversion," + " Average Agressableness, Average Neuroticism, "
 				+ "Average Tenacity, Average Focus\n");
 		for (Entry<String, List<IPerson>> e : map.entrySet()) {
 			List<IPerson> employees = e.getValue();
@@ -564,7 +446,7 @@ public class Driver {
 			List<Double> tLst = new ArrayList<Double>();
 			List<Double> fLst = new ArrayList<Double>();
 			for (IPerson p : employees) {
-				ageLst.add((double)p.getAge());
+				ageLst.add((double) p.getAge());
 				IPersonality personality = p.getPersonality();
 				oLst.add(personality.getTraitValue(PersonalityTrait.OPENNESS));
 				cLst.add(personality.getTraitValue(PersonalityTrait.CONSCIENTIOUSNESS));
@@ -581,12 +463,10 @@ public class Driver {
 			fileWriter.write(Double.toString(mean(ageLst)));
 			fileWriter.write(",");
 			// Number of Men
-			fileWriter.write(Long.toString(employees.stream().
-					filter(empl -> empl.getSex() == Sex.MALE).count()));
+			fileWriter.write(Long.toString(employees.stream().filter(empl -> empl.getSex() == Sex.MALE).count()));
 			fileWriter.write(",");
 			// Number of Women
-			fileWriter.write(Long.toString(employees.stream().
-					filter(empl -> empl.getSex() == Sex.FEMALE).count()));
+			fileWriter.write(Long.toString(employees.stream().filter(empl -> empl.getSex() == Sex.FEMALE).count()));
 			fileWriter.write(",");
 			// Average Openness
 			fileWriter.write(Double.toString(mean(oLst)));
@@ -611,6 +491,19 @@ public class Driver {
 			fileWriter.write("\n");
 		}
 		fileWriter.close();
+	}
+
+	private static double mean(List<Double> lst) {
+		double sum = sum(lst);
+		return sum / lst.size();
+	}
+
+	private static double sum(List<Double> lst) {
+		double sum = 0;
+		for (Number n : lst) {
+			sum += n.doubleValue();
+		}
+		return sum;
 	}
 
 }

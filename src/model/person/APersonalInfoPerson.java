@@ -7,6 +7,12 @@ import model.Sex;
 import model.career.CareerManager;
 import model.genetics.GeneticsMap;
 import model.genetics.JSONTraits;
+import model.goals.GoalTrackerImpl;
+import model.goals.IGoalTracker;
+import model.lifeevents.BirthLifeEvent;
+import model.lifeevents.DeathLifeEvent;
+import model.lifeevents.ILifeEvent;
+import model.lifeevents.MeetingEvent;
 import model.personality.IPersonality;
 import model.relationship.IRelationship;
 import model.relationship.RelationshipImpl;
@@ -34,10 +40,16 @@ public abstract class APersonalInfoPerson implements IPerson {
 	protected ARole role;
 	protected HashMap<String, Integer> preferences;
 	protected IPersonality personality;
+	protected IGoalTracker goalTracker;
     protected CareerManager career;
+    protected List<ILifeEvent> lifeEvents = new ArrayList<ILifeEvent>();
 
 	public CareerManager getCareer() {
 		return career;
+	}
+
+	public IGoalTracker getGoalTracker() {
+		return goalTracker;
 	}
 
 	// Relationships
@@ -59,6 +71,7 @@ public abstract class APersonalInfoPerson implements IPerson {
         this.preferences = getRandomPreferences(new Random());
 		this.relationships = new HashMap<>();
 		this.personality = personality;
+		this.goalTracker = new GoalTrackerImpl(this, new Random());
         this.career = new CareerManager(this);
 	}
 
@@ -217,7 +230,9 @@ public abstract class APersonalInfoPerson implements IPerson {
 		parent.addChild(child);
 		this.resetYearsSinceLastChild();
 		parent.resetYearsSinceLastChild();
-
+		this.addLifeEvent(new BirthLifeEvent(child));
+		parent.addLifeEvent(new BirthLifeEvent(child));
+		child.addLifeEvent(new BirthLifeEvent(child));
 		return child;
 	}
 
@@ -232,6 +247,7 @@ public abstract class APersonalInfoPerson implements IPerson {
 		this.living = false;
 		makeSpouseWidow(deathYear);
 		this.deathYear = deathYear;
+		this.addLifeEvent(new DeathLifeEvent(this, deathYear));
 	}
 
 	protected abstract void makeSpouseWidow(int deathYear);
@@ -356,6 +372,9 @@ public abstract class APersonalInfoPerson implements IPerson {
 			this.addRelationship(other, relationship);
 			other.addRelationship(this, relationship);
 		}
+		MeetingEvent event = new MeetingEvent(this, other, year);
+		lifeEvents.add(event);
+		other.addLifeEvent(event);
 	}
 
 	@Override
@@ -384,9 +403,17 @@ public abstract class APersonalInfoPerson implements IPerson {
 	}
 
     @Override
-    public void doCareer() {
+    public void doCareer(int year) {
         if(this.age > 18) {
-            career.manageCareer();
+            career.manageCareer(year);
         }
     }
+    
+    public void addLifeEvent(ILifeEvent e){
+    	this.lifeEvents.add(e);
+    }
+
+	public List<ILifeEvent> getLifeEvents() {
+		return lifeEvents;
+	}
 }

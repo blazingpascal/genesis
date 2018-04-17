@@ -70,4 +70,28 @@ public class CombinationRole extends ARole {
 		NarrativeRole narrative = (NarrativeRole) this.narrative.merge(cr.narrative);
 		return new CombinationRole(romantic, platonic, career, narrative);
 	}
+
+	public RomanticRole getRomantic() {
+		return romantic;
+	}
+
+	public PlatonicRole getPlatonic() {
+		return platonic;
+	}
+
+	public CareerRole getCareer() {
+		return career;
+	}
+
+	public NarrativeRole getNarrative() {
+		return narrative;
+	}
+
+
+	public Double tenacity() {
+		return career.tenacity();
+	}
+	
+	public Double focus(){
+		return career.focus();
 }

@@ -8,6 +8,7 @@ import model.Sex;
 import model.genesis.idbased.IIdBasedGenesis;
 import model.genesis.idbased.IdGenesisMapCollection;
 import model.genetics.GeneticsMap;
+import model.lifeevents.MarriageLifeEvent;
 import model.person.APersonalInfoPerson;
 import model.person.IPerson;
 import model.person.ARole;
@@ -175,6 +176,8 @@ class IdBasedPersonImpl extends APersonalInfoPerson implements IIdBasedPerson{
 		this.stopMourning();
 		fiance.stopMourning();
 		this.spouseId = fiance.getId();
+		this.addLifeEvent(new MarriageLifeEvent(this, fiance, year));
+		fiance.addLifeEvent(new MarriageLifeEvent(this, fiance, year));
 		notifyGenesisOfMarriage(this, fiance, year);
 		
 	}
