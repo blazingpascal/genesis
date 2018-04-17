@@ -1,4 +1,4 @@
-package model.goals;
+package model.lifeevents;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.Optional;
 
 import model.career.Job;
-import model.lifeevents.ILifeEvent;
 import model.person.APersonalInfoPerson;
 
 public class TakeLeaveEvent implements ILifeEvent {

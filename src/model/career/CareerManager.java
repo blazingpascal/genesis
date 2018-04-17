@@ -2,9 +2,9 @@ package model.career;
 
 import model.career.occupations.AOccupation;
 import model.goals.JoinedJobEvent;
-import model.goals.TakeLeaveEvent;
 import model.lifeevents.QuitJobEvent;
 import model.lifeevents.RetirementEvent;
+import model.lifeevents.TakeLeaveEvent;
 import model.person.APersonalInfoPerson;
 
 import java.util.ArrayList;
