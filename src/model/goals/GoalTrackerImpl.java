@@ -11,6 +11,7 @@ public class GoalTrackerImpl implements IGoalTracker{
 	private final RomanticGoal romanticGoal;
 	private final PlatonicGoal platonicGoal;
 	private final CareerGoal careerGoal;
+	// Narrative goals may have happened in a better run.
 	//private final NarrativeGoal narrativeGoal;
 	
 	public GoalTrackerImpl(IPerson p, Random r){
