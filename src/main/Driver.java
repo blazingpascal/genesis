@@ -20,6 +20,7 @@ import java.util.Scanner;
 import model.GeneologyRules;
 import model.Sex;
 import model.career.Job;
+import model.career.occupations.AOccupation;
 import model.genesis.IGenesis;
 import model.genesis.idbased.ILifeEventEnabledGenesis;
 import model.genesis.idbased.LifeEventEnabledGenesisImpl;
@@ -39,8 +40,8 @@ import model.relationship.RelationshipType;
 import model.spousehistory.ISpouseHistory;
 
 public class Driver {
-	public static final int STARTING_MALE_FOUNDERS = 250;
-	public static final int STARTING_FEMALE_FOUNDERS = 250;
+	public static final int STARTING_MALE_FOUNDERS = 25;
+	public static final int STARTING_FEMALE_FOUNDERS = 25;
 	public static final int MINIMUM_FOUNDER_AGE = 18;
 	public static final int MAXIMUM_FOUNDER_AGE = 25;
 
@@ -67,6 +68,8 @@ public class Driver {
 					genesis.addSinglePerson(firstName, lastName, Sex.FEMALE, age, GeneticsMap.randomGenes(new Random()),
 							ARole.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
 		}
+
+        if(args.length == 0) args = new String[] {"generation", "5", "output"};
 
 		int target = Integer.parseInt(args[1]);
 		StopCondition condition;
@@ -124,6 +127,8 @@ public class Driver {
 		System.out.println("Relationship info stats outputted");
 		outputGoals(prefix, genesis);
 		System.out.println("Goal Success Stats outputted");
+        outputCareerStats(prefix, genesis);
+        System.out.println("Career stats outputted");
 		outputDiverseSampleActions(prefix, genesis);
 		System.out.println("Diverse Samples Outputted");
 
@@ -424,12 +429,22 @@ public class Driver {
 		FileWriter fileWriter = new FileWriter(file);
 		List<IPerson> population = genesis.historicalPopulation();
 		HashMap<String, List<IPerson>> map = new HashMap<String, List<IPerson>>();
+
 		// TODO This is such a band-aid solution
-		map.put("Journalism", new ArrayList<IPerson>());
-		map.put("Unemployed", new ArrayList<IPerson>());
+        for(AOccupation oc : AOccupation.opts) {
+            map.put(oc.getName(), new ArrayList<>());
+        }
+        map.put("Unemployed", new ArrayList<>());
+        map.put("Retired", new ArrayList<>());
+
 		for (IPerson p : population) {
 			Job j = p.getCareer().currentJob();
-			String jobName = j == null ? "Unemployed" : j.getJobTypeTitle();
+            String jobName;
+            if(j != null) {
+                jobName = j.getJobTypeTitle();
+            } else {
+                jobName = p.getCareer().isRetired() ? "Retired" : "Unemployed";
+            }
 			map.get(jobName).add(p);
 		}
 		fileWriter.write("Occupation,Average Age, Number of Men, Number of Women, " + "Average Openness, "
@@ -454,8 +469,8 @@ public class Driver {
 				agrLst.add(personality.getTraitValue(PersonalityTrait.AGREEABLENESS));
 				nLst.add(personality.getTraitValue(PersonalityTrait.NEUROTICISM));
 				CombinationRole role = (CombinationRole) p.getRole();
-				tLst.add(role.tenacity());
-				fLst.add(role.focus());
+				tLst.add(role.getCareerTenacity());
+				fLst.add(role.getCareerFocus());
 			}
 			fileWriter.write(e.getKey());
 			fileWriter.write(",");

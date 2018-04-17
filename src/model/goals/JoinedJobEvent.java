@@ -21,7 +21,7 @@ public class JoinedJobEvent implements ILifeEvent {
 
 	public JoinedJobEvent(IPerson person, Job job, int year) {
 		this.personName = person.getFullName();
-		this.level = job.getLevel();
+		this.level = job.getRank();
 		this.title = job.getJobTypeTitle();
 		this.occupation = job.getOccupation().getName();
 		this.year = year;

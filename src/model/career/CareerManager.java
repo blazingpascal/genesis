@@ -53,8 +53,6 @@ public class CareerManager {
     private int jobAttempts;
     private int maxAttempts;
     private AOccupation[] careerRanking;
-  
-  	private ArrayList<Job> previousJobs;
 
     public CareerManager(APersonalInfoPerson person) {
         this.person = person;
@@ -67,7 +65,13 @@ public class CareerManager {
     }
   
   	public ArrayList<Job> getPreviousJobs() {
-      return previousJobs;
+        ArrayList<Job> result = new ArrayList<>();
+        for(JobGroup g : previousJobGroups) {
+            for(Job j : g.getJobs()) {
+                result.add(j);
+            }
+        }
+        return result;
     }
 
 
@@ -85,20 +89,20 @@ public class CareerManager {
         return sorted;
     }
 
-    public void manageCareer() {
+    public void manageCareer(int year) {
         if(!retired) {
             if(occupation == null || jobAttempts >= maxAttempts) {
                 occupation = chooseCareer();
-                currentJob = attemptFindJob();
+                currentJob = attemptFindJob(year);
             } else if(!currentJob.isPresent()) {
-                currentJob = attemptFindJob();
+                currentJob = attemptFindJob(year);
             } else {
                 jobAttempts = 0;
-                if(attemptQuit()) return;
-                attemptTakeLeave();
+                if(attemptQuit(year)) return;
+                attemptTakeLeave(year);
 
                 currentJob.get().work(this);
-                if(person.getAge() > 65) retired = attemptRetire();
+                if(person.getAge() > 65) retired = attemptRetire(year);
             }
         }
     }
@@ -134,7 +138,7 @@ public class CareerManager {
         return careerRanking[0];
     }
 
-    public Optional<Job> attemptFindJob() {
+    public Optional<Job> attemptFindJob(int year) {
         if(occupation.interview(person)) {
             int level = 0;
 
@@ -175,11 +179,15 @@ public class CareerManager {
       }
     }
 
-    public boolean attemptRetire() {
+    public boolean attemptRetire(int year) {
         double tenacity = person.getRole().getCareerTenacity();
         double chance = (1 - tenacity) / 2 + 0.1;
         boolean b = r.nextDouble() < chance;
-			  if(b) person.addLifeEvent(new RetirementEvent(person, currentJob.get(), year));
+        if(b) {
+            Job j = currentJob.orElse(null);
+            if(j == null) j = lastJobGroup().getMostRecentJob();
+            person.addLifeEvent(new RetirementEvent(person, j, year));
+        }
         return b;
     }
 
@@ -196,7 +204,7 @@ public class CareerManager {
 
     void addToPreviousJobs(Job j) {
         if(previousJobGroups.size() > 0) {
-            JobGroup last = previousJobGroups.get(previousJobGroups.size() - 1);
+            JobGroup last = lastJobGroup();
             if(last.sameOccupation(j.getOccupation())) {
                 last.addJob(j);
                 return;
@@ -212,5 +220,9 @@ public class CareerManager {
 
     public boolean isRetired() {
         return retired;
+    }
+
+    JobGroup lastJobGroup() {
+        return previousJobGroups.get(previousJobGroups.size() - 1);
     }
 }
