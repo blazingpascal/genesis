@@ -8,20 +8,31 @@ import java.util.Random;
 
 public abstract class AOccupation {
 
+    public static final Culinary CULINARY = new Culinary();
+    public static final Engineering ENGINEERING = new Engineering();
+    public static final Finance FINANCE = new Finance();
     public static final Journalism JOURNALISM = new Journalism();
-    public static final Medical MEDICAL = new Medical();
-    public static final VisualArt VISUAL_ART = new VisualArt();
-    public static final Teaching TEACHING = new Teaching();
     public static final LawEnforcement LAW_ENFORCEMENT = new LawEnforcement();
+    public static final Medical MEDICAL = new Medical();
+    public static final Politics POLITICS = new Politics();
+    public static final Science SCIENCE = new Science();
+    public static final Teaching TEACHING = new Teaching();
+    public static final VisualArt VISUAL_ART = new VisualArt();
 
-    public static final AOccupation[] opts = new AOccupation[5];
+
+    public static final AOccupation[] opts = new AOccupation[10];
 
     static{
-        opts[0] = JOURNALISM;
-        opts[1] = MEDICAL;
-        opts[2] = VISUAL_ART;
-        opts[3] = TEACHING;
+        opts[0] = CULINARY;
+        opts[1] = ENGINEERING;
+        opts[2] = FINANCE;
+        opts[3] = JOURNALISM;
         opts[4] = LAW_ENFORCEMENT;
+        opts[5] = MEDICAL;
+        opts[6] = POLITICS;
+        opts[7] = SCIENCE;
+        opts[8] = TEACHING;
+        opts[9] = VISUAL_ART;
     }
 
     protected Random r;

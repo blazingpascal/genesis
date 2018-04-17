@@ -12,169 +12,205 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
 
+class JobGroup {
+    private AOccupation occupation;
+    private ArrayList<Job> jobs;
+
+    public JobGroup(AOccupation o, Job j) {
+        this.occupation = o;
+        this.jobs = new ArrayList<>();
+        this.jobs.add(j);
+    }
+
+    public void addJob(Job j) {
+        jobs.add(j);
+    }
+
+    public ArrayList<Job> getJobs() {
+        return jobs;
+    }
+
+    public AOccupation getOccupation() {
+        return occupation;
+    }
+
+    public boolean sameOccupation(AOccupation o) {
+        return o.getName() == occupation.getName();
+    }
+
+    public Job getMostRecentJob() {
+        return jobs.get(jobs.size() - 1);
+    }
+}
+
 public class CareerManager {
-	private APersonalInfoPerson person;
-	private Optional<Job> currentJob;
-	private ArrayList<Job> previousJobs;
+    private APersonalInfoPerson person;
+    private Optional<Job> currentJob;
+    private ArrayList<JobGroup> previousJobGroups;
+    private AOccupation occupation;
+    private boolean retired;
+    private Random r;
+    private int jobAttempts;
+    private int maxAttempts;
+    private AOccupation[] careerRanking;
+  
+  	private ArrayList<Job> previousJobs;
 
-	public ArrayList<Job> getPreviousJobs() {
-		return previousJobs;
-	}
+    public CareerManager(APersonalInfoPerson person) {
+        this.person = person;
+        this.currentJob = Optional.empty();
+        this.previousJobGroups = new ArrayList<>();
+        this.retired = false;
+        this.r = new Random();
+        this.maxAttempts = calculateMaxAttempts();
+        this.careerRanking = rankCareers();
+    }
+  
+  	public ArrayList<Job> getPreviousJobs() {
+      return previousJobs;
+    }
 
-	private AOccupation occupation;
-	private boolean retired;
-	private Random r;
-	private int jobAttempts;
-	private int maxAttempts;
-	private AOccupation[] careerRanking;
 
-	public CareerManager(APersonalInfoPerson person) {
-		this.person = person;
-		this.currentJob = Optional.empty();
-		this.previousJobs = new ArrayList<>();
-		this.retired = false;
-		this.r = new Random();
-		this.maxAttempts = calculateMaxAttempts();
-		this.careerRanking = rankCareers();
-	}
+    private int calculateMaxAttempts() {
+        double focus = Math.pow(person.getRole().getCareerFocus(), 1.5);
+        return (int) Math.round(focus * 6) + 1;
+    }
 
-	private int calculateMaxAttempts() {
-		double focus = Math.pow(person.getRole().getCareerFocus(), 1.5);
-		return (int) Math.round(focus * 6) + 1;
-	}
+    private AOccupation[] rankCareers() {
+        AOccupation[] sorted = AOccupation.opts.clone();
+        Arrays.sort(sorted, (a1, a2) -> {
+            double d = a1.evaluateFit(person) - a2.evaluateFit(person);
+            return d < 0 ? 1 : d > 0 ? -1 : 0;
+        });
+        return sorted;
+    }
 
-	private AOccupation[] rankCareers() {
-		AOccupation[] sorted = AOccupation.opts.clone();
-		Arrays.sort(sorted, (a1, a2) -> {
-			double d = a1.evaluateFit(person) - a2.evaluateFit(person);
-			return d < 0 ? 1 : d > 0 ? -1 : 0;
-		});
-		return sorted;
-	}
+    public void manageCareer() {
+        if(!retired) {
+            if(occupation == null || jobAttempts >= maxAttempts) {
+                occupation = chooseCareer();
+                currentJob = attemptFindJob();
+            } else if(!currentJob.isPresent()) {
+                currentJob = attemptFindJob();
+            } else {
+                jobAttempts = 0;
+                if(attemptQuit()) return;
+                attemptTakeLeave();
 
-	public void manageCareer(int year) {
-		if (!retired) {
-			if (occupation == null || jobAttempts >= maxAttempts) {
-				occupation = chooseCareer();
-				currentJob = attemptFindJob();
-				if (currentJob.isPresent()) {
-					this.person.addLifeEvent(new JoinedJobEvent(this.person, currentJob.get(), year));
-				}
-			} else if (!currentJob.isPresent()) {
-				currentJob = attemptFindJob();
-				if (currentJob.isPresent()) {
-					this.person.addLifeEvent(new JoinedJobEvent(this.person, currentJob.get(), year));
-				}
-			} else {
-				jobAttempts = 0;
-				if (attemptQuit(year))
-					return;
-				attemptTakeLeave(year);
+                currentJob.get().work(this);
+                if(person.getAge() > 65) retired = attemptRetire();
+            }
+        }
+    }
 
-				currentJob.get().work(this);
-				if (person.getAge() > 65){
-					retired = attemptRetire();
-					if(retired && currentJob.isPresent()){
-						this.person.addLifeEvent(new RetirementEvent(this.person, currentJob.get(), year));
-					}
-				}
-			}
-		}
-	}
+    public APersonalInfoPerson getPerson() {
+        return person;
+    }
 
-	public APersonalInfoPerson getPerson() {
-		return person;
-	}
+    public AOccupation chooseCareer() {
+        jobAttempts = 0;
+        if(occupation != null) {
+            for(int i = 0; i < careerRanking.length - 1; i++) {
+                if(occupation.getName() == careerRanking[i].getName()) {
+                    careerRanking[i] = careerRanking[i + 1];
+                    careerRanking[i + 1] = occupation;
+                }
+            }
+        }
 
-	public AOccupation chooseCareer() {
-		jobAttempts = 0;
-		if (occupation != null) {
-			for (int i = 0; i < careerRanking.length - 1; i++) {
-				if (occupation.getName() == careerRanking[i].getName()) {
-					careerRanking[i] = careerRanking[i + 1];
-					careerRanking[i + 1] = occupation;
-				}
-			}
-		}
+        for(AOccupation oc : careerRanking) {
+            if(occupation == null || occupation.getName() != oc.getName()) {
+                double roll = r.nextDouble();
+                if(roll < 0.7) return oc;
+            }
+        }
 
-		for (AOccupation oc : careerRanking) {
-			if (occupation == null || occupation.getName() != oc.getName()) {
-				double roll = r.nextDouble();
-				if (roll < 0.7)
-					return oc;
-			}
-		}
+        for(AOccupation oc : careerRanking) {
+            if(occupation == null || occupation.getName() != oc.getName()) {
+                return oc;
+            }
+        }
 
-		for (AOccupation oc : careerRanking) {
-			if (occupation == null || occupation.getName() != oc.getName()) {
-				return oc;
-			}
-		}
+        return careerRanking[0];
+    }
 
-		return careerRanking[0];
-	}
+    public Optional<Job> attemptFindJob() {
+        if(occupation.interview(person)) {
+            int level = 0;
 
-	public Optional<Job> attemptFindJob() {
-		if (occupation.interview(person)) {
-			int level = 0;
-			if (!previousJobs.isEmpty()) {
-				for (int i = previousJobs.size() - 1; i >= 0; i--) {
-					if (previousJobs.get(i).getOccupation().getName() == occupation.getName()) {
-						double roll = r.nextDouble();
-						int levelMod = roll < 0.4 ? roll < 0.15 ? -1 : 1 : 0;
-						level = previousJobs.get(previousJobs.size() - 1).getLevel() + levelMod;
-						level = Math.max(0, Math.min(level, 9));
-						break;
-					}
-				}
-			}
-			return Optional.of(new Job(occupation, level));
-		}
-		jobAttempts++;
-		return Optional.empty();
-	}
+            if(!previousJobGroups.isEmpty()) {
+                for(int i = previousJobGroups.size() - 1; i >= 0; i--) {
+                    if(previousJobGroups.get(i).sameOccupation(occupation)) {
+                        double roll = r.nextDouble();
+                        level = roll < 0.4 ? roll < 0.15 ? -1 : 1 : 0;
+                        level += previousJobGroups.get(i).getMostRecentJob().getRank();
+                        level = Math.max(0, Math.min(level, 9));
+                        break;
+                    }
+                }
+            }
+            Job j = new Job(occupation, level);
+  					person.addLifeEvent(new JoinedJobEvent(person, j, year));
+            return Optional.of(j);
+        }
+        jobAttempts++;
+        return Optional.empty();
+    }
+  
+  	public boolean attemptQuit(int year) {
+      double focus = person.getRole().getCareerFocus();
+      double chance = Math.pow((1 - focus) / 2, 2) + 0.05;
+      boolean b = r.nextDouble() < chance;
+      if (b) {
+        this.person.addLifeEvent(new QuitJobEvent(this.person, currentJob.get(), year));
+        quitJob();
+      }
+      return b;
+    }
 
-	public boolean attemptRetire() {
-		double tenacity = person.getRole().getCareerTenacity();
-		double chance = (1 - tenacity) / 2 + 0.1;
-		return r.nextDouble() < chance;
-	}
+    public void attemptTakeLeave(int year) {
+      if (r.nextDouble() < 0.1) {
+        currentJob.get().takeLeave();
+        this.person.addLifeEvent(new TakeLeaveEvent(this.person, this.currentJob.get(), year));
+      }
+    }
 
-	public boolean attemptQuit(int year) {
-		double focus = person.getRole().getCareerFocus();
-		double chance = Math.pow((1 - focus) / 2, 2) + 0.05;
-		boolean b = r.nextDouble() < chance;
-		if (b) {
-			this.person.addLifeEvent(new QuitJobEvent(this.person, currentJob.get(), year));
-			quitJob();
-			
-		}
-		return b;
-	}
+    public boolean attemptRetire() {
+        double tenacity = person.getRole().getCareerTenacity();
+        double chance = (1 - tenacity) / 2 + 0.1;
+        boolean b = r.nextDouble() < chance;
+			  if(b) person.addLifeEvent(new RetirementEvent(person, currentJob.get(), year));
+        return b;
+    }
 
-	public void attemptTakeLeave(int year) {
-		if (r.nextDouble() < 0.1) {
-			currentJob.get().takeLeave();
-			this.person.addLifeEvent(new TakeLeaveEvent(this.person, this.currentJob.get(), year));
-		}
+    public void fired() {
+        addToPreviousJobs(currentJob.get());
+        currentJob = Optional.empty();
+    }
 
-	}
+    public void quitJob() {
+        currentJob.get().sendResignation();
+        addToPreviousJobs(currentJob.get());
+        currentJob = Optional.empty();
+    }
 
-	public void fired(Job j) {
-		previousJobs.add(j);
-		currentJob = Optional.empty();
-	}
+    void addToPreviousJobs(Job j) {
+        if(previousJobGroups.size() > 0) {
+            JobGroup last = previousJobGroups.get(previousJobGroups.size() - 1);
+            if(last.sameOccupation(j.getOccupation())) {
+                last.addJob(j);
+                return;
+            }
+        }
+        previousJobGroups.add(new JobGroup(occupation, j));
 
-	public void quitJob() {
-		currentJob.get().sendResignation();
-		previousJobs.add(currentJob.get());
-		currentJob = Optional.empty();
-	}
+    }
+  
+  	public Job currentJob() {
+      return currentJob.orElse(null);
+    }
 
-	public Job currentJob() {
-		if (currentJob.isPresent()) {
-			return currentJob.get();
-		}
-		return null;
-	}
+    public boolean isRetired() {
+        return retired;
+    }
 }

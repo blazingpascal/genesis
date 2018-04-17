@@ -50,17 +50,17 @@ public class CombinationRole extends ARole {
 
     @Override
     public double computeCareerProgressionModifier() {
-        return this.career.computeCareerProgressionModifier();
+        return career.computeCareerProgressionModifier();
     }
 
     @Override
     public double getCareerFocus() {
-        return this.career.getCareerFocus();
+        return career.getCareerFocus();
     }
 
     @Override
     public double getCareerTenacity() {
-        return this.career.getCareerTenacity();
+        return career.getCareerTenacity();
     }
 
 	protected ARole mergeCoR(CombinationRole cr) {
@@ -70,6 +70,7 @@ public class CombinationRole extends ARole {
 		NarrativeRole narrative = (NarrativeRole) this.narrative.merge(cr.narrative);
 		return new CombinationRole(romantic, platonic, career, narrative);
 	}
+
 	public RomanticRole getRomantic() {
 		return romantic;
 	}
@@ -93,5 +94,4 @@ public class CombinationRole extends ARole {
 	
 	public Double focus(){
 		return career.focus();
-	}
 }

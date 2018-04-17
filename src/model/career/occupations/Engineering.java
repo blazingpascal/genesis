@@ -4,10 +4,9 @@ import model.person.APersonalInfoPerson;
 import model.personality.IPersonality;
 import model.personality.PersonalityTrait;
 
-public class Teaching extends AOccupation {
-
-    public Teaching() {
-        super("Teaching", 0.2);
+public class Engineering extends AOccupation {
+    public Engineering() {
+        super("Engineering", 0.5);
     }
 
     @Override
@@ -16,9 +15,7 @@ public class Teaching extends AOccupation {
         double ranking = 0;
 
         ranking += addValue(personality, PersonalityTrait.CONSCIENTIOUSNESS);
-        ranking += addValue(personality, PersonalityTrait.EXTRAVERSION);
-        ranking += addValueAdditional(personality, PersonalityTrait.AGREEABLENESS);
-        ranking += addValueAbsence(personality, PersonalityTrait.NEUROTICISM);
+        ranking += addValueAbsence(personality, PersonalityTrait.EXTRAVERSION);
 
         return ranking;
     }

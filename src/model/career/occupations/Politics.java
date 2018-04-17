@@ -4,10 +4,9 @@ import model.person.APersonalInfoPerson;
 import model.personality.IPersonality;
 import model.personality.PersonalityTrait;
 
-public class Teaching extends AOccupation {
-
-    public Teaching() {
-        super("Teaching", 0.2);
+public class Politics extends AOccupation {
+    public Politics() {
+        super("Politics", 0.2);
     }
 
     @Override
@@ -15,10 +14,9 @@ public class Teaching extends AOccupation {
         IPersonality personality = person.getPersonality();
         double ranking = 0;
 
-        ranking += addValue(personality, PersonalityTrait.CONSCIENTIOUSNESS);
+        ranking += addValueAdditional(personality, PersonalityTrait.CONSCIENTIOUSNESS);
         ranking += addValue(personality, PersonalityTrait.EXTRAVERSION);
-        ranking += addValueAdditional(personality, PersonalityTrait.AGREEABLENESS);
-        ranking += addValueAbsence(personality, PersonalityTrait.NEUROTICISM);
+        ranking += addValueAbsenceAdditional(personality, PersonalityTrait.NEUROTICISM);
 
         return ranking;
     }

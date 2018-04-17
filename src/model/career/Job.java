@@ -27,11 +27,10 @@ public class Job {
                 if (level < 9) {
                     level++;
                     performance = 0;
-                    //System.out.println(manager.getPerson().getFullName() + " promoted to " + level);
                 }
             } else if (performance <= -1) {
                 this.status = 1;
-                manager.fired(this);
+                manager.fired();
             }
         } else if(status == 3) {
             status = 0;
@@ -53,10 +52,6 @@ public class Job {
           p += roll < 0.1 ? 0.8 : -0.8;
       }
       return p;
-    }
-
-    public int getLevel() {
-        return level;
     }
   
   	public Integer getRank() {
