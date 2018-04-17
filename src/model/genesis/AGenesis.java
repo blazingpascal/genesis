@@ -70,7 +70,7 @@ public abstract class AGenesis implements IGenesis {
 		timeInYears++;
 		for (IPerson p : livingPopulation()) {
 			p.incrementAge();
-			p.doCareer();
+			p.doCareer(this.timeInYears);
 		}
 		progressRelationships(r);
 		meetPeople(r);
@@ -301,7 +301,7 @@ public abstract class AGenesis implements IGenesis {
 			int numRelationships = Math.min(p.getRelationships().size(), RELATIONSHIP_CHANGES_PER_YEAR);
 			Iterator<IRelationship> it = p.getRelationships().values().iterator();
 			for (int i = 0; i < numRelationships; i++) { //
-				it.next().progressRelationship(r);
+				it.next().progressRelationship(r, this.timeInYears);
 			}
 		}
 

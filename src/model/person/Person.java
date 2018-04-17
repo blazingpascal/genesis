@@ -213,7 +213,7 @@ class Person extends APersonalInfoPerson {
 	}
 
 	@Override
-	public void doCareer() {
+	public void doCareer(int year) {
 		// TODO Auto-generated method stub
 		
 	}

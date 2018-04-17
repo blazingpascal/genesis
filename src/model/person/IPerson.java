@@ -6,6 +6,8 @@ import model.Sex;
 import model.career.CareerManager;
 import model.genetics.GeneticsMap;
 import model.goals.IGoalTracker;
+import model.lifeevents.ILifeEvent;
+import model.lifeevents.MeetingEvent;
 import model.person.idbased.IIdBasedPerson;
 import model.personality.IPersonality;
 import model.relationship.IRelationship;
@@ -136,7 +138,11 @@ public interface IPerson {
 	
 	IGoalTracker getGoalTracker();
 
-    void doCareer();
-
 	CareerManager getCareer();
+
+	void addLifeEvent(ILifeEvent event);
+
+	void doCareer(int year);
+
+	List<ILifeEvent> getLifeEvents();
 }
