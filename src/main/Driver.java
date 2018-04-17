@@ -40,8 +40,8 @@ import model.relationship.RelationshipType;
 import model.spousehistory.ISpouseHistory;
 
 public class Driver {
-	public static final int STARTING_MALE_FOUNDERS = 250;
-	public static final int STARTING_FEMALE_FOUNDERS = 250;
+	public static final int STARTING_MALE_FOUNDERS = 25;
+	public static final int STARTING_FEMALE_FOUNDERS = 25;
 	public static final int MINIMUM_FOUNDER_AGE = 18;
 	public static final int MAXIMUM_FOUNDER_AGE = 25;
 
@@ -69,7 +69,7 @@ public class Driver {
 							ARole.getRandomRole(new Random(), false), IPersonality.randomPersonality(new Random())));
 		}
 
-        if(args.length == 0) args = new String[] {"years", "100", "output"};
+        if(args.length == 0) args = new String[] {"generation", "5", "output"};
 
 		int target = Integer.parseInt(args[1]);
 		StopCondition condition;
@@ -127,6 +127,8 @@ public class Driver {
 		System.out.println("Relationship info stats outputted");
 		outputGoals(prefix, genesis);
 		System.out.println("Goal Success Stats outputted");
+        outputCareerStats(prefix, genesis);
+        System.out.println("Career stats outputted");
 		outputDiverseSampleActions(prefix, genesis);
 		System.out.println("Diverse Samples Outputted");
 
